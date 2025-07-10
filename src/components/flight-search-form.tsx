@@ -852,10 +852,8 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         {tripType === 'Multi-city' && multiSegments.map((segment, idx) => (
           <div className="relative" key={idx}>
             <MultiCitySegment
-              index={idx}
               segment={segment}
               onChange={(field, value) => handleSegmentChange(idx, field, value)}
-              cities={cities}
               fromSuggestions={multiFromSuggestions[idx] || []}
               toSuggestions={multiToSuggestions[idx] || []}
               showFromSuggestions={multiShowFromSuggestions[idx] || false}
@@ -916,10 +914,8 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
 
 // Flight segment form for Multi-city
 const MultiCitySegment: React.FC<{
-  index: number
   segment: { from: string; to: string; date: Date | null; fromSelection: City | null; toSelection: City | null }
   onChange: (field: 'from' | 'to' | 'date' | 'fromSelection' | 'toSelection', value: string | Date | null | City) => void
-  cities: City[]
   fromSuggestions: City[]
   toSuggestions: City[]
   showFromSuggestions: boolean
@@ -934,184 +930,178 @@ const MultiCitySegment: React.FC<{
   onInputFocus: (field: 'from' | 'to') => void
   onInputBlur: () => void
 }> = ({
-  index, segment, onChange, cities,
+  segment, onChange,
   fromSuggestions, toSuggestions,
   showFromSuggestions, showToSuggestions,
   onFromInput, onToInput, onCitySelect,
   onDateClick, openPopover, setOpenPopover,
   activeInput, onInputFocus, onInputBlur
-}) => (
-  <div className="bg-white rounded-full shadow-lg p-2 flex items-center gap-1 mt-4 autocomplete-container">
-    {/* From */}
-    <div className={`relative grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'from' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}> 
-      {(() => {
-        const fromRef = React.useRef<HTMLInputElement>(null);
-        return (
-          <div
-            className="flex items-center px-4 py-3 cursor-pointer w-full"
-            tabIndex={0}
-            aria-label="From input"
-            onClick={() => fromRef.current && fromRef.current.focus()}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromRef.current && fromRef.current.focus(); } }}
-          >
-            <div className="flex items-center gap-3 w-full">
-              <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                <Plane size={16} className="text-[#0ABAB5]" />
-              </div>
-              <div className="flex-1">
-                <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
-                <input
-                  ref={fromRef}
-                  type="text"
-                  value={segment.from}
-                  onChange={e => onFromInput(e.target.value)}
-                  onFocus={() => onInputFocus('from')}
-                  onBlur={onInputBlur}
-                  placeholder="Flying from?"
-                  className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
-                  tabIndex={-1}
-                />
-              </div>
-              {segment.fromSelection && (
-                <div className="bg-[#0ABAB5] text-white font-bold text-sm rounded-lg px-3 py-1.5 ml-2">
-                  {segment.fromSelection.code}
-                </div>
-              )}
+}) => {
+  const fromRef = React.useRef<HTMLInputElement>(null);
+  const toRef = React.useRef<HTMLInputElement>(null);
+  return (
+    <div className="bg-white rounded-full shadow-lg p-2 flex items-center gap-1 mt-4 autocomplete-container">
+      {/* From */}
+      <div className={`relative grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'from' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}> 
+        <div
+          className="flex items-center px-4 py-3 cursor-pointer w-full"
+          tabIndex={0}
+          aria-label="From input"
+          onClick={() => fromRef.current && fromRef.current.focus()}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromRef.current && fromRef.current.focus(); } }}
+        >
+          <div className="flex items-center gap-3 w-full">
+            <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
+              <Plane size={16} className="text-[#0ABAB5]" />
             </div>
-          </div>
-        );
-      })()}
-      {showFromSuggestions && fromSuggestions.length > 0 && (
-        <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
-          {fromSuggestions.map((city, idx) => (
-            <button
-              key={idx}
-              onClick={() => onCitySelect(city, 'from')}
-              className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer first:rounded-t-xl last:rounded-b-xl"
-              tabIndex={0}
-            >
-              <div className="flex items-center">
-                <MapPin size={16} className="text-gray-400 mr-3" />
-                <div>
-                  <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
-                  <div className="font-poppins text-sm text-gray-500">{city.country}</div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-    {/* Divider with Swapper Button */}
-    <div className="relative flex-shrink-0">
-      <div className="w-px h-16 bg-gray-200"></div>
-      <button
-        onClick={() => {
-          // Swap from and to for this segment
-          const temp = segment.from
-          const tempSelection = segment.fromSelection
-          onChange('from', segment.to)
-          onChange('to', temp)
-          onChange('fromSelection', segment.toSelection)
-          onChange('toSelection', tempSelection)
-        }}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-gray-100 hover:border-[#0ABAB5] transition-all cursor-pointer"
-        aria-label="Swap origin and destination"
-      >
-        <ArrowLeftRight size={18} className="text-gray-500 hover:text-[#0ABAB5] transition-colors" />
-      </button>
-    </div>
-    {/* To */}
-    <div className={`relative grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'to' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}> 
-      {(() => {
-        const toRef = React.useRef<HTMLInputElement>(null);
-        return (
-          <div
-            className="flex items-center px-4 py-3 cursor-pointer w-full"
-            tabIndex={0}
-            aria-label="To input"
-            onClick={() => toRef.current && toRef.current.focus()}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toRef.current && toRef.current.focus(); } }}
-          >
-            <div className="flex items-center gap-3 w-full">
-              <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                <Plane size={16} className="text-[#0ABAB5] rotate-90" />
-              </div>
-              <div className="flex-1">
-                <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
-                <input
-                  ref={toRef}
-                  type="text"
-                  value={segment.to}
-                  onChange={e => onToInput(e.target.value)}
-                  onFocus={() => onInputFocus('to')}
-                  onBlur={onInputBlur}
-                  placeholder="Where are you flying?"
-                  className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
-                  tabIndex={-1}
-                />
-              </div>
-              {segment.toSelection && (
-                <div className="bg-[#0ABAB5] text-white font-bold text-sm rounded-lg px-3 py-1.5 ml-2">
-                  {segment.toSelection.code}
-                </div>
-              )}
+            <div className="flex-1">
+              <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
+              <input
+                ref={fromRef}
+                type="text"
+                value={segment.from}
+                onChange={e => onFromInput(e.target.value)}
+                onFocus={() => onInputFocus('from')}
+                onBlur={onInputBlur}
+                placeholder="Flying from?"
+                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
+                tabIndex={-1}
+              />
             </div>
-          </div>
-        );
-      })()}
-      {showToSuggestions && toSuggestions.length > 0 && (
-        <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
-          {toSuggestions.map((city, idx) => (
-            <button
-              key={idx}
-              onClick={() => onCitySelect(city, 'to')}
-              className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer first:rounded-t-xl last:rounded-b-xl"
-              tabIndex={0}
-            >
-              <div className="flex items-center">
-                <MapPin size={16} className="text-gray-400 mr-3" />
-                <div>
-                  <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
-                  <div className="font-poppins text-sm text-gray-500">{city.country}</div>
-                </div>
+            {segment.fromSelection && (
+              <div className="bg-[#0ABAB5] text-white font-bold text-sm rounded-lg px-3 py-1.5 ml-2">
+                {segment.fromSelection.code}
               </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-    {/* Divider */}
-    <div className="w-px h-16 bg-gray-200"></div>
-    {/* Departure Date */}
-    <div className="relative calendar-container grow-[2] shrink basis-0">
-      <div 
-        className="flex items-center px-4 py-3 cursor-pointer h-full"
-        onClick={onDateClick}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-            <CalendarIcon size={16} className="text-[#0ABAB5]" />
-          </div>
-          <div className="flex-1">
-            <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">DEPARTURE</div>
-            <div className={`w-full font-poppins font-medium border-none outline-none bg-transparent ${segment.date ? 'text-[#0D2B29]' : 'text-gray-400'}`}>
-              {segment.date ? segment.date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Select Date'}
-            </div>
+            )}
           </div>
         </div>
+        {showFromSuggestions && fromSuggestions.length > 0 && (
+          <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+            {fromSuggestions.map((city, idx) => (
+              <button
+                key={idx}
+                onClick={() => onCitySelect(city, 'from')}
+                className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer first:rounded-t-xl last:rounded-b-xl"
+                tabIndex={0}
+              >
+                <div className="flex items-center">
+                  <MapPin size={16} className="text-gray-400 mr-3" />
+                  <div>
+                    <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
+                    <div className="font-poppins text-sm text-gray-500">{city.country}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      {openPopover && (
-        <div className="absolute top-full left-0 mt-2 z-50 calendar-container" onClick={(e) => e.stopPropagation()}>
-          <CustomCalendar
-            selectedDate={segment.date}
-            onDateSelect={date => { onChange('date', date); setOpenPopover(false) }}
-            minDate={new Date()}
-          />
+      {/* Divider with Swapper Button */}
+      <div className="relative flex-shrink-0">
+        <div className="w-px h-16 bg-gray-200"></div>
+        <button
+          onClick={() => {
+            // Swap from and to for this segment
+            const temp = segment.from
+            const tempSelection = segment.fromSelection
+            onChange('from', segment.to)
+            onChange('to', temp)
+            onChange('fromSelection', segment.toSelection)
+            onChange('toSelection', tempSelection)
+          }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-gray-100 hover:border-[#0ABAB5] transition-all cursor-pointer"
+          aria-label="Swap origin and destination"
+        >
+          <ArrowLeftRight size={18} className="text-gray-500 hover:text-[#0ABAB5] transition-colors" />
+        </button>
+      </div>
+      {/* To */}
+      <div className={`relative grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'to' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}> 
+        <div
+          className="flex items-center px-4 py-3 cursor-pointer w-full"
+          tabIndex={0}
+          aria-label="To input"
+          onClick={() => toRef.current && toRef.current.focus()}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toRef.current && toRef.current.focus(); } }}
+        >
+          <div className="flex items-center gap-3 w-full">
+            <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
+              <Plane size={16} className="text-[#0ABAB5] rotate-90" />
+            </div>
+            <div className="flex-1">
+              <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
+              <input
+                ref={toRef}
+                type="text"
+                value={segment.to}
+                onChange={e => onToInput(e.target.value)}
+                onFocus={() => onInputFocus('to')}
+                onBlur={onInputBlur}
+                placeholder="Where are you flying?"
+                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
+                tabIndex={-1}
+              />
+            </div>
+            {segment.toSelection && (
+              <div className="bg-[#0ABAB5] text-white font-bold text-sm rounded-lg px-3 py-1.5 ml-2">
+                {segment.toSelection.code}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+        {showToSuggestions && toSuggestions.length > 0 && (
+          <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+            {toSuggestions.map((city, idx) => (
+              <button
+                key={idx}
+                onClick={() => onCitySelect(city, 'to')}
+                className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer first:rounded-t-xl last:rounded-b-xl"
+                tabIndex={0}
+              >
+                <div className="flex items-center">
+                  <MapPin size={16} className="text-gray-400 mr-3" />
+                  <div>
+                    <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
+                    <div className="font-poppins text-sm text-gray-500">{city.country}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Divider */}
+      <div className="w-px h-16 bg-gray-200"></div>
+      {/* Departure Date */}
+      <div className="relative calendar-container grow-[2] shrink basis-0">
+        <div 
+          className="flex items-center px-4 py-3 cursor-pointer h-full"
+          onClick={onDateClick}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
+              <CalendarIcon size={16} className="text-[#0ABAB5]" />
+            </div>
+            <div className="flex-1">
+              <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">DEPARTURE</div>
+              <div className={`w-full font-poppins font-medium border-none outline-none bg-transparent ${segment.date ? 'text-[#0D2B29]' : 'text-gray-400'}`}> 
+                {segment.date ? segment.date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Select Date'}
+              </div>
+            </div>
+          </div>
+        </div>
+        {openPopover && (
+          <div className="absolute top-full left-0 mt-2 z-50 calendar-container" onClick={(e) => e.stopPropagation()}>
+            <CustomCalendar
+              selectedDate={segment.date}
+              onDateSelect={date => { onChange('date', date); setOpenPopover(false) }}
+              minDate={new Date()}
+            />
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default FlightSearchForm 

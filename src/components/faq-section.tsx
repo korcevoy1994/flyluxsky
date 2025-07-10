@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 
-const faqData = [
+type FaqItemType = {
+  question: string;
+  answer: string;
+};
+
+const faqData: FaqItemType[] = [
   {
     question: "What makes Fly Lux Sky different from other booking platforms?",
     answer: "We specialize in business and first-class travel, offering exclusive fares with discounts up to 70%. With over 130 travel advisors averaging 10+ years of experience, we provide personalized service that surpasses any search engine."
@@ -29,7 +34,7 @@ const faqData = [
   }
 ];
 
-const FaqItem = ({ item, index, isOpen, onClick }: { item: any, index: number, isOpen: boolean, onClick: () => void }) => (
+const FaqItem = ({ item, index, isOpen, onClick }: { item: FaqItemType, index: number, isOpen: boolean, onClick: () => void }) => (
   <div className="border-b border-[#E1F7F7]">
     <div
       className="flex items-center justify-between gap-4 py-6 cursor-pointer"

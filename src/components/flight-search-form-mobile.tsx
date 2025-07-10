@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react'
-import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, MapPin, Search, Users, Plane, ChevronLeft, ChevronRight, Plus, X, ChevronUp } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, MapPin, Search, Users, Plane, Plus, X } from 'lucide-react'
 import { cities, City } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
@@ -46,12 +46,6 @@ interface FlightSearchFormMobileProps {
   setMultiShowToSuggestions: React.Dispatch<React.SetStateAction<boolean[]>>;
   multiActiveInputs: ('from' | 'to' | null)[];
   setMultiActiveInputs: React.Dispatch<React.SetStateAction<('from' | 'to' | null)[]>>;
-}
-
-interface PassengerCount {
-  adults: number
-  children: number
-  infants: number
 }
 
 // Календарь со скроллом по месяцам
@@ -224,7 +218,6 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   const [activeModal, setActiveModal] = useState<'from' | 'to' | 'calendar' | 'multi-from' | 'multi-to' | 'multi-calendar' | null>(null)
   const [calendarMode, setCalendarMode] = useState<'departure' | 'return'>('departure')
   const [activeMultiIndex, setActiveMultiIndex] = useState<number>(0)
-  const [activeMultiField, setActiveMultiField] = useState<'from' | 'to'>('from')
 
   // Multi-city segments
   // const [multiSegments, setMultiSegments] = useState<{ from: string; to: string; date: Date | null; fromSelection: City | null; toSelection: City | null }[]>([])
