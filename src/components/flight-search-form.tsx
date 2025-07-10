@@ -340,7 +340,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [setMultiPopovers, setMultiShowFromSuggestions, setMultiShowToSuggestions])
   
   // Multi-city segments (дополнительные, кроме основной формы)
   // При выборе Multi-city сразу появляется одна доп. форма
@@ -947,8 +947,8 @@ const MultiCitySegment: React.FC<{
           className="flex items-center px-4 py-3 cursor-pointer w-full"
           tabIndex={0}
           aria-label="From input"
-          onClick={() => fromRef.current && fromRef.current.focus()}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromRef.current && fromRef.current.focus(); } }}
+          onClick={() => { fromRef.current?.focus(); }}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromRef.current?.focus(); } }}
         >
           <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
@@ -1021,8 +1021,8 @@ const MultiCitySegment: React.FC<{
           className="flex items-center px-4 py-3 cursor-pointer w-full"
           tabIndex={0}
           aria-label="To input"
-          onClick={() => toRef.current && toRef.current.focus()}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toRef.current && toRef.current.focus(); } }}
+          onClick={() => { toRef.current?.focus(); }}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toRef.current?.focus(); } }}
         >
           <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">

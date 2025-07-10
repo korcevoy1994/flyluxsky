@@ -44,8 +44,6 @@ interface FlightSearchFormMobileProps {
   setMultiShowFromSuggestions: React.Dispatch<React.SetStateAction<boolean[]>>;
   multiShowToSuggestions: boolean[];
   setMultiShowToSuggestions: React.Dispatch<React.SetStateAction<boolean[]>>;
-  multiActiveInputs: ('from' | 'to' | null)[];
-  setMultiActiveInputs: React.Dispatch<React.SetStateAction<('from' | 'to' | null)[]>>;
 }
 
 // Календарь со скроллом по месяцам
@@ -205,16 +203,15 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   setMultiShowFromSuggestions,
   multiShowToSuggestions,
   setMultiShowToSuggestions,
-  multiActiveInputs,
-  setMultiActiveInputs,
 }) => {
   const [fromSuggestions, setFromSuggestions] = useState<City[]>([])
   const [toSuggestions, setToSuggestions] = useState<City[]>([])
-  const [showFromSuggestions, setShowFromSuggestions] = useState(false)
-  const [showToSuggestions, setShowToSuggestions] = useState(false)
+  // Remove unused variables
+  // const [showFromSuggestions, setShowFromSuggestions] = useState(false)
+  // const [showToSuggestions, setShowToSuggestions] = useState(false)
   
-  type OpenPopover = 'trip' | 'class' | 'passengers' | null
-  const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
+  // type OpenPopover = 'trip' | 'class' | 'passengers' | null
+  // const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
   const [activeModal, setActiveModal] = useState<'from' | 'to' | 'calendar' | 'multi-from' | 'multi-to' | 'multi-calendar' | null>(null)
   const [calendarMode, setCalendarMode] = useState<'departure' | 'return'>('departure')
   const [activeMultiIndex, setActiveMultiIndex] = useState<number>(0)
@@ -245,7 +242,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       setMultiShowFromSuggestions(shows => shows.map(() => false))
       setMultiShowToSuggestions(shows => shows.map(() => false))
     }
-  }, [tripType])
+  }, [tripType, multiSegments.length, setMultiSegments, setMultiPopovers, setMultiFromSuggestions, setMultiToSuggestions, setMultiShowFromSuggestions, setMultiShowToSuggestions])
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
@@ -265,10 +262,10 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         city.country.toLowerCase().includes(value.toLowerCase())
       )
       setFromSuggestions(filtered)
-      setShowFromSuggestions(true)
+      // setShowFromSuggestions(true)
     } else {
       setFromSuggestions([])
-      setShowFromSuggestions(false)
+      // setShowFromSuggestions(false)
     }
   }
 
@@ -282,34 +279,36 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         city.country.toLowerCase().includes(value.toLowerCase())
       )
       setToSuggestions(filtered)
-      setShowToSuggestions(true)
+      // setShowToSuggestions(true)
     } else {
       setToSuggestions([])
-      setShowToSuggestions(false)
+      // setShowToSuggestions(false)
     }
   }
 
-  const handleCitySelect = (city: City, type: 'from' | 'to') => {
-    if (type === 'from') {
-      setFromSelection(city)
-      setFromInput(`${city.name}, ${city.country}`)
-      setShowFromSuggestions(false)
-      setActiveModal('to')
-    } else {
-      setToSelection(city)
-      setToInput(`${city.name}, ${city.country}`)
-      setShowToSuggestions(false)
-      setActiveModal(null)
-    }
-  }
+  // Remove unused function
+  // const handleCitySelect = (city: City, type: 'from' | 'to') => {
+  //   if (type === 'from') {
+  //     setFromSelection(city)
+  //     setFromInput(`${city.name}, ${city.country}`)
+  //     setShowFromSuggestions(false)
+  //     setActiveModal('to')
+  //   } else {
+  //     setToSelection(city)
+  //     setToInput(`${city.name}, ${city.country}`)
+  //     setShowToSuggestions(false)
+  //     setActiveModal(null)
+  //   }
+  // }
 
-  const handleTogglePopover = (popover: OpenPopover) => {
-    if (openPopover === popover) {
-      setOpenPopover(null)
-    } else {
-      setOpenPopover(popover)
-    }
-  }
+  // Remove unused function
+  // const handleTogglePopover = (popover: OpenPopover) => {
+  //   if (openPopover === popover) {
+  //     setOpenPopover(null)
+  //   } else {
+  //     setOpenPopover(popover)
+  //   }
+  // }
 
   const handleSwapCities = () => {
     const tempInput = fromInput
@@ -429,12 +428,11 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
       if (!target.closest('.dropdown-container') && !target.closest('.calendar-container')) {
-        setOpenPopover(null)
+        // setOpenPopover(null)
         setMultiPopovers(pops => pops.map(() => false))
       }
       if (!target.closest('.autocomplete-container')) {
-        setShowFromSuggestions(false)
-        setShowToSuggestions(false)
+        // Remove unused calls
         setMultiShowFromSuggestions(shows => shows.map(() => false))
         setMultiShowToSuggestions(shows => shows.map(() => false))
       }
@@ -442,11 +440,12 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [setMultiPopovers, setMultiShowFromSuggestions, setMultiShowToSuggestions])
 
-  const getTotalPassengers = () => {
-    return passengers.adults + passengers.children + passengers.infants
-  }
+  // Remove unused function
+  // const getTotalPassengers = () => {
+  //   return passengers.adults + passengers.children + passengers.infants
+  // }
 
   const updatePassengerCount = (type: 'adults' | 'children' | 'infants', increment: boolean) => {
     setPassengers(prev => {
@@ -1090,7 +1089,6 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   onClick={() => {
                     setFromSelection(city)
                     setFromInput(`${city.name}, ${city.country}`)
-                    setShowFromSuggestions(false)
                     setCityTab('to')
                   }}
                   className="w-full px-4 py-4 text-left hover:bg-[#F0FBFA] border-b border-gray-100"
@@ -1115,7 +1113,6 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   onClick={() => {
                     setToSelection(city)
                     setToInput(`${city.name}, ${city.country}`)
-                    setShowToSuggestions(false)
                     setCitySheetOpen(false)
                   }}
                   className="w-full px-4 py-4 text-left hover:bg-[#F0FBFA] border-b border-gray-100"

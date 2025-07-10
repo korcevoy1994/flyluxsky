@@ -37,7 +37,7 @@ const HeroSection: React.FC = () => {
   const [multiToSuggestions, setMultiToSuggestions] = useState<City[][]>([])
   const [multiShowFromSuggestions, setMultiShowFromSuggestions] = useState<boolean[]>([])
   const [multiShowToSuggestions, setMultiShowToSuggestions] = useState<boolean[]>([])
-  const [multiActiveInputs, setMultiActiveInputs] = useState<('from' | 'to' | null)[]>([])
+  // const [multiActiveInputs, setMultiActiveInputs] = useState<('from' | 'to' | null)[]>([])
   
   const [isSticky, setSticky] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ const HeroSection: React.FC = () => {
       setMultiToSuggestions([[]])
       setMultiShowFromSuggestions([false])
       setMultiShowToSuggestions([false])
-      setMultiActiveInputs([null])
+      // setMultiActiveInputs([null])
     }
     if (tripType !== 'Multi-city' && multiSegments.length > 0) {
       setMultiSegments([])
@@ -59,7 +59,7 @@ const HeroSection: React.FC = () => {
       setMultiToSuggestions([])
       setMultiShowFromSuggestions([false])
       setMultiShowToSuggestions([false])
-      setMultiActiveInputs([])
+      // setMultiActiveInputs([])
     }
   }, [tripType, multiSegments.length])
 
@@ -148,8 +148,8 @@ const HeroSection: React.FC = () => {
                         setMultiShowFromSuggestions={setMultiShowFromSuggestions}
                         multiShowToSuggestions={multiShowToSuggestions}
                         setMultiShowToSuggestions={setMultiShowToSuggestions}
-                        multiActiveInputs={multiActiveInputs}
-                        setMultiActiveInputs={setMultiActiveInputs}
+                        multiActiveInputs={[]}
+                        setMultiActiveInputs={() => {}}
                       />
                   </div>
                   <div className="block md:hidden w-full">
@@ -184,8 +184,6 @@ const HeroSection: React.FC = () => {
                         setMultiShowFromSuggestions={setMultiShowFromSuggestions}
                         multiShowToSuggestions={multiShowToSuggestions}
                         setMultiShowToSuggestions={setMultiShowToSuggestions}
-                        multiActiveInputs={multiActiveInputs}
-                        setMultiActiveInputs={setMultiActiveInputs}
                       />
                   </div>
               </div>
@@ -229,8 +227,8 @@ const HeroSection: React.FC = () => {
               setMultiShowFromSuggestions={setMultiShowFromSuggestions}
               multiShowToSuggestions={multiShowToSuggestions}
               setMultiShowToSuggestions={setMultiShowToSuggestions}
-              multiActiveInputs={multiActiveInputs}
-              setMultiActiveInputs={setMultiActiveInputs}
+              multiActiveInputs={[]}
+              setMultiActiveInputs={() => {}}
             />
           </div>
           
@@ -267,8 +265,6 @@ const HeroSection: React.FC = () => {
               setMultiShowFromSuggestions={setMultiShowFromSuggestions}
               multiShowToSuggestions={multiShowToSuggestions}
               setMultiShowToSuggestions={setMultiShowToSuggestions}
-              multiActiveInputs={multiActiveInputs}
-              setMultiActiveInputs={setMultiActiveInputs}
             />
           </div>
         </div>
