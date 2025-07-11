@@ -122,7 +122,7 @@ const BookTripSection = () => {
                 className="w-full relative rounded-3xl overflow-hidden bg-cover bg-center"
                 style={{
                   height: '356px',
-                  backgroundImage: 'url(/images/paris.jpg)'
+                  backgroundImage: 'url(/images/happy-family.jpg)'
                 }}
               >
                 <div className="absolute inset-0 bg-black/10" />
@@ -426,7 +426,7 @@ const BookTripSection = () => {
                 className="w-full relative rounded-3xl overflow-hidden bg-cover bg-center"
                 style={{
                   height: '452px',
-                  backgroundImage: 'url(/images/paris.jpg)'
+                  backgroundImage: 'url(/images/happy-family.jpg)'
                 }}
               >
                 <div className="absolute inset-0 bg-black/10" />
