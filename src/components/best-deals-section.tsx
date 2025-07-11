@@ -16,6 +16,7 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2450,
   },
   {
     airline: 'Singapore Airlines',
@@ -28,6 +29,7 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2650,
   },
   {
     airline: 'Etihad Airways',
@@ -40,6 +42,7 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2300,
   },
   {
     airline: 'Swiss',
@@ -52,6 +55,7 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2550,
   },
   {
     airline: 'Emirates',
@@ -64,6 +68,7 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2850,
   },
   {
     airline: 'Turkish Airlines',
@@ -76,12 +81,20 @@ const deals = [
     to: 'JFK',
     toCity: 'New York',
     toTime: '10:30 pm',
+    price: 2400,
   },
 ];
 
 const BestDealsSection = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    setCurrentDate(today.toLocaleDateString('en-US', options));
+  }, []);
 
   const handleScroll = () => {
     const scrollContainer = scrollContainerRef.current;
@@ -110,7 +123,7 @@ const BestDealsSection = () => {
             </h2>
             <div className="bg-[#0D2B29] text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm md:text-base">
               <Calendar size={20} className="text-[#F0FBFA]" />
-              <span className="font-medium font-poppins">April 29, 2025</span>
+              {currentDate && <span className="font-medium font-poppins">{currentDate}</span>}
             </div>
           </div>
         </div>
@@ -123,7 +136,7 @@ const BestDealsSection = () => {
           {deals.map((deal, index) => (
             <div 
               key={index} 
-              className="relative flex-shrink-0 w-[309px] aspect-[309/190] h-auto md:w-full"
+              className="relative flex-shrink-0 w-[309px] aspect-[309/190] h-auto md:w-full cursor-pointer group"
               style={{ 
                 filter: 'drop-shadow(0px 4px 4px rgba(28, 94, 89, 0.05))'
               }}
@@ -132,7 +145,7 @@ const BestDealsSection = () => {
                 className="w-full h-full bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: 'url(/Subtract.svg)' }}
               >
-                <div className="grid grid-cols-2 grid-rows-2 h-full p-1" style={{fontFamily: "'Inter', sans-serif"}}>
+                <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Inter', sans-serif"}}>
                   {/* Top-Left: Airline */}
                   <div className="flex items-center justify-center">
                     <Image src={deal.logo} alt={`${deal.airline} logo`} width={120} height={30} className="h-auto max-h-[40px] object-contain" />
@@ -173,6 +186,10 @@ const BestDealsSection = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0ABAB5] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-lg flex items-baseline gap-1 md:gap-1.5 transition-transform duration-300 group-hover:scale-110">
+                <span className="text-xs md:text-sm font-normal">from</span>
+                <span className="font-bold text-base md:text-lg">${deal.price}</span>
               </div>
             </div>
           ))}

@@ -226,6 +226,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   type OpenPopover = 'trip' | 'class' | 'passengers' | 'departure' | 'return' | null
   const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null)
   const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
+  const [submissionMessage, setSubmissionMessage] = useState('');
   
   const fromInputRef = useRef<HTMLInputElement>(null)
   const toInputRef = useRef<HTMLInputElement>(null)
@@ -290,17 +293,53 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     }
   }
   
-  const handleSearch = () => {
-    console.log('Search flights:', {
+  const handleSearch = async () => {
+    setIsSubmitting(true);
+    setSubmissionStatus(null);
+
+    const leadData = {
+      name: 'New Lead', // This could be more dynamic
+      phone: 'N/A', // Assuming you don't collect this in the form
+      email: 'lead@example.com', // Assuming you don't collect this
+      from: fromSelection?.name,
+      to: toSelection?.name,
       tripType,
-      classType: selectedClass,
-      passengers,
-      fromCity: fromSelection ? `${fromSelection.name} ${fromSelection.code}` : fromInput,
-      toCity: toSelection ? `${toSelection.name} ${toSelection.code}` : toInput,
-      departureDate,
-      returnDate
-    })
-  }
+      departureDate: departureDate ? departureDate.toISOString().split('T')[0] : null,
+      returnDate: returnDate ? returnDate.toISOString().split('T')[0] : null,
+      passengers: `${passengers.adults} Adults, ${passengers.children} Children, ${passengers.infants} Infants`,
+      class: selectedClass,
+      price: 0, // Or some calculated price
+    };
+
+    try {
+      const response = await fetch('/api/kommo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmissionStatus('success');
+        setSubmissionMessage('Тест Отправлено в коммо');
+        console.log('ТЕСТ лид создан в коммо', result);
+        // Maybe clear the form or show a success message
+      } else {
+        setSubmissionStatus('error');
+        setSubmissionMessage(result.message || 'An error occurred while sending your request.');
+        console.error('Failed to create lead in Kommo:', result);
+      }
+    } catch (error) {
+      setSubmissionStatus('error');
+      setSubmissionMessage('An unexpected network error occurred.');
+      console.error('Form submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   const updatePassengerCount = (type: keyof PassengerCount, increment: boolean) => {
     setPassengers(prev => ({
@@ -840,11 +879,10 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             {tripType !== 'Multi-city' && (
               <button
                 onClick={handleSearch}
-                className="bg-[#FF6B47] text-white px-10 py-4 rounded-full font-poppins font-semibold text-lg hover:bg-[#E5593E] transition-colors flex items-center justify-center gap-2 cursor-pointer border-0"
-                tabIndex={0}
-                aria-label="Search flights"
+                disabled={isSubmitting}
+                className="bg-[#EC5E39] text-white font-normal text-lg font-poppins px-10 py-5 rounded-full hover:bg-opacity-90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EC5E39] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                SEARCH
+                {isSubmitting ? 'Sending...' : 'Search'}
               </button>
             )}
           </div>
@@ -901,14 +939,20 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             </div>
             <button
               onClick={handleSearch}
-              className="bg-[#FF6B47] text-white px-10 py-4 rounded-full font-poppins font-semibold text-lg hover:bg-[#E5593E] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isSubmitting}
+              className="bg-[#EC5E39] text-white px-10 py-4 rounded-full font-poppins font-semibold text-lg hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               tabIndex={0}
               aria-label="Search flights"
             >
-              SEARCH
+              {isSubmitting ? 'Sending...' : 'SEARCH'}
             </button>
           </div>
         )}
+      {submissionStatus && (
+        <div className={`mt-4 text-center p-2 rounded-md ${submissionStatus === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {submissionMessage}
+        </div>
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from "next/image";
 import useEmblaCarousel, { UseEmblaCarouselType } from 'embla-carousel-react';
+import TestimonialModal from './testimonial-modal';
 
 // Interfaces and Data
 interface Testimonial {
@@ -78,6 +79,17 @@ function useTestimonialCarousel() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
+  const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
+
+  const handleOpenModal = (testimonial: Testimonial) => {
+    setSelectedTestimonial(testimonial);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTestimonial(null);
+    document.body.style.overflow = 'auto';
+  };
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -106,7 +118,7 @@ function useTestimonialCarousel() {
     emblaApi.on('select', onSelect);
   }, [emblaApi, onScroll, onSelect]);
 
-  return { emblaRef, scrollProgress, scrollPrev, scrollNext, prevBtnDisabled, nextBtnDisabled };
+  return { emblaRef, scrollProgress, scrollPrev, scrollNext, prevBtnDisabled, nextBtnDisabled, selectedTestimonial, handleOpenModal, handleCloseModal };
 }
 
 
@@ -120,8 +132,11 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
-const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
-  <div className="relative flex-shrink-0 w-[224px] lg:w-[270px] bg-white border border-[#F0FBFA] rounded-3xl p-4 flex flex-col items-center text-center gap-4">
+const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial, onClick: () => void }) => (
+  <div 
+    onClick={onClick}
+    className="relative flex-shrink-0 w-[224px] lg:w-[270px] bg-white border border-[#F0FBFA] rounded-3xl p-4 flex flex-col items-center text-center gap-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+  >
     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden relative">
       {testimonial.avatar ? (
         <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} />
@@ -142,7 +157,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
 
 // Main Component
 export default function TestimonialsSection() {
-  const { emblaRef, scrollProgress, scrollPrev, scrollNext, prevBtnDisabled, nextBtnDisabled } = useTestimonialCarousel();
+  const { emblaRef, scrollProgress, scrollPrev, scrollNext, prevBtnDisabled, nextBtnDisabled, selectedTestimonial, handleOpenModal, handleCloseModal } = useTestimonialCarousel();
 
   return (
     <section className="w-full max-w-[1280px] mx-auto bg-white rounded-3xl py-8 px-2 lg:p-12 flex flex-col items-center gap-8 lg:gap-12">
@@ -173,10 +188,10 @@ export default function TestimonialsSection() {
             <Image src="/icons/testimonials/arrow-left-black.svg" alt="Previous" width={10} height={16} />
         </button>
 
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-hidden py-4" ref={emblaRef}>
             <div className="flex gap-6 pl-6 lg:pl-10">
                 {testimonials.map((testimonial, index) => (
-                    <TestimonialCard key={index} testimonial={testimonial} />
+                    <TestimonialCard key={index} testimonial={testimonial} onClick={() => handleOpenModal(testimonial)} />
                 ))}
             </div>
         </div>
@@ -198,6 +213,10 @@ export default function TestimonialsSection() {
       <button className="bg-[#0ABAB5] text-white px-8 py-4 rounded-full font-inter font-medium text-lg uppercase hover:bg-[#0ABAB5]/90 transition-colors cursor-pointer">
         view all reviews
       </button>
+
+      {selectedTestimonial && (
+        <TestimonialModal testimonial={selectedTestimonial} onClose={handleCloseModal} />
+      )}
     </section>
   );
 } 

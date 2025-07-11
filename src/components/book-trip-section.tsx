@@ -56,7 +56,7 @@ const BookTripSection = () => {
                     className="text-left text-base"
                     style={{ fontFamily: 'Poppins, sans-serif', color: '#0D2B29' }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Urna, tortor tempus.
+                    Explore our vast network of destinations. Select your desired city, and let us handle the rest to create your perfect itinerary.
                   </p>
                 </div>
               </div>
@@ -82,7 +82,7 @@ const BookTripSection = () => {
                     className="text-left text-base"
                     style={{ fontFamily: 'Poppins, sans-serif', color: '#0D2B29' }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Urna, tortor tempus.
+                    Complete your booking with our secure and flexible payment options. We accept all major credit cards for a seamless transaction.
                   </p>
                 </div>
               </div>
@@ -108,7 +108,7 @@ const BookTripSection = () => {
                     className="text-left text-base"
                     style={{ fontFamily: 'Poppins, sans-serif', color: '#0D2B29' }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Urna, tortor tempus.
+                    All set! Just arrive at the airport on your selected date. Your e-tickets and trip details will be waiting in your inbox.
                   </p>
                 </div>
               </div>
@@ -305,8 +305,7 @@ const BookTripSection = () => {
                       color: '#0D2B29'
                     }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur<br />
-                    adipiscing elit. Urna, tortor tempus.
+                    Explore our vast network of destinations. Select your desired city, and let us handle the rest.
                   </p>
                 </div>
               </div>
@@ -357,8 +356,8 @@ const BookTripSection = () => {
                       color: '#0D2B29'
                     }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur<br />
-                    adipiscing elit. Urna, tortor tempus.
+                    Complete your booking with our secure and flexible<br />
+                    payment options for a seamless transaction.
                   </p>
                 </div>
               </div>
@@ -409,8 +408,7 @@ const BookTripSection = () => {
                         color: '#0D2B29'
                       }}
                     >
-                      Lorem ipsum dolor sit amet, consectetur<br />
-                      adipiscing elit. Urna, tortor tempus.
+                      All set! Just arrive at the airport on your selected date. Your e-tickets will be in your inbox.
                     </p>
                   </div>
                 </div>

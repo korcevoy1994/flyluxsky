@@ -37,7 +37,7 @@ const faqData: FaqItemType[] = [
 const FaqItem = ({ item, index, isOpen, onClick }: { item: FaqItemType, index: number, isOpen: boolean, onClick: () => void }) => (
   <div className="border-b border-[#E1F7F7]">
     <div
-      className="flex items-center justify-between gap-4 py-6 cursor-pointer"
+      className="flex items-center justify-between gap-4 py-6 cursor-pointer group transition-colors duration-200 hover:bg-teal-50/50"
       onClick={onClick}
     >
       <div className="flex items-center gap-4">
@@ -46,9 +46,9 @@ const FaqItem = ({ item, index, isOpen, onClick }: { item: FaqItemType, index: n
             {String(index + 1).padStart(2, '0')}
           </span>
         </div>
-        <h3 className="text-lg font-medium text-[#0D2B29] font-poppins">{item.question}</h3>
+        <h3 className="text-lg font-medium text-[#0D2B29] font-poppins transition-colors duration-200 group-hover:text-teal-700">{item.question}</h3>
       </div>
-      <div className="flex-shrink-0 w-8 h-8 rounded-full border border-[#1C5E59] flex items-center justify-center">
+      <div className="flex-shrink-0 w-8 h-8 rounded-full border border-[#1C5E59] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
         <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
             <svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <line y1="1" x2="12" y2="1" stroke="#1C5E59" strokeWidth="2"/>

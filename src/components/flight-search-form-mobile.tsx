@@ -207,15 +207,17 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
 }) => {
   const [fromSuggestions, setFromSuggestions] = useState<City[]>([])
   const [toSuggestions, setToSuggestions] = useState<City[]>([])
-  // Remove unused variables
-  // const [showFromSuggestions, setShowFromSuggestions] = useState(false)
-  // const [showToSuggestions, setShowToSuggestions] = useState(false)
   
   // type OpenPopover = 'trip' | 'class' | 'passengers' | null
   // const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
   const [activeModal, setActiveModal] = useState<'from' | 'to' | 'calendar' | 'multi-from' | 'multi-to' | 'multi-calendar' | null>(null)
   const [calendarMode, setCalendarMode] = useState<'departure' | 'return'>('departure')
   const [activeMultiIndex, setActiveMultiIndex] = useState<number>(0)
+  const [departureFlash, setDepartureFlash] = useState(false)
+  const [returnTabFlash, setReturnTabFlash] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
+  const [submissionMessage, setSubmissionMessage] = useState('');
 
   // Multi-city segments
   // const [multiSegments, setMultiSegments] = useState<{ from: string; to: string; date: Date | null; fromSelection: City | null; toSelection: City | null }[]>([])
@@ -252,6 +254,54 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       year: 'numeric'
     })
   }
+
+  const handleSearch = async () => {
+    setIsSubmitting(true);
+    setSubmissionStatus(null);
+
+    const leadData = {
+      name: 'New Lead', // This could be more dynamic
+      phone: 'N/A', // Assuming you don't collect this in the form
+      email: 'lead@example.com', // Assuming you don't collect this
+      from: fromSelection?.name,
+      to: toSelection?.name,
+      tripType,
+      departureDate: departureDate ? departureDate.toISOString().split('T')[0] : null,
+      returnDate: returnDate ? returnDate.toISOString().split('T')[0] : null,
+      passengers: `${passengers.adults} Adults, ${passengers.children} Children, ${passengers.infants} Infants`,
+      class: selectedClass,
+      price: 0, // Or some calculated price
+    };
+
+    try {
+      const response = await fetch('/api/kommo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmissionStatus('success');
+        setSubmissionMessage('Your request has been sent successfully!');
+        console.log('Lead created in Kommo:', result);
+        // Maybe clear the form or show a success message
+      } else {
+        setSubmissionStatus('error');
+        setSubmissionMessage(result.message || 'An error occurred while sending your request.');
+        console.error('Failed to create lead in Kommo:', result);
+      }
+    } catch (error) {
+      setSubmissionStatus('error');
+      setSubmissionMessage('An unexpected network error occurred.');
+      console.error('Form submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleFromInputChange = (value: string) => {
     setFromInput(value)
@@ -417,7 +467,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     setDepartureDate(null)
     setReturnDate(null)
     setMultiSegments([{ from: '', to: '', date: null, fromSelection: null, toSelection: null }])
-    setMultiPopovers([false])
+    setMultiPopovers([])
     setMultiFromSuggestions([[]])
     setMultiToSuggestions([[]])
     setMultiShowFromSuggestions([false])
@@ -458,8 +508,8 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   const [openSheet, setOpenSheet] = useState<null | 'trip' | 'class' | 'passengers'>(null)
 
   // Для анимации departure date:
-  const [departureFlash, setDepartureFlash] = useState(false)
-  const [returnTabFlash, setReturnTabFlash] = useState(false)
+  // const [departureFlash, setDepartureFlash] = useState(false)
+  // const [returnTabFlash, setReturnTabFlash] = useState(false)
 
   useEffect(() => {
     if (returnTabFlash) {
@@ -716,9 +766,13 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 Clear All
               </button>
             </div>
-            <button className="h-12 w-full mt-2 bg-[#FF6B35] text-white font-poppins font-semibold text-base rounded-full hover:bg-[#E55A2B] transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md">
+            <button 
+              onClick={handleSearch}
+              disabled={isSubmitting}
+              className="h-12 w-full mt-2 bg-[#EC5E39] text-white font-poppins font-semibold text-base rounded-full hover:bg-opacity-90 transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Search size={18} />
-              SEARCH FLIGHTS
+              {isSubmitting ? 'Sending...' : 'SEARCH FLIGHTS'}
             </button>
           </div>
         </div>
@@ -726,9 +780,13 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
 
       {/* Search Button - для One way и Round Trip */}
       {tripType !== 'Multi-city' && (
-        <button className="w-full bg-[#FF6B35] text-white font-poppins font-semibold py-4 rounded-2xl hover:bg-[#E55A2B] transition-colors cursor-pointer flex items-center justify-center gap-2 mt-4">
+        <button 
+          onClick={handleSearch}
+          disabled={isSubmitting}
+          className="w-full bg-[#EC5E39] text-white font-poppins font-semibold py-4 rounded-2xl hover:bg-opacity-90 transition-colors cursor-pointer flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           <Search size={18} />
-          SEARCH
+          {isSubmitting ? 'Sending...' : 'SEARCH'}
         </button>
       )}
 
@@ -1239,6 +1297,13 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
               ))}
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Submission Status Messages */}
+      {submissionStatus && (
+        <div className={`mt-4 text-center p-3 rounded-lg ${submissionStatus === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {submissionMessage}
         </div>
       )}
     </div>

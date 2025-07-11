@@ -8,22 +8,110 @@ const popularDestinations = [
     city: 'London', 
     country: 'United Kingdom',
     flights: [
-      { from: 'Paris', to: 'London', savings: 977 },
-      { from: 'Lyon', to: 'London', savings: 977 },
-      { from: 'Marseille', to: 'London', savings: 977 },
+      { from: 'New York', to: 'London', savings: 950 },
+      { from: 'Dubai', to: 'London', savings: 870 },
+      { from: 'Los Angeles', to: 'London', savings: 920 },
     ]
   },
-  { city: 'Paris', country: 'France', flights: [] },
-  { city: 'Rome', country: 'Italy', flights: [] },
-  { city: 'Tokyo', country: 'Japan', flights: [] },
-  { city: 'Seoul', country: 'South Korea', flights: [] },
-  { city: 'Bangkok', country: 'Thailand', flights: [] },
-  { city: 'Nassau', country: 'Bahamas', flights: [] },
-  { city: 'Punta Cana', country: 'Dominican Republic', flights: [] },
-  { city: 'Dubai', country: 'UAE', flights: [] },
-  { city: 'Cancún', country: 'Mexico', flights: [] },
-  { city: 'Sydney', country: 'Australia', flights: [] },
-  { city: 'Auckland', country: 'New Zealand', flights: [] },
+  { 
+    city: 'Paris', 
+    country: 'France',
+    flights: [
+      { from: 'New York', to: 'Paris', savings: 900 },
+      { from: 'Dubai', to: 'Paris', savings: 850 },
+      { from: 'Los Angeles', to: 'Paris', savings: 880 },
+    ]
+  },
+  { 
+    city: 'Rome', 
+    country: 'Italy',
+    flights: [
+      { from: 'New York', to: 'Rome', savings: 870 },
+      { from: 'London', to: 'Rome', savings: 650 },
+      { from: 'Dubai', to: 'Rome', savings: 800 },
+    ]
+  },
+  { 
+    city: 'Tokyo', 
+    country: 'Japan',
+    flights: [
+      { from: 'Los Angeles', to: 'Tokyo', savings: 1100 },
+      { from: 'Singapore', to: 'Tokyo', savings: 950 },
+      { from: 'London', to: 'Tokyo', savings: 1050 },
+    ]
+  },
+  { 
+    city: 'Seoul', 
+    country: 'South Korea',
+    flights: [
+      { from: 'Los Angeles', to: 'Seoul', savings: 980 },
+      { from: 'Singapore', to: 'Seoul', savings: 900 },
+      { from: 'London', to: 'Seoul', savings: 970 },
+    ]
+  },
+  { 
+    city: 'Bangkok', 
+    country: 'Thailand',
+    flights: [
+      { from: 'London', to: 'Bangkok', savings: 950 },
+      { from: 'Dubai', to: 'Bangkok', savings: 900 },
+      { from: 'Singapore', to: 'Bangkok', savings: 850 },
+    ]
+  },
+  { 
+    city: 'Nassau', 
+    country: 'Bahamas',
+    flights: [
+      { from: 'New York', to: 'Nassau', savings: 600 },
+      { from: 'Miami', to: 'Nassau', savings: 500 },
+      { from: 'London', to: 'Nassau', savings: 700 },
+    ]
+  },
+  { 
+    city: 'Punta Cana', 
+    country: 'Dominican Republic',
+    flights: [
+      { from: 'New York', to: 'Punta Cana', savings: 650 },
+      { from: 'Miami', to: 'Punta Cana', savings: 550 },
+      { from: 'London', to: 'Punta Cana', savings: 750 },
+    ]
+  },
+  { 
+    city: 'Dubai', 
+    country: 'UAE',
+    flights: [
+      { from: 'London', to: 'Dubai', savings: 950 },
+      { from: 'New York', to: 'Dubai', savings: 1100 },
+      { from: 'Singapore', to: 'Dubai', savings: 1050 },
+    ]
+  },
+  { 
+    city: 'Cancún', 
+    country: 'Mexico',
+    flights: [
+      { from: 'New York', to: 'Cancún', savings: 700 },
+      { from: 'Miami', to: 'Cancún', savings: 600 },
+      { from: 'London', to: 'Cancún', savings: 800 },
+    ]
+  },
+  { 
+    city: 'Sydney', 
+    country: 'Australia',
+    flights: [
+      { from: 'Los Angeles', to: 'Sydney', savings: 1200 },
+      { from: 'London', to: 'Sydney', savings: 1300 },
+      { from: 'Singapore', to: 'Sydney', savings: 1100 },
+    ]
+  },
+  { 
+    city: 'Auckland', 
+    country: 'New Zealand',
+    flights: [
+      { from: 'Los Angeles', to: 'Auckland', savings: 1150 },
+      { from: 'London', to: 'Auckland', savings: 1250 },
+      { from: 'Singapore', to: 'Auckland', savings: 1050 },
+    ]
+  },
 ];
 
 const topAirlines = [
@@ -60,34 +148,40 @@ const paymentMethods = [
 ];
 
 const DestinationAccordion = ({ dest, isOpen, onToggle }: { dest: typeof popularDestinations[0], isOpen: boolean, onToggle: () => void }) => {
+  const hasFlights = dest.flights.length > 0;
+
   return (
-    <div className={`bg-white rounded-2xl border border-gray-200/50 shadow-sm transition-all duration-300 ${isOpen ? 'pb-4' : ''}`}>
+    <div className="bg-white rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
       <button 
-        onClick={onToggle}
-        className="w-full p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 rounded-2xl"
+        onClick={hasFlights ? onToggle : undefined}
+        className={`w-full p-4 flex justify-between items-center ${hasFlights ? 'cursor-pointer hover:bg-gray-50' : 'cursor-default'}`}
       >
         <div className="flex items-center gap-2">
           <p className="font-poppins font-normal text-sm text-[#0D2B29]">{dest.city}</p>
           <p className="font-poppins text-sm text-[#1C5E59]">{dest.country}</p>
         </div>
-        <Image 
-          src="/icons/footer/chevron-down.svg" 
-          alt="chevron" 
-          width={12} 
-          height={7} 
-          className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
-        />
+        {hasFlights && (
+          <Image 
+            src="/icons/footer/chevron-down.svg" 
+            alt="chevron" 
+            width={12} 
+            height={7} 
+            className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          />
+        )}
       </button>
-      {isOpen && dest.flights.length > 0 && (
-        <div className="px-4 pt-2 space-y-2">
-          {dest.flights.map((flight, index) => (
-            <a href="#" key={index} className="flex justify-between items-center text-xs hover:bg-gray-100 p-2 rounded-lg">
-              <span className="text-[#0D2B29]">{flight.from} – {flight.to}</span>
-              <span className="text-[#1C5E59]">save up to ${flight.savings}</span>
-            </a>
-          ))}
+      <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen && hasFlights ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+        <div className="overflow-hidden">
+          <div className="px-4 pt-2 pb-4 space-y-2">
+            {dest.flights.map((flight, index) => (
+              <a href="#" key={index} className="flex justify-between items-center text-xs hover:bg-gray-100 p-2 rounded-lg">
+                <span className="text-[#0D2B29]">{flight.from} – {flight.to}</span>
+                <span className="text-[#1C5E59]">save up to ${flight.savings}</span>
+              </a>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -103,7 +197,7 @@ const Footer = () => {
         alt="Footer background"
         layout="fill"
         objectFit="cover"
-        className="absolute inset-0 opacity-10 z-0"
+        className="absolute inset-0 opacity-20 z-0 object-top"
       />
       <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -150,7 +244,7 @@ const Footer = () => {
                 <h3 className="text-2xl font-bold text-[#0ABAB5] font-ubuntu lowercase">flyLUXsky</h3>
                 <div className="flex space-x-3">
                     {socialLinks.map(social => (
-                        <a key={social.name} href="#" className="bg-[#F8F8F8] hover:bg-gray-200 p-2 rounded-lg transition-colors">
+                        <a key={social.name} href="#" className="bg-[#F8F8F8] hover:bg-gray-200 p-2 rounded-lg transition-colors flex items-center justify-center">
                             <Image src={social.icon} alt={social.name} width={20} height={20} />
                         </a>
                     ))}
