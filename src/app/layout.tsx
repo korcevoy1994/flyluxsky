@@ -15,8 +15,7 @@ const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
 });
 
-// ... existing code ...
-export const metadata = {
+export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
   },
@@ -39,7 +38,6 @@ export const metadata = {
     type: "website",
   },
 };
-// ... existing code ...
 
 export default function RootLayout({
   children,
