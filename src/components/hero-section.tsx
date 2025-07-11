@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react"
 import Navbar from "@/components/navbar"
 import FlightSearchForm from "@/components/flight-search-form"
 import FlightSearchFormMobile from "@/components/flight-search-form-mobile"
+import StickySearchInput from "@/components/sticky-search-input"
+import SearchModal from "@/components/search-modal"
 import { motion, AnimatePresence } from "framer-motion"
 
 export interface City {
@@ -40,6 +42,7 @@ const HeroSection: React.FC = () => {
   // const [multiActiveInputs, setMultiActiveInputs] = useState<('from' | 'to' | null)[]>([])
   
   const [isSticky, setSticky] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -94,7 +97,7 @@ const HeroSection: React.FC = () => {
         {/* Title */}
         <div className="flex flex-col items-center w-full mt-16 mb-10 text-center">
           <h1 className="font-poppins font-bold text-[40px] md:text-[72px] leading-[1em] text-white">
-            The Best Business Class Travel Deals
+          Your Gateway to Exclusive Business Class Savings
           </h1>
 
           <p className="font-poppins font-light text-[20px] md:text-[32px] leading-[1.4em] text-[#F0FBFA]">
@@ -153,37 +156,10 @@ const HeroSection: React.FC = () => {
                       />
                   </div>
                   <div className="block md:hidden w-full">
-                      <FlightSearchFormMobile 
-                        fromInput={fromInput}
-                        setFromInput={setFromInput}
-                        toInput={toInput}
-                        setToInput={setToInput}
+                      <StickySearchInput 
                         fromSelection={fromSelection}
-                        setFromSelection={setFromSelection}
                         toSelection={toSelection}
-                        setToSelection={setToSelection}
-                        tripType={tripType}
-                        setTripType={setTripType}
-                        selectedClass={selectedClass}
-                        setSelectedClass={setSelectedClass}
-                        passengers={passengers}
-                        setPassengers={setPassengers}
-                        departureDate={departureDate}
-                        setDepartureDate={setDepartureDate}
-                        returnDate={returnDate}
-                        setReturnDate={setReturnDate}
-                        multiSegments={multiSegments}
-                        setMultiSegments={setMultiSegments}
-                        multiPopovers={multiPopovers}
-                        setMultiPopovers={setMultiPopovers}
-                        multiFromSuggestions={multiFromSuggestions}
-                        setMultiFromSuggestions={setMultiFromSuggestions}
-                        multiToSuggestions={multiToSuggestions}
-                        setMultiToSuggestions={setMultiToSuggestions}
-                        multiShowFromSuggestions={multiShowFromSuggestions}
-                        setMultiShowFromSuggestions={setMultiShowFromSuggestions}
-                        multiShowToSuggestions={multiShowToSuggestions}
-                        setMultiShowToSuggestions={setMultiShowToSuggestions}
+                        onClick={() => setIsModalOpen(true)}
                       />
                   </div>
               </div>
@@ -269,6 +245,42 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Search Modal */}
+      <SearchModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        fromInput={fromInput}
+        setFromInput={setFromInput}
+        toInput={toInput}
+        setToInput={setToInput}
+        fromSelection={fromSelection}
+        setFromSelection={setFromSelection}
+        toSelection={toSelection}
+        setToSelection={setToSelection}
+        departureDate={departureDate}
+        setDepartureDate={setDepartureDate}
+        returnDate={returnDate}
+        setReturnDate={setReturnDate}
+        passengers={passengers}
+        setPassengers={setPassengers}
+        tripType={tripType}
+        setTripType={setTripType}
+        selectedClass={selectedClass}
+        setSelectedClass={setSelectedClass}
+        multiSegments={multiSegments}
+        setMultiSegments={setMultiSegments}
+        multiPopovers={multiPopovers}
+        setMultiPopovers={setMultiPopovers}
+        multiFromSuggestions={multiFromSuggestions}
+        setMultiFromSuggestions={setMultiFromSuggestions}
+        multiToSuggestions={multiToSuggestions}
+        setMultiToSuggestions={setMultiToSuggestions}
+        multiShowFromSuggestions={multiShowFromSuggestions}
+        setMultiShowFromSuggestions={setMultiShowFromSuggestions}
+        multiShowToSuggestions={multiShowToSuggestions}
+        setMultiShowToSuggestions={setMultiShowToSuggestions}
+      />
     </section>
   )
 }

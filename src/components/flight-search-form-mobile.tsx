@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, MapPin, Search, Users, Plane, Plus, X } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Search, Users, Plus, X } from 'lucide-react'
 import { cities, City } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
@@ -507,7 +508,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         <div className="px-4 py-4 border-b border-gray-100" onClick={() => { setCityTab('from'); setCitySheetOpen(true) }}>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-              <Plane size={16} className="text-[#0ABAB5]" />
+              <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="text-[#0ABAB5]" />
             </div>
             <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -538,7 +539,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         <div className="px-4 py-4 border-b border-gray-100" onClick={() => { setCityTab('to'); setCitySheetOpen(true) }}>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-              <MapPin size={16} className="text-[#0ABAB5]" />
+              <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="text-[#0ABAB5]" />
             </div>
             <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
@@ -644,7 +645,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   setMultiCityModalOpen(true)
                 }}
               >
-                <Plane size={16} className="text-[#0ABAB5]" />
+                <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="text-[#0ABAB5]" />
                 <div className="flex-1">
                   <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
                   <div className="font-poppins text-sm text-[#0D2B29]">
@@ -666,7 +667,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   setMultiCityModalOpen(true)
                 }}
               >
-                <MapPin size={16} className="text-[#0ABAB5]" />
+                <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="text-[#0ABAB5]" />
                 <div className="flex-1">
                   <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
                   <div className="font-poppins text-sm text-[#0D2B29]">
@@ -823,7 +824,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Plane size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -872,7 +873,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <MapPin size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1095,7 +1096,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <MapPin size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1119,7 +1120,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <MapPin size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1201,7 +1202,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <MapPin size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1224,7 +1225,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <MapPin size={20} className="text-gray-400 mr-3" />
+                      <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]">{city.name}</div>
                         <div className="font-poppins text-sm text-gray-500">{city.country}</div>

@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react'
-import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, MapPin, Users, Plane, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Users, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import { cities, City } from '@/lib/utils'
 
 interface PassengerCount {
@@ -541,7 +542,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               >
                 <div className="flex items-center gap-3 w-full">
                   <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Plane size={16} className="text-[#0ABAB5]" />
+                    <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" />
                   </div>
                   <div className="flex-1">
                     <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -574,7 +575,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                       tabIndex={0}
                     >
                       <div className="flex items-center">
-                        <MapPin size={16} className="text-gray-400 mr-3" />
+                        <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="mr-3" />
                         <div>
                           <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                           <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -609,7 +610,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               >
                 <div className="flex items-center gap-3 w-full">
                   <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Plane size={16} className="text-[#0ABAB5] rotate-90" />
+                    <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" />
                   </div>
                   <div className="flex-1">
                     <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
@@ -642,7 +643,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                       tabIndex={0}
                     >
                       <div className="flex items-center">
-                        <MapPin size={16} className="text-gray-400 mr-3" />
+                        <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="mr-3" />
                         <div>
                           <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                           <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -937,8 +938,9 @@ const MultiCitySegment: React.FC<{
   onDateClick, openPopover, setOpenPopover,
   activeInput, onInputFocus, onInputBlur
 }) => {
-  const fromRef = React.useRef<HTMLInputElement>(null);
-  const toRef = React.useRef<HTMLInputElement>(null);
+  const fromInputRef = useRef<HTMLInputElement>(null)
+  const toInputRef = useRef<HTMLInputElement>(null)
+
   return (
     <div className="bg-white rounded-full shadow-lg p-2 flex items-center gap-1 mt-4 autocomplete-container">
       {/* From */}
@@ -947,17 +949,17 @@ const MultiCitySegment: React.FC<{
           className="flex items-center px-4 py-3 cursor-pointer w-full"
           tabIndex={0}
           aria-label="From input"
-          onClick={() => { fromRef.current?.focus(); }}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromRef.current?.focus(); } }}
+          onClick={() => { fromInputRef.current?.focus(); }}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fromInputRef.current?.focus(); } }}
         >
           <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-              <Plane size={16} className="text-[#0ABAB5]" />
+              <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" />
             </div>
             <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
               <input
-                ref={fromRef}
+                ref={fromInputRef}
                 type="text"
                 value={segment.from}
                 onChange={e => onFromInput(e.target.value)}
@@ -985,7 +987,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <MapPin size={16} className="text-gray-400 mr-3" />
+                  <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="mr-3" />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1021,17 +1023,17 @@ const MultiCitySegment: React.FC<{
           className="flex items-center px-4 py-3 cursor-pointer w-full"
           tabIndex={0}
           aria-label="To input"
-          onClick={() => { toRef.current?.focus(); }}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toRef.current?.focus(); } }}
+          onClick={() => { toInputRef.current?.focus(); }}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toInputRef.current?.focus(); } }}
         >
           <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-              <Plane size={16} className="text-[#0ABAB5] rotate-90" />
+              <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" />
             </div>
             <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
               <input
-                ref={toRef}
+                ref={toInputRef}
                 type="text"
                 value={segment.to}
                 onChange={e => onToInput(e.target.value)}
@@ -1059,7 +1061,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <MapPin size={16} className="text-gray-400 mr-3" />
+                  <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="mr-3" />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>
