@@ -7,64 +7,14 @@ import FlightSearchFormMobile from "@/components/flight-search-form-mobile"
 import StickySearchInput from "@/components/sticky-search-input"
 import SearchModal from "@/components/search-modal"
 import { motion, AnimatePresence } from "framer-motion"
+import { Coordinates } from "../app/page"
+import { useFlightSearch } from "@/hooks/useFlightSearch"
 
-export interface City {
-  name: string;
-  code: string;
-  country: string;
-}
-
-const HeroSection: React.FC = () => {
-  // Shared state для обеих форм
-  const [fromInput, setFromInput] = useState('')
-  const [toInput, setToInput] = useState('')
-  const [fromSelection, setFromSelection] = useState<City | null>(null)
-  const [toSelection, setToSelection] = useState<City | null>(null)
-  
-  // Дополнительный state для мобильной формы
-  const [tripType, setTripType] = useState('Round Trip')
-  const [selectedClass, setSelectedClass] = useState('Business class')
-  const [passengers, setPassengers] = useState({
-    adults: 1,
-    children: 0,
-    infants: 0
-  })
-  const [departureDate, setDepartureDate] = useState<Date | null>(null)
-  const [returnDate, setReturnDate] = useState<Date | null>(null)
-
-  // Shared multi-city state
-  const [multiSegments, setMultiSegments] = useState<{ from: string; to: string; date: Date | null; fromSelection: City | null; toSelection: City | null }[]>([])
-  const [multiPopovers, setMultiPopovers] = useState<boolean[]>([])
-  const [multiFromSuggestions, setMultiFromSuggestions] = useState<City[][]>([])
-  const [multiToSuggestions, setMultiToSuggestions] = useState<City[][]>([])
-  const [multiShowFromSuggestions, setMultiShowFromSuggestions] = useState<boolean[]>([])
-  const [multiShowToSuggestions, setMultiShowToSuggestions] = useState<boolean[]>([])
-  // const [multiActiveInputs, setMultiActiveInputs] = useState<('from' | 'to' | null)[]>([])
-  
+const HeroSection: React.FC<{coords: Coordinates | null}> = ({coords}) => {
+  const searchState = useFlightSearch();
   const [isSticky, setSticky] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (tripType === 'Multi-city' && multiSegments.length === 0) {
-      setMultiSegments([{ from: '', to: '', date: null, fromSelection: null, toSelection: null }])
-      setMultiPopovers([false])
-      setMultiFromSuggestions([[]])
-      setMultiToSuggestions([[]])
-      setMultiShowFromSuggestions([false])
-      setMultiShowToSuggestions([false])
-      // setMultiActiveInputs([null])
-    }
-    if (tripType !== 'Multi-city' && multiSegments.length > 0) {
-      setMultiSegments([])
-      setMultiPopovers([])
-      setMultiFromSuggestions([])
-      setMultiToSuggestions([])
-      setMultiShowFromSuggestions([false])
-      setMultiShowToSuggestions([false])
-      // setMultiActiveInputs([])
-    }
-  }, [tripType, multiSegments.length])
 
   useEffect(() => {
     if (!sentinelRef.current) {
@@ -88,7 +38,6 @@ const HeroSection: React.FC = () => {
     };
   }, []);
 
-
   return (
     <section className="relative w-full flex flex-col items-center justify-start bg-gradient-to-b from-[#0ABAB5] via-[#84DDDA] to-[#F0FBFA] min-h-[682px] px-2 md:px-4">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0ABAB5] via-[#84DDDA] to-white w-full h-full" />
@@ -105,8 +54,6 @@ const HeroSection: React.FC = () => {
           </p>
         </div>
         
-        <div ref={sentinelRef} />
-
         {/* Sticky Header with Animation */}
         <AnimatePresence>
           {isSticky && (
@@ -121,44 +68,13 @@ const HeroSection: React.FC = () => {
                   <div className="hidden md:block w-full">
                       <FlightSearchForm 
                         isSticky={isSticky}
-                        fromInput={fromInput}
-                        setFromInput={setFromInput}
-                        toInput={toInput}
-                        setToInput={setToInput}
-                        fromSelection={fromSelection}
-                        setFromSelection={setFromSelection}
-                        toSelection={toSelection}
-                        setToSelection={setToSelection}
-                        departureDate={departureDate}
-                        setDepartureDate={setDepartureDate}
-                        returnDate={returnDate}
-                        setReturnDate={setReturnDate}
-                        passengers={passengers}
-                        setPassengers={setPassengers}
-                        tripType={tripType}
-                        setTripType={setTripType}
-                        selectedClass={selectedClass}
-                        setSelectedClass={setSelectedClass}
-                        multiSegments={multiSegments}
-                        setMultiSegments={setMultiSegments}
-                        multiPopovers={multiPopovers}
-                        setMultiPopovers={setMultiPopovers}
-                        multiFromSuggestions={multiFromSuggestions}
-                        setMultiFromSuggestions={setMultiFromSuggestions}
-                        multiToSuggestions={multiToSuggestions}
-                        setMultiToSuggestions={setMultiToSuggestions}
-                        multiShowFromSuggestions={multiShowFromSuggestions}
-                        setMultiShowFromSuggestions={setMultiShowFromSuggestions}
-                        multiShowToSuggestions={multiShowToSuggestions}
-                        setMultiShowToSuggestions={setMultiShowToSuggestions}
-                        multiActiveInputs={[]}
-                        setMultiActiveInputs={() => {}}
+                        {...searchState}
                       />
                   </div>
                   <div className="block md:hidden w-full">
                       <StickySearchInput 
-                        fromSelection={fromSelection}
-                        toSelection={toSelection}
+                        fromSelection={searchState.fromSelection}
+                        toSelection={searchState.toSelection}
                         onClick={() => setIsModalOpen(true)}
                       />
                   </div>
@@ -173,116 +89,34 @@ const HeroSection: React.FC = () => {
           <div className="hidden md:block w-full">
             <FlightSearchForm 
               isSticky={isSticky}
-              fromInput={fromInput}
-              setFromInput={setFromInput}
-              toInput={toInput}
-              setToInput={setToInput}
-              fromSelection={fromSelection}
-              setFromSelection={setFromSelection}
-              toSelection={toSelection}
-              setToSelection={setToSelection}
-              departureDate={departureDate}
-              setDepartureDate={setDepartureDate}
-              returnDate={returnDate}
-              setReturnDate={setReturnDate}
-              passengers={passengers}
-              setPassengers={setPassengers}
-              tripType={tripType}
-              setTripType={setTripType}
-              selectedClass={selectedClass}
-              setSelectedClass={setSelectedClass}
-              multiSegments={multiSegments}
-              setMultiSegments={setMultiSegments}
-              multiPopovers={multiPopovers}
-              setMultiPopovers={setMultiPopovers}
-              multiFromSuggestions={multiFromSuggestions}
-              setMultiFromSuggestions={setMultiFromSuggestions}
-              multiToSuggestions={multiToSuggestions}
-              setMultiToSuggestions={setMultiToSuggestions}
-              multiShowFromSuggestions={multiShowFromSuggestions}
-              setMultiShowFromSuggestions={setMultiShowFromSuggestions}
-              multiShowToSuggestions={multiShowToSuggestions}
-              setMultiShowToSuggestions={setMultiShowToSuggestions}
-              multiActiveInputs={[]}
-              setMultiActiveInputs={() => {}}
+              {...searchState}
             />
           </div>
           
           {/* Mobile form - показана только на мобильных */}
           <div className="block md:hidden w-full">
             <FlightSearchFormMobile 
-              fromInput={fromInput}
-              setFromInput={setFromInput}
-              toInput={toInput}
-              setToInput={setToInput}
-              fromSelection={fromSelection}
-              setFromSelection={setFromSelection}
-              toSelection={toSelection}
-              setToSelection={setToSelection}
-              tripType={tripType}
-              setTripType={setTripType}
-              selectedClass={selectedClass}
-              setSelectedClass={setSelectedClass}
-              passengers={passengers}
-              setPassengers={setPassengers}
-              departureDate={departureDate}
-              setDepartureDate={setDepartureDate}
-              returnDate={returnDate}
-              setReturnDate={setReturnDate}
-              multiSegments={multiSegments}
-              setMultiSegments={setMultiSegments}
-              multiPopovers={multiPopovers}
-              setMultiPopovers={setMultiPopovers}
-              multiFromSuggestions={multiFromSuggestions}
-              setMultiFromSuggestions={setMultiFromSuggestions}
-              multiToSuggestions={multiToSuggestions}
-              setMultiToSuggestions={setMultiToSuggestions}
-              multiShowFromSuggestions={multiShowFromSuggestions}
-              setMultiShowFromSuggestions={setMultiShowFromSuggestions}
-              multiShowToSuggestions={multiShowToSuggestions}
-              setMultiShowToSuggestions={setMultiShowToSuggestions}
+              {...searchState}
+              coords={coords}
             />
           </div>
         </div>
+
+        <div ref={sentinelRef} />
       </div>
       
       {/* Search Modal */}
       <SearchModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        fromInput={fromInput}
-        setFromInput={setFromInput}
-        toInput={toInput}
-        setToInput={setToInput}
-        fromSelection={fromSelection}
-        setFromSelection={setFromSelection}
-        toSelection={toSelection}
-        setToSelection={setToSelection}
-        departureDate={departureDate}
-        setDepartureDate={setDepartureDate}
-        returnDate={returnDate}
-        setReturnDate={setReturnDate}
-        passengers={passengers}
-        setPassengers={setPassengers}
-        tripType={tripType}
-        setTripType={setTripType}
-        selectedClass={selectedClass}
-        setSelectedClass={setSelectedClass}
-        multiSegments={multiSegments}
-        setMultiSegments={setMultiSegments}
-        multiPopovers={multiPopovers}
-        setMultiPopovers={setMultiPopovers}
-        multiFromSuggestions={multiFromSuggestions}
-        setMultiFromSuggestions={setMultiFromSuggestions}
-        multiToSuggestions={multiToSuggestions}
-        setMultiToSuggestions={setMultiToSuggestions}
-        multiShowFromSuggestions={multiShowFromSuggestions}
-        setMultiShowFromSuggestions={setMultiShowFromSuggestions}
-        multiShowToSuggestions={multiShowToSuggestions}
-        setMultiShowToSuggestions={setMultiShowToSuggestions}
-      />
+      >
+        <FlightSearchFormMobile 
+          {...searchState}
+          coords={coords}
+        />
+      </SearchModal>
     </section>
-  )
-}
+  );
+};
 
-export default HeroSection 
+export default HeroSection; 

@@ -2,11 +2,11 @@
 
 import React from "react"
 import Image from "next/image"
-import { City } from "@/components/hero-section"
+import { Airport } from "@/lib/utils"
 
 interface StickySearchInputProps {
-  fromSelection: City | null;
-  toSelection: City | null;
+  fromSelection: Airport | null;
+  toSelection: Airport | null;
   onClick: () => void;
 }
 

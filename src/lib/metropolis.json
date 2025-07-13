@@ -1,0 +1,12 @@
+[
+  { "code": "NYC", "name": "New York City", "airports": ["JFK", "LGA", "EWR"] },
+  { "code": "LON", "name": "London", "airports": ["LHR", "LGW", "STN", "LTN", "LCY", "SEN"] },
+  { "code": "TYO", "name": "Tokyo", "airports": ["NRT", "HND"] },
+  { "code": "PAR", "name": "Paris", "airports": ["CDG", "ORY", "BVA"] },
+  { "code": "MOW", "name": "Moscow", "airports": ["SVO", "DME", "VKO", "ZIA"] },
+  { "code": "CHI", "name": "Chicago", "airports": ["ORD", "MDW"] },
+  { "code": "WAS", "name": "Washington, D.C.", "airports": ["IAD", "DCA", "BWI"] },
+  { "code": "SAO", "name": "São Paulo", "airports": ["GRU", "CGH", "VCP"] },
+  { "code": "BUE", "name": "Buenos Aires", "airports": ["EZE", "AEP"] },
+  { "code": "SEL", "name": "Seoul", "airports": ["ICN", "GMP"] }
+] 

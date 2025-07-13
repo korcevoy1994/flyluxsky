@@ -1,45 +1,204 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import airports from './airports.json';
+import metropolis from './metropolis.json';
+import Fuse from 'fuse.js';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export interface City {
+export { airports };
+
+// Типы для аэропортов
+export interface Airport {
   name: string;
   code: string;
+  city: string;
   country: string;
+  countryCode: string;
+  lat: number;
+  lon: number;
 }
 
-export const cities: City[] = [
-  { name: 'Los Angeles', code: 'LAX', country: 'USA' },
-  { name: 'New York', code: 'JFK', country: 'USA' },
-  { name: 'London', code: 'LHR', country: 'UK' },
-  { name: 'Paris', code: 'CDG', country: 'France' },
-  { name: 'Tokyo', code: 'NRT', country: 'Japan' },
-  { name: 'Dubai', code: 'DXB', country: 'UAE' },
-  { name: 'Singapore', code: 'SIN', country: 'Singapore' },
-  { name: 'Sydney', code: 'SYD', country: 'Australia' },
-  { name: 'Frankfurt', code: 'FRA', country: 'Germany' },
-  { name: 'Amsterdam', code: 'AMS', country: 'Netherlands' },
-  { name: 'Hong Kong', code: 'HKG', country: 'Hong Kong' },
-  { name: 'Bangkok', code: 'BKK', country: 'Thailand' },
-  { name: 'Istanbul', code: 'IST', country: 'Turkey' },
-  { name: 'Mumbai', code: 'BOM', country: 'India' },
-  { name: 'São Paulo', code: 'GRU', country: 'Brazil' },
-  { name: 'Toronto', code: 'YYZ', country: 'Canada' },
-  { name: 'Moscow', code: 'SVO', country: 'Russia' },
-  { name: 'Beijing', code: 'PEK', country: 'China' },
-  { name: 'Seoul', code: 'ICN', country: 'South Korea' },
-  { name: 'Cairo', code: 'CAI', country: 'Egypt' },
-  { name: 'Mexico City', code: 'MEX', country: 'Mexico' },
-  { name: 'Buenos Aires', code: 'EZE', country: 'Argentina' },
-  { name: 'Johannesburg', code: 'JNB', country: 'South Africa' },
-  { name: 'Madrid', code: 'MAD', country: 'Spain' },
-  { name: 'Rome', code: 'FCO', country: 'Italy' },
-  { name: 'Vienna', code: 'VIE', country: 'Austria' },
-  { name: 'Zurich', code: 'ZUR', country: 'Switzerland' },
-  { name: 'Copenhagen', code: 'CPH', country: 'Denmark' },
-  { name: 'Stockholm', code: 'ARN', country: 'Sweden' },
-  { name: 'Oslo', code: 'OSL', country: 'Norway' },
+// Интерфейс для группированных результатов
+export interface GroupedSearchResult {
+  type: 'city' | 'airport';
+  id: string;
+  name: string;
+  code?: string;
+  city?: string;
+  country: string;
+  countryCode?: string;
+  airports?: Airport[];
+  lat?: number;
+  lon?: number;
+}
+
+const allSearchableItems = [
+  ...airports,
+  ...metropolis.map(m => ({
+    ...m,
+    isMetropolis: true,
+    city: m.name,
+    country: airports.find(a => a.code === m.airports[0])?.country || '',
+    countryCode: airports.find(a => a.code === m.airports[0])?.countryCode || ''
+  }))
 ];
+
+const fuseOptions = {
+  includeScore: true,
+  shouldSort: true,
+  threshold: 0.4,
+  keys: [
+    { name: 'name', weight: 0.7 },
+    { name: 'city', weight: 0.6 },
+    { name: 'code', weight: 0.9 },
+    { name: 'country', weight: 0.5 },
+    { name: 'countryCode', weight: 0.8 }
+  ]
+};
+
+const fuse = new Fuse(allSearchableItems, fuseOptions);
+
+// Функция для группированного поиска аэропортов
+export function searchAirportsGrouped(query: string, limit = 10): GroupedSearchResult[] {
+  if (!query || query.length < 2) return [];
+
+  const fuseResults = fuse.search(query, { limit: 20 });
+  const cityGroups = new Map<string, Airport[]>();
+  const metropolisResults: GroupedSearchResult[] = [];
+  const metropolisCityNames = new Set<string>();
+
+  // First, process and collect all metropolis results
+  fuseResults.forEach(result => {
+    const item = result.item as Airport & { isMetropolis?: boolean; airports?: string[] };
+    if (item.isMetropolis) {
+      if (!metropolisCityNames.has(item.name)) {
+        metropolisResults.push({
+          type: 'city',
+          id: `metropolis-${item.code}`,
+          name: item.name,
+          country: item.country,
+          airports: item.airports!.map((code: string) => airports.find(a => a.code === code)).filter(Boolean) as Airport[],
+        });
+        metropolisCityNames.add(item.name);
+      }
+    }
+  });
+
+  // Then, process all airport results, excluding those in metropolis cities.
+  fuseResults.forEach(result => {
+    const item = result.item as Airport & { isMetropolis?: boolean };
+    if (!item.isMetropolis) {
+      const airport = item;
+      if (!metropolisCityNames.has(airport.city)) {
+        const cityKey = `${airport.city}, ${airport.country}`;
+        if (!cityGroups.has(cityKey)) {
+          cityGroups.set(cityKey, []);
+        }
+        cityGroups.get(cityKey)!.push(airport);
+      }
+    }
+  });
+
+  const results: GroupedSearchResult[] = [...metropolisResults];
+  
+  // Сортируем города по релевантности
+  const sortedCities = Array.from(cityGroups.entries()).sort(([, airportsA], [, airportsB]) => {
+    return airportsB.length - airportsA.length;
+  });
+  
+  // Добавляем города с аэропортами
+  for (const [cityName, cityAirports] of sortedCities) {
+    if (results.length >= limit) break;
+    
+    const firstAirport = cityAirports[0];
+    
+    if (cityAirports.length > 1) {
+      results.push({
+        type: 'city',
+        id: `city-${cityName}`,
+        name: firstAirport.city,
+        country: firstAirport.country,
+        countryCode: firstAirport.countryCode,
+        airports: cityAirports,
+      })
+    } else {
+      results.push({
+        type: 'airport',
+        id: `airport-${firstAirport.code}`,
+        name: firstAirport.name,
+        code: firstAirport.code,
+        city: firstAirport.city,
+        country: firstAirport.country,
+        countryCode: firstAirport.countryCode,
+        lat: firstAirport.lat,
+        lon: firstAirport.lon,
+      })
+    }
+  }
+  
+  return results.slice(0, limit);
+}
+
+// Получение популярных аэропортов
+export function getPopularAirports(limit = 20): Airport[] {
+  const popularCodes = ['JFK', 'LAX', 'LHR', 'CDG', 'DXB', 'NRT', 'SIN', 'FRA', 'AMS', 'ICN', 'BKK', 'HND', 'BCN', 'MAD', 'FCO'];
+  
+  return airports
+    .filter(airport => popularCodes.includes(airport.code))
+    .sort((a, b) => popularCodes.indexOf(a.code) - popularCodes.indexOf(b.code))
+    .slice(0, limit);
+}
+
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  ;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg: number) {
+  return deg * (Math.PI / 180)
+}
+
+export function getNearbyAirports(lat: number, lon: number, limit = 5): Airport[] {
+  return airports
+    .map(airport => ({
+      ...airport,
+      distance: getDistance(lat, lon, airport.lat, airport.lon)
+    }))
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, limit);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(func: T, waitFor: number): T {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: Parameters<T>) => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+
+  return debounced as T;
+}
+
+export function formatAirportName(name: string): string {
+  return name
+    .replace(/International/gi, 'INT')
+    .replace(/\b(Regional|National|Airport)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
