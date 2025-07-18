@@ -14,6 +14,7 @@ import {
 import { motion } from 'framer-motion'
 import { Coordinates } from '../app/page';
 import HighlightedText from './ui/highlighted-text';
+import { useRouter } from 'next/navigation';
 
 // Remove duplicate City interface - using Airport from utils instead
 
@@ -233,6 +234,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   const [submissionMessage, setSubmissionMessage] = useState('');
   const [showNearby, setShowNearby] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const router = useRouter();
 
   const debouncedSearch = useCallback(debounce((value: string, type: 'from' | 'to') => {
     if (value.length > 0) {
@@ -298,85 +300,55 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   }
 
   const handleSearch = async () => {
-    setIsSubmitting(true);
-    setSubmissionStatus(null);
-
-    const leadData = {
-      name: 'New Lead', // This could be more dynamic
-      phone: 'N/A', // Assuming you don't collect this in the form
-      email: 'lead@example.com', // Assuming you don't collect this
-      from: fromSelection?.name,
-      to: toSelection?.name,
-      tripType,
-      departureDate: departureDate ? departureDate.toISOString().split('T')[0] : null,
-      returnDate: returnDate ? returnDate.toISOString().split('T')[0] : null,
-      passengers: `${passengers.adults} Adults, ${passengers.children} Children, ${passengers.infants} Infants`,
-      class: selectedClass,
-      price: 0, // Or some calculated price
-    };
-
-    try {
-      const response = await fetch('/api/kommo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    let query;
+    if (tripType === 'Multi-city') {
+      // Include main form data as first segment
+      const allSegments = [
+        {
+          fromSelection: fromSelection,
+          toSelection: toSelection,
+          date: departureDate
         },
-        body: JSON.stringify(leadData),
+        ...multiSegments
+      ];
+      
+      const segments = allSegments.map(s => 
+        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? s.date.toISOString().split('T')[0] : ''}`
+      ).join('&');
+      query = new URLSearchParams(segments + `&tripType=${tripType}&passengers=${passengers.adults + passengers.children + passengers.infants}&class=${selectedClass}`);
+    } else {
+      const totalPassengers = passengers.adults + passengers.children + passengers.infants;
+      query = new URLSearchParams({
+        from: fromSelection?.code || '',
+        to: toSelection?.code || '',
+        departureDate: departureDate ? departureDate.toISOString().split('T')[0] : '',
+        tripType: tripType,
+        passengers: totalPassengers.toString(),
+        class: selectedClass,
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setSubmissionStatus('success');
-        setSubmissionMessage('Your request has been sent successfully!');
-        console.log('Lead created in Kommo:', result);
-        // Maybe clear the form or show a success message
-      } else {
-        setSubmissionStatus('error');
-        setSubmissionMessage(result.message || 'An error occurred while sending your request.');
-        console.error('Failed to create lead in Kommo:', result);
+      if (tripType === 'Round Trip' && returnDate) {
+        query.set('returnDate', returnDate.toISOString().split('T')[0]);
       }
-    } catch (error) {
-      setSubmissionStatus('error');
-      setSubmissionMessage('An unexpected network error occurred.');
-      console.error('Form submission error:', error);
-    } finally {
-      setIsSubmitting(false);
     }
+
+    router.push(`/search?${query.toString()}`);
   };
 
   const handleCitySelect = (result: GroupedSearchResult | Airport, type: 'from' | 'to') => {
-    let selectedAirport: Airport;
-    
-    if ('type' in result) {
-      if (result.type === 'city' && result.airports?.length) {
-        selectedAirport = result.airports[0]
-      } else {
-        selectedAirport = {
-          ...result,
-          code: result.code || '',
-          city: result.city || '',
-          lat: result.lat || 0,
-          lon: result.lon || 0,
-          countryCode: result.countryCode || '',
-        }
-      }
-    } else {
-      selectedAirport = result
-    }
-
-    const airportDisplayName = formatAirportName(selectedAirport.name)
+    const isAirport = (r: GroupedSearchResult | Airport): r is Airport => 'code' in r;
+    const airportToSet = isAirport(result) ? result : result.airports![0];
+    const airportDisplayName = formatAirportName(airportToSet.name);
 
     if (type === 'from') {
-      setFromSelection(selectedAirport)
-      setFromInput(airportDisplayName)
-      setCityTab('to')
+        setFromInput(airportDisplayName);
+        setFromSelection(airportToSet);
     } else {
-      setToSelection(selectedAirport)
-      setToInput(airportDisplayName)
-      setCitySheetOpen(false)
+        setToInput(airportDisplayName);
+        setToSelection(airportToSet);
     }
-  }
+    setCitySheetOpen(false);
+  };
 
   const handleFromInputChange = (value: string) => {
     setFromInput(value)
@@ -389,30 +361,6 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     setToSelection(null)
     debouncedSearch(value, 'to');
   }
-
-  // Remove unused function
-  // const handleCitySelect = (city: City, type: 'from' | 'to') => {
-  //   if (type === 'from') {
-  //     setFromSelection(city)
-  //     setFromInput(`${city.name}, ${city.country}`)
-  //     setShowFromSuggestions(false)
-  //     setActiveModal('to')
-  //   } else {
-  //     setToSelection(city)
-  //     setToInput(`${city.name}, ${city.country}`)
-  //     setShowToSuggestions(false)
-  //     setActiveModal(null)
-  //   }
-  // }
-
-  // Remove unused function
-  // const handleTogglePopover = (popover: OpenPopover) => {
-  //   if (openPopover === popover) {
-  //     setOpenPopover(null)
-  //   } else {
-  //     setOpenPopover(popover)
-  //   }
-  // }
 
   const handleSwapCities = () => {
     const tempInput = fromInput
@@ -458,52 +406,33 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   }
 
   const handleMultiCitySelect = (idx: number, result: GroupedSearchResult | Airport, type: 'from' | 'to') => {
-    const newSegments = [...multiSegments]
-    let selectedCity: Airport;
-
-    if ('type' in result) {
-       if (result.type === 'airport') {
-        selectedCity = {
-          name: result.name,
-          code: result.code!,
-          city: result.city!,
-          country: result.country,
-          countryCode: '',
-          lat: result.lat!,
-          lon: result.lon!
-        };
+    const isAirport = (r: GroupedSearchResult | Airport): r is Airport => 'code' in r;
+    const airportToSet = isAirport(result) ? result : result.airports![0];
+    const airportDisplayName = formatAirportName(airportToSet.name);
+    
+    setMultiSegments(prev => {
+      const newSegments = [...prev];
+      if (type === 'from') {
+        newSegments[idx].from = airportDisplayName;
+        newSegments[idx].fromSelection = airportToSet;
       } else {
-        const firstAirport = result.airports![0];
-        selectedCity = firstAirport;
+        newSegments[idx].to = airportDisplayName;
+        newSegments[idx].toSelection = airportToSet;
       }
-    } else {
-      selectedCity = result;
-    }
+      return newSegments;
+    });
 
-    if (type === 'from') {
-      newSegments[idx] = { 
-        ...newSegments[idx], 
-        fromSelection: selectedCity, 
-        from: `${selectedCity.name}, ${selectedCity.country}` 
-      }
-    } else {
-      newSegments[idx] = { 
-        ...newSegments[idx], 
-        toSelection: selectedCity, 
-        to: `${selectedCity.name}, ${selectedCity.country}` 
-      }
-    }
-    setMultiSegments(newSegments)
-  }
+    setMultiCityModalOpen(false);
+    setActiveMultiIndex(0); // Reset after selection
+  };
 
   const handleAddSegment = () => {
-    if (multiSegments.length >= 5) return
-    setMultiSegments([...multiSegments, { from: '', to: '', date: null, fromSelection: null, toSelection: null }])
-    setMultiPopovers([...multiPopovers, false])
-    setMultiFromSuggestions([...multiFromSuggestions, []])
-    setMultiToSuggestions([...multiToSuggestions, []])
-    setMultiShowFromSuggestions([...multiShowFromSuggestions, false])
-    setMultiShowToSuggestions([...multiShowToSuggestions, false])
+    setMultiSegments([...multiSegments, { from: '', to: '', date: null, fromSelection: null, toSelection: null }]);
+    setMultiPopovers([...multiPopovers, false]);
+    setMultiFromSuggestions([...multiFromSuggestions, []]);
+    setMultiToSuggestions([...multiToSuggestions, []]);
+    setMultiShowFromSuggestions([...multiShowFromSuggestions, false]);
+    setMultiShowToSuggestions([...multiShowToSuggestions, false]);
   }
 
   const handleRemoveSegment = (idx: number) => {
@@ -558,11 +487,6 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [setMultiPopovers, setMultiShowFromSuggestions, setMultiShowToSuggestions])
-
-  // Remove unused function
-  // const getTotalPassengers = () => {
-  //   return passengers.adults + passengers.children + passengers.infants
-  // }
 
   const updatePassengerCount = (type: 'adults' | 'children' | 'infants', increment: boolean) => {
     setPassengers(prev => {
@@ -968,7 +892,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
+                      <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3 h-auto w-auto" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(city.name)} highlight={multiSegments[activeMultiIndex]?.from || ''} /></div>
                         <div className="font-poppins text-sm text-gray-500"><HighlightedText text={city.country} highlight={multiSegments[activeMultiIndex]?.from || ''} /></div>
@@ -1017,7 +941,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
+                      <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3 h-auto w-auto" />
                       <div>
                         <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(city.name)} highlight={multiSegments[activeMultiIndex]?.to || ''} /></div>
                         <div className="font-poppins text-sm text-gray-500"><HighlightedText text={city.country} highlight={multiSegments[activeMultiIndex]?.to || ''} /></div>
@@ -1241,8 +1165,11 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   {result.type === 'city' ? (
                     <>
                       {/* Заголовок города */}
-                      <div className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100">
-                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5]" />
+                      <div 
+                        className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleCitySelect(result, 'from')}
+                      >
+                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5] h-auto w-auto" />
                         <div>
                           <div className="font-poppins font-semibold text-[#0D2B29] text-sm"><HighlightedText text={formatAirportName(result.name)} highlight={fromInput}/></div>
                           <div className="font-poppins text-xs text-gray-500"><HighlightedText text={result.country} highlight={fromInput}/></div>
@@ -1258,7 +1185,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-from.svg" width={20} height={20} alt="airport" className="mr-3" />
+                              <Image src="/icons/airport-from.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={fromInput}/></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={fromInput}/></div>
@@ -1280,7 +1207,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
+                          <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3 h-auto w-auto" />
                           <div>
                             <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(result.name)} highlight={fromInput}/></div>
                             <div className="font-poppins text-sm text-gray-500"><HighlightedText text={`${result.city}, ${result.country}`} highlight={fromInput}/></div>
@@ -1302,8 +1229,11 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   {result.type === 'city' ? (
                     <>
                       {/* Заголовок города */}
-                      <div className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100">
-                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5]" />
+                      <div 
+                        className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleCitySelect(result, 'to')}
+                      >
+                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5] h-auto w-auto" />
                         <div>
                           <div className="font-poppins font-semibold text-[#0D2B29] text-sm"><HighlightedText text={formatAirportName(result.name)} highlight={toInput}/></div>
                           <div className="font-poppins text-xs text-gray-500"><HighlightedText text={result.country} highlight={toInput}/></div>
@@ -1319,7 +1249,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3" />
+                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={toInput}/></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={toInput}/></div>
@@ -1341,7 +1271,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
+                          <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3 h-auto w-auto" />
                           <div>
                             <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(result.name)} highlight={toInput}/></div>
                             <div className="font-poppins text-sm text-gray-500"><HighlightedText text={`${result.city}, ${result.country}`} highlight={toInput}/></div>
@@ -1421,8 +1351,11 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   {result.type === 'city' ? (
                     <>
                       {/* Заголовок города */}
-                      <div className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100">
-                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5]" />
+                      <div 
+                        className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleMultiCitySelect(multiCityActiveIndex, result, 'from')}
+                      >
+                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5] h-auto w-auto" />
                         <div>
                           <div className="font-poppins font-semibold text-[#0D2B29] text-sm"><HighlightedText text={formatAirportName(result.name)} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
                           <div className="font-poppins text-xs text-gray-500"><HighlightedText text={result.country} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
@@ -1432,16 +1365,13 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                       {result.airports?.map((airport, airportIndex) => (
                         <button
                           key={`${result.id}-airport-${airportIndex}`}
-                          onClick={() => {
-                            handleMultiCitySelect(multiCityActiveIndex, airport, 'from')
-                            setMultiCityTab('to')
-                          }}
+                          onClick={() => handleMultiCitySelect(multiCityActiveIndex, airport, 'from')}
                           className={`w-full px-4 py-3 pl-8 text-left hover:bg-[#F0FBFA] cursor-pointer border-b border-gray-50 last:border-b-0 ${airportIndex === focusedIndex ? 'bg-[#F0FBFA]' : ''}`}
                           tabIndex={0}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-from.svg" width={20} height={20} alt="airport" className="mr-3" />
+                              <Image src="/icons/airport-from.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
@@ -1458,15 +1388,12 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                     /* Одиночный аэропорт */
                     <button
                       key={result.id}
-                      onClick={() => {
-                        handleMultiCitySelect(multiCityActiveIndex, result, 'from')
-                        setMultiCityTab('to')
-                      }}
+                      onClick={() => handleMultiCitySelect(multiCityActiveIndex, result, 'from')}
                       className={`w-full px-4 py-4 text-left hover:bg-[#F0FBFA] border-b border-gray-100 ${idx === focusedIndex ? 'bg-[#F0FBFA]' : ''}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3" />
+                          <Image src="/icons/airport-from.svg" width={20} height={20} alt="from" className="mr-3 h-auto w-auto" />
                           <div>
                             <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(result.name)} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
                             <div className="font-poppins text-sm text-gray-500"><HighlightedText text={`${result.city}, ${result.country}`} highlight={multiSegments[multiCityActiveIndex]?.from || ''} /></div>
@@ -1485,8 +1412,11 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   {result.type === 'city' ? (
                     <>
                       {/* Заголовок города */}
-                      <div className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100">
-                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5]" />
+                      <div 
+                        className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleMultiCitySelect(multiCityActiveIndex, result, 'to')}
+                      >
+                        <Image src="/icons/footer/map-pin.svg" width={16} height={16} alt="city" className="mr-3 text-[#0ABAB5] h-auto w-auto" />
                         <div>
                           <div className="font-poppins font-semibold text-[#0D2B29] text-sm"><HighlightedText text={formatAirportName(result.name)} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
                           <div className="font-poppins text-xs text-gray-500"><HighlightedText text={result.country} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
@@ -1496,16 +1426,13 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                       {result.airports?.map((airport, airportIndex) => (
                         <button
                           key={`${result.id}-airport-${airportIndex}`}
-                          onClick={() => {
-                            handleMultiCitySelect(multiCityActiveIndex, airport, 'to')
-                            setMultiCityModalOpen(false)
-                          }}
+                          onClick={() => handleMultiCitySelect(multiCityActiveIndex, airport, 'to')}
                           className={`w-full px-4 py-3 pl-8 text-left hover:bg-[#F0FBFA] cursor-pointer border-b border-gray-50 last:border-b-0 ${airportIndex === focusedIndex ? 'bg-[#F0FBFA]' : ''}`}
                           tabIndex={0}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3" />
+                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
@@ -1522,15 +1449,12 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                     /* Одиночный аэропорт */
                     <button
                       key={result.id}
-                      onClick={() => {
-                        handleMultiCitySelect(multiCityActiveIndex, result, 'to')
-                        setMultiCityModalOpen(false)
-                      }}
+                      onClick={() => handleMultiCitySelect(multiCityActiveIndex, result, 'to')}
                       className={`w-full px-4 py-4 text-left hover:bg-[#F0FBFA] border-b border-gray-100 ${idx === focusedIndex ? 'bg-[#F0FBFA]' : ''}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3" />
+                          <Image src="/icons/airport-to.svg" width={20} height={20} alt="to" className="mr-3 h-auto w-auto" />
                           <div>
                             <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(result.name)} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
                             <div className="font-poppins text-sm text-gray-500"><HighlightedText text={`${result.city}, ${result.country}`} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
@@ -1559,4 +1483,4 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   )
 }
 
-export default FlightSearchFormMobile 
+export default FlightSearchFormMobile

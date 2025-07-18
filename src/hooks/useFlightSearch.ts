@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { GroupedSearchResult, Airport } from '@/lib/utils';
+import { GroupedSearchResult, Airport, formatAirportName } from '@/lib/utils';
+interface ContactInfo {
+  name: string;
+  email: string;
+  phone: string;
+}
 
-export const useFlightSearch = () => {
+export const useFlightSearch = (initialFromAirport?: Airport | null) => {
   const [fromInput, setFromInput] = useState('');
   const [toInput, setToInput] = useState('');
   const [fromSelection, setFromSelection] = useState<Airport | null>(null);
@@ -13,6 +18,7 @@ export const useFlightSearch = () => {
   const [passengers, setPassengers] = useState({ adults: 1, children: 0, infants: 0 });
   const [departureDate, setDepartureDate] = useState<Date | null>(null);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({ name: '', email: '', phone: '' });
 
   const [multiSegments, setMultiSegments] = useState<{ from: string; to: string; date: Date | null; fromSelection: Airport | null; toSelection: Airport | null }[]>([]);
   const [multiPopovers, setMultiPopovers] = useState<boolean[]>([]);
@@ -21,6 +27,16 @@ export const useFlightSearch = () => {
   const [multiShowFromSuggestions, setMultiShowFromSuggestions] = useState<boolean[]>([]);
   const [multiShowToSuggestions, setMultiShowToSuggestions] = useState<boolean[]>([]);
   const [multiActiveInputs, setMultiActiveInputs] = useState<('from' | 'to' | null)[]>([]);
+  const [initialAirportSet, setInitialAirportSet] = useState(false);
+
+  useEffect(() => {
+    // Set the initial airport only once if it's provided and it hasn't been set before.
+    if (initialFromAirport && !initialAirportSet) {
+      setFromInput(formatAirportName(initialFromAirport.name));
+      setFromSelection(initialFromAirport);
+      setInitialAirportSet(true);
+    }
+  }, [initialFromAirport, initialAirportSet]);
 
   useEffect(() => {
     if (tripType === 'Multi-city' && multiSegments.length === 0) {
@@ -52,6 +68,7 @@ export const useFlightSearch = () => {
     passengers, setPassengers,
     departureDate, setDepartureDate,
     returnDate, setReturnDate,
+    contactInfo, setContactInfo,
     multiSegments, setMultiSegments,
     multiPopovers, setMultiPopovers,
     multiFromSuggestions, setMultiFromSuggestions,
@@ -60,4 +77,4 @@ export const useFlightSearch = () => {
     multiShowToSuggestions, setMultiShowToSuggestions,
     multiActiveInputs, setMultiActiveInputs,
   };
-}; 
+};

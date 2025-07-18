@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "airline": "Emirates",
+    "airlineLogo": "/logos/hero/emirates.png",
+    "from": "JFK",
+    "to": "DXB",
+    "departureTime": "10:30",
+    "arrivalTime": "07:15",
+    "duration": 705,
+    "price": 2376,
+    "stops": 0
+  },
+  {
+    "id": "2",
+    "airline": "Lufthansa",
+    "airlineLogo": "/logos/hero/lufthansa.png",
+    "from": "JFK",
+    "to": "DXB",
+    "departureTime": "12:00",
+    "arrivalTime": "09:30",
+    "duration": 750,
+    "price": 2150,
+    "stops": 1
+  },
+  {
+    "id": "3",
+    "airline": "Qatar Airways",
+    "airlineLogo": "/logos/hero/qatar.png",
+    "from": "JFK",
+    "to": "DXB",
+    "departureTime": "14:00",
+    "arrivalTime": "11:45",
+    "duration": 765,
+    "price": 2200,
+    "stops": 1
+  },
+  {
+    "id": "4",
+    "airline": "Turkish Airlines",
+    "airlineLogo": "/logos/hero/turkish.png",
+    "from": "JFK",
+    "to": "DXB",
+    "departureTime": "09:00",
+    "arrivalTime": "06:00",
+    "duration": 720,
+    "price": 2450,
+    "stops": 0
+  }
+] 

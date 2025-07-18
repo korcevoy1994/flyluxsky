@@ -9,6 +9,7 @@ import {
   Airport,
   formatAirportName,
 } from '@/lib/utils'
+import { useRouter } from 'next/navigation';
 
 interface PassengerCount {
   adults: number
@@ -237,6 +238,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   
   const fromInputRef = useRef<HTMLInputElement>(null)
   const toInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
   
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
@@ -276,40 +278,20 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     result: GroupedSearchResult | Airport,
     type: 'from' | 'to'
   ) => {
-    let selectedAirport: Airport
-
-    if ('type' in result) {
-      // It's a GroupedSearchResult
-      if (result.type === 'city') {
-        // City group clicked, default to first airport
-        selectedAirport = result.airports![0]
-      } else {
-        // Standalone airport clicked
-        selectedAirport = {
-          name: result.name,
-          code: result.code!,
-          city: result.city!,
-          country: result.country,
-          countryCode: result.countryCode!,
-          lat: result.lat!,
-          lon: result.lon!,
-        }
-      }
-    } else {
-      // Airport from a city group clicked
-      selectedAirport = result
-    }
-
-    const airportDisplayName = formatAirportName(selectedAirport.name)
+    const isAirport = (r: GroupedSearchResult | Airport): r is Airport => 'code' in r;
+    const airportToSet = isAirport(result) ? result : result.airports![0];
+    const airportDisplayName = formatAirportName(airportToSet.name);
 
     if (type === 'from') {
-      setFromInput(airportDisplayName)
-      setFromSelection(selectedAirport)
+      setFromInput(airportDisplayName);
+      setFromSelection(airportToSet);
       setShowFromSuggestions(false)
-      toInputRef.current?.focus()
+      if (toInputRef.current) {
+        toInputRef.current.focus()
+      }
     } else {
-      setToInput(airportDisplayName)
-      setToSelection(selectedAirport)
+      setToInput(airportDisplayName);
+      setToSelection(airportToSet);
       setShowToSuggestions(false)
     }
   }
@@ -323,51 +305,42 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   }
   
   const handleSearch = async () => {
-    setIsSubmitting(true);
-    setSubmissionStatus(null);
-
-    const leadData = {
-      name: 'New Lead', // This could be more dynamic
-      phone: 'N/A', // Assuming you don't collect this in the form
-      email: 'lead@example.com', // Assuming you don't collect this
-      from: fromSelection?.name,
-      to: toSelection?.name,
-      tripType,
-      departureDate: departureDate ? departureDate.toISOString().split('T')[0] : null,
-      returnDate: returnDate ? returnDate.toISOString().split('T')[0] : null,
-      passengers: `${passengers.adults} Adults, ${passengers.children} Children, ${passengers.infants} Infants`,
-      class: selectedClass,
-      price: 0, // Or some calculated price
-    };
-
-    try {
-      const response = await fetch('/api/kommo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    let query;
+    if (tripType === 'Multi-city') {
+      // Include main form data as first segment
+      const allSegments = [
+        {
+          fromSelection: fromSelection,
+          toSelection: toSelection,
+          date: departureDate
         },
-        body: JSON.stringify(leadData),
+        ...multiSegments
+      ];
+      
+      const segments = allSegments.map(s => 
+        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? s.date.toISOString().split('T')[0] : ''}`
+      ).join('&');
+      query = new URLSearchParams(segments);
+      query.set('tripType', tripType);
+      query.set('passengers', (passengers.adults + passengers.children + passengers.infants).toString());
+      query.set('class', selectedClass);
+    } else {
+      const totalPassengers = passengers.adults + passengers.children + passengers.infants;
+      query = new URLSearchParams({
+        from: fromSelection?.code || '',
+        to: toSelection?.code || '',
+        departureDate: departureDate ? departureDate.toISOString().split('T')[0] : '',
+        tripType: tripType,
+        passengers: totalPassengers.toString(),
+        class: selectedClass,
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setSubmissionStatus('success');
-        setSubmissionMessage('Тест Отправлено в коммо');
-        console.log('ТЕСТ лид создан в коммо', result);
-        // Maybe clear the form or show a success message
-      } else {
-        setSubmissionStatus('error');
-        setSubmissionMessage(result.message || 'An error occurred while sending your request.');
-        console.error('Failed to create lead in Kommo:', result);
+      if (tripType === 'Round Trip' && returnDate) {
+        query.set('returnDate', returnDate.toISOString().split('T')[0]);
       }
-    } catch (error) {
-      setSubmissionStatus('error');
-      setSubmissionMessage('An unexpected network error occurred.');
-      console.error('Form submission error:', error);
-    } finally {
-      setIsSubmitting(false);
     }
+
+    router.push(`/search?${query.toString()}`);
   };
   
   const updatePassengerCount = (type: keyof PassengerCount, increment: boolean) => {
@@ -478,37 +451,27 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   }
 
   const handleMultiCitySelect = (idx: number, result: GroupedSearchResult | Airport, type: 'from' | 'to') => {
-    let selectedAirport: Airport;
-    
-    if ('type' in result) {
-      if (result.type === 'airport') {
-        selectedAirport = {
-          name: result.name,
-          code: result.code!,
-          city: result.city!,
-          country: result.country,
-          countryCode: '',
-          lat: result.lat!,
-          lon: result.lon!
-        };
-      } else {
-        const firstAirport = result.airports![0];
-        selectedAirport = firstAirport;
-      }
-    } else {
-      selectedAirport = result;
-    }
+    const isAirport = (r: GroupedSearchResult | Airport): r is Airport => 'code' in r;
+    const airportToSet = isAirport(result) ? result : result.airports![0];
+    const airportDisplayName = formatAirportName(airportToSet.name);
+
+    const newSegments = [...multiSegments];
     
     if (type === 'from') {
-      handleSegmentChange(idx, 'fromSelection', selectedAirport)
-      handleSegmentChange(idx, 'from', selectedAirport.name)
-      setMultiShowFromSuggestions(shows => shows.map((s, i) => i === idx ? false : s))
+      newSegments[idx] = { ...newSegments[idx], from: airportDisplayName, fromSelection: airportToSet };
     } else {
-      handleSegmentChange(idx, 'toSelection', selectedAirport)
-      handleSegmentChange(idx, 'to', selectedAirport.name)
-      setMultiShowToSuggestions(shows => shows.map((s, i) => i === idx ? false : s))
+      newSegments[idx] = { ...newSegments[idx], to: airportDisplayName, toSelection: airportToSet };
     }
-  }
+    setMultiSegments(newSegments);
+    
+    const newShowFromSuggestions = [...multiShowFromSuggestions];
+    newShowFromSuggestions[idx] = false;
+    setMultiShowFromSuggestions(newShowFromSuggestions);
+    
+    const newShowToSuggestions = [...multiShowToSuggestions];
+    newShowToSuggestions[idx] = false;
+    setMultiShowToSuggestions(newShowToSuggestions);
+  };
 
   const handleMultiInputFocus = (idx: number, field: 'from' | 'to') => {
     setMultiActiveInputs(actives => actives.map((a, i) => i === idx ? field : a))
@@ -661,7 +624,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                   width={24}
                                                   height={24}
                                                   alt="city"
-                                                  className="mr-3"
+                                                  className="mr-3 h-auto w-auto"
                                                 />
                                                 <div>
                                                   <div className="font-poppins font-bold text-[#0D2B29]">
@@ -685,7 +648,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                         width={24}
                                                         height={24}
                                                         alt="from"
-                                                        className="mr-3"
+                                                        className="mr-3 h-auto w-auto"
                                                       />
                                                       <div>
                                                         <div className="font-poppins font-medium text-[#0D2B29]">
@@ -716,7 +679,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                   width={24}
                                                   height={24}
                                                   alt="from"
-                                                  className="mr-3"
+                                                  className="mr-3 h-auto w-auto"
                                                 />
                                                 <div>
                                                   <div className="font-poppins font-medium text-[#0D2B29]">
@@ -801,7 +764,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                   width={24}
                                                   height={24}
                                                   alt="city"
-                                                  className="mr-3"
+                                                  className="mr-3 h-auto w-auto"
                                                 />
                                                 <div>
                                                   <div className="font-poppins font-bold text-[#0D2B29]">
@@ -825,7 +788,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                         width={24}
                                                         height={24}
                                                         alt="to"
-                                                        className="mr-3"
+                                                        className="mr-3 h-auto w-auto"
                                                       />
                                                       <div>
                                                         <div className="font-poppins font-medium text-[#0D2B29]">
@@ -856,7 +819,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                   width={24}
                                                   height={24}
                                                   alt="to"
-                                                  className="mr-3"
+                                                  className="mr-3 h-auto w-auto"
                                                 />
                                                 <div>
                                                   <div className="font-poppins font-medium text-[#0D2B29]">
@@ -1217,7 +1180,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="mr-3" />
+                  <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="mr-3 h-auto w-auto" />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1254,7 +1217,7 @@ const MultiCitySegment: React.FC<{
           tabIndex={0}
           aria-label="To input"
           onClick={() => { toInputRef.current?.focus(); }}
-          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); toInputRef.current?.focus(); } }}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); fromInputRef.current?.focus(); } }}
         >
           <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
@@ -1291,7 +1254,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="mr-3" />
+                  <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="mr-3 h-auto w-auto" />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1336,4 +1299,4 @@ const MultiCitySegment: React.FC<{
   )
 }
 
-export default FlightSearchForm 
+export default FlightSearchForm

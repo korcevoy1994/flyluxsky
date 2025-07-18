@@ -193,7 +193,7 @@ export const Navbar: React.FC = () => {
                     <Image src="/icons/logo-white 1.svg" alt="Trustpilot" width={90} height={23} />
                     <Image src="/icons/cdnlogo.com_discover 1.svg" alt="Discover" width={80} height={14} />
                     <Image src="/icons/mas.svg" alt="Mastercard" width={40} height={24} />
-                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={70} height={24} />
+                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={70} height={24} className="h-auto w-auto" />
                     <Image src="/icons/Visa_2021.svg" alt="Visa" width={45} height={15} />
                   </div>
                 </div>

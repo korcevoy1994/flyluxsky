@@ -7,17 +7,23 @@ import FlightSearchFormMobile from "@/components/flight-search-form-mobile"
 import StickySearchInput from "@/components/sticky-search-input"
 import SearchModal from "@/components/search-modal"
 import { motion, AnimatePresence } from "framer-motion"
-import { Coordinates } from "../app/page"
-import { useFlightSearch } from "@/hooks/useFlightSearch"
+import { type Coordinates } from "@/app/page";
+import { useFlightSearch } from "@/hooks/useFlightSearch";
+import { Airport } from "@/lib/utils";
 
-const HeroSection: React.FC<{coords: Coordinates | null}> = ({coords}) => {
-  const searchState = useFlightSearch();
+interface HeroSectionProps {
+  coords: Coordinates | null;
+  initialFromAirport: Airport | null;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({coords, initialFromAirport}) => {
+  const searchState = useFlightSearch(initialFromAirport);
   const [isSticky, setSticky] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sentinelRef.current) {
+    if (!formRef.current) {
       return;
     }
 
@@ -31,7 +37,7 @@ const HeroSection: React.FC<{coords: Coordinates | null}> = ({coords}) => {
       }
     );
 
-    observer.observe(sentinelRef.current);
+    observer.observe(formRef.current);
 
     return () => {
       observer.disconnect();
@@ -84,7 +90,7 @@ const HeroSection: React.FC<{coords: Coordinates | null}> = ({coords}) => {
         </AnimatePresence>
 
         {/* Flight search forms - responsive */}
-        <div className={`w-full transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
+        <div ref={formRef} className={`w-full transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
           {/* Desktop form - скрыта на мобильных */}
           <div className="hidden md:block w-full">
             <FlightSearchForm 
@@ -101,8 +107,6 @@ const HeroSection: React.FC<{coords: Coordinates | null}> = ({coords}) => {
             />
           </div>
         </div>
-
-        <div ref={sentinelRef} />
       </div>
       
       {/* Search Modal */}

@@ -199,7 +199,7 @@ const DealCard = ({ deal }: { deal: Deal }) => (
         <p className="text-sm font-poppins uppercase">Save up to</p>
         <p className="text-4xl font-bold font-poppins">{deal.price}</p>
         <div className="mt-2 inline-flex items-center gap-2 bg-white text-[#0ABAB5] px-4 py-2 rounded-full text-base font-bold font-poppins whitespace-nowrap">
-          <Image src="/icons/clock.svg" alt="clock icon" width={24} height={24} className="text-white"/>
+          <Image src="/icons/clock.svg" alt="clock icon" width={24} height={24} className="text-white h-auto w-auto"/>
           <span className="uppercase">Limited time</span>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { HeroLogosSection } from "@/components/hero-logos-section";
 import NewsletterSection from "@/components/newsletter-section";
 import TestimonialsSection from "@/components/testimonials-section";
 import { useEffect, useState } from "react";
+import { getNearbyAirports, Airport } from "@/lib/utils";
 
 export interface Coordinates {
   latitude: number;
@@ -17,24 +18,41 @@ export interface Coordinates {
 
 export default function Home() {
   const [coords, setCoords] = useState<Coordinates | null>(null);
+  const [nearestAirport, setNearestAirport] = useState<Airport | null>(null);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        setCoords({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        });
-      },
-      (error) => {
-        console.error("Error getting geolocation:", error);
+    const fetchLocationAndAirport = async () => {
+      try {
+        // Switched to a more robust IP geolocation service
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        if (data.latitude && data.longitude) {
+          const currentCoords = {
+            latitude: data.latitude,
+            longitude: data.longitude,
+          };
+          setCoords(currentCoords);
+          const nearby = getNearbyAirports(currentCoords.latitude, currentCoords.longitude, 1);
+          if (nearby.length > 0) {
+            setNearestAirport(nearby[0]);
+          }
+        } else {
+          console.error("Failed to get location from IP API:", data.error ? data.reason : "Unknown error");
+        }
+      } catch (error) {
+        console.error("Error fetching IP geolocation:", error);
       }
-    );
+    };
+
+    fetchLocationAndAirport();
   }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <HeroSection coords={coords} />
+      <HeroSection coords={coords} initialFromAirport={nearestAirport} />
       <CarouselDeals />
       <div className="w-full max-w-[1280px] mx-auto px-2">
         <BookTripSection />
