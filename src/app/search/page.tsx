@@ -580,11 +580,6 @@ function SearchResultsContent() {
         });
     };
 
-    
-
-
-
-
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-8 pb-20 lg:pb-8">
             {/* Search Summary Header */}

@@ -52,7 +52,7 @@ const SearchingPage = () => {
       clearInterval(stepInterval);
       clearTimeout(redirectTimer);
     };
-  }, [router, searchParams]);
+  }, [router, searchParams, searchSteps.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
