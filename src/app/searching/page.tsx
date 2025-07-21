@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plane, Loader2 } from 'lucide-react';
 import Navbar from '@/components/navbar';
 
-const SearchingPage = () => {
+const SearchingContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [progress, setProgress] = useState(0);
@@ -143,6 +143,24 @@ const SearchingPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const SearchingPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+        <Navbar isDarkBackground={false} />
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <div className="text-center">
+            <Loader2 size={40} className="animate-spin text-[#0abab5] mx-auto mb-4" />
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <SearchingContent />
+    </Suspense>
   );
 };
 
