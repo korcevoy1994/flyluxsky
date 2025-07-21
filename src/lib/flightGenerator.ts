@@ -1,4 +1,5 @@
 import airports from './airports.json';
+import type { Airport } from './utils';
 
 // Simple seeded random number generator
 class SeededRandom {
@@ -170,16 +171,15 @@ function getAirportRegion(airportCode: string): string | null {
 
 // Получить подходящие хабы для маршрута
 function getRealisticStopovers(
-  fromAirport: any,
-  toAirport: any,
-  airlineName: string,
-  rng?: SeededRandom
+  fromAirport: Airport,
+  toAirport: Airport,
+  airlineName: string
 ): string[] {
   const airline = commonAirlines.find(a => a.name === airlineName);
   const fromRegion = getAirportRegion(fromAirport.code);
   const toRegion = getAirportRegion(toAirport.code);
   
-  let potentialHubs: string[] = [];
+  const potentialHubs: string[] = [];
   
   // 1. Приоритет хабам авиакомпании
   if (airline?.hubs) {
@@ -227,8 +227,8 @@ function getRealisticStopovers(
 }
 
 function selectStopoverAirports(
-  fromAirport: any,
-  toAirport: any,
+  fromAirport: Airport,
+  toAirport: Airport,
   stopsCount: number,
   airlineName: string,
   rng?: SeededRandom
@@ -236,7 +236,7 @@ function selectStopoverAirports(
   if (stopsCount === 0) return [];
   
   const airportsMap = new Map(airports.map(a => [a.code, a]));
-  const realisticHubs = getRealisticStopovers(fromAirport, toAirport, airlineName, rng);
+  const realisticHubs = getRealisticStopovers(fromAirport, toAirport, airlineName);
   
   // Фильтровать только существующие в базе аэропорты
   const availableHubs = realisticHubs

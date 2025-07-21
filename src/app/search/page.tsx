@@ -188,6 +188,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, departureDate, returnDate }: { flight: GeneratedFlight, isSelected: boolean, onSelect: () => void, tripType?: string, passengers?: string, departureDate?: string, returnDate?: string }) => {
     const [showReturnFlight, setShowReturnFlight] = useState(false);
     const getAmenityIcon = (amenity: string) => {
