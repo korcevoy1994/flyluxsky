@@ -1,5 +1,6 @@
 import airports from './airports.json';
 import type { Airport } from './utils';
+import { pricingConfig } from './pricingConfig';
 
 // Simple seeded random number generator
 class SeededRandom {
@@ -318,13 +319,13 @@ function calculatePrice(distance: number, airlineName: string, flightClass: stri
   // Base price calculation with different rates for distance ranges
   let basePricePerKm;
   if (distance < 500) {
-    basePricePerKm = 0.25; // Short-haul flights are more expensive per km
+    basePricePerKm = pricingConfig.basePricePerKm.shortHaul;
   } else if (distance < 2000) {
-    basePricePerKm = 0.18; // Medium-haul
+    basePricePerKm = pricingConfig.basePricePerKm.mediumHaul;
   } else if (distance < 5000) {
-    basePricePerKm = 0.12; // Long-haul
+    basePricePerKm = pricingConfig.basePricePerKm.longHaul;
   } else {
-    basePricePerKm = 0.08; // Ultra long-haul
+    basePricePerKm = pricingConfig.basePricePerKm.ultraLongHaul;
   }
   
   let basePrice = distance * basePricePerKm;
@@ -334,21 +335,17 @@ function calculatePrice(distance: number, airlineName: string, flightClass: stri
   
   // Premium airline surcharge
   if (airline?.premium) {
-    basePrice *= 1.4;
+    basePrice *= pricingConfig.premiumAirlineSurcharge;
   }
   
   // Class multipliers
-  if (flightClass === 'First class') {
-    basePrice *= 3.2;
-  } else if (flightClass === 'Business class') {
-    basePrice *= 2.1;
-  } else if (flightClass === 'Premium economy') {
-    basePrice *= 1.4;
-  }
+  const classMultiplier = pricingConfig.classMultipliers[flightClass as keyof typeof pricingConfig.classMultipliers] || 1.0;
+  basePrice *= classMultiplier;
   
-  // Add fuel surcharge and taxes (10-25% of base price)
+  // Add fuel surcharge and taxes
   const randomValue1 = rng ? rng.random() : Math.random();
-  const fuelAndTaxes = basePrice * (0.1 + randomValue1 * 0.15);
+  const fuelAndTaxesPercentage = pricingConfig.fuelAndTaxes.min + randomValue1 * (pricingConfig.fuelAndTaxes.max - pricingConfig.fuelAndTaxes.min);
+  const fuelAndTaxes = basePrice * fuelAndTaxesPercentage;
   basePrice += fuelAndTaxes;
   
   // Special pricing for flights from USA (popular international destinations)
@@ -358,29 +355,29 @@ function calculatePrice(distance: number, airlineName: string, flightClass: stri
   // Apply USA international flight premium before market variation
   if (isFromUSA && isInternational) {
     const randomValue2 = rng ? rng.random() : Math.random();
-    basePrice *= (1.8 + randomValue2 * 0.6); // 1.8x to 2.4x multiplier for USA international
+    const usaPremium = pricingConfig.usaInternationalPremium.min + randomValue2 * (pricingConfig.usaInternationalPremium.max - pricingConfig.usaInternationalPremium.min);
+    basePrice *= usaPremium;
   }
   
-  // Random market variation (±20% for more price diversity)
+  // Random market variation
   const randomValue3 = rng ? rng.random() : Math.random();
-  const marketVariation = 0.8 + randomValue3 * 0.4;
+  const marketVariation = pricingConfig.marketVariation.min + randomValue3 * (pricingConfig.marketVariation.max - pricingConfig.marketVariation.min);
   basePrice *= marketVariation;
   
   // Set minimum price thresholds
   let minimumPrice;
+  const flightClassKey = flightClass as keyof typeof pricingConfig.minimumPrice.standard;
   if (isFromUSA && isInternational) {
-    // Higher minimum prices for international flights from USA
-    minimumPrice = flightClass === 'First class' ? 5000 : 
-                   flightClass === 'Business class' ? 2000 : 
-                   flightClass === 'Premium economy' ? 800 : 400;
+    minimumPrice = pricingConfig.minimumPrice.internationalFromUsa[flightClassKey];
   } else {
-    // Standard minimum prices
-    minimumPrice = flightClass === 'First class' ? 800 : 
-                   flightClass === 'Business class' ? 400 : 
-                   flightClass === 'Premium economy' ? 200 : 100;
+    minimumPrice = pricingConfig.minimumPrice.standard[flightClassKey];
   }
   
-  return Math.round(Math.max(basePrice, minimumPrice));
+  // Add randomness to minimum price (up to 15% variation)
+  const randomValue4 = rng ? rng.random() : Math.random();
+  const randomizedMinimumPrice = minimumPrice * (1 + (randomValue4 * 0.15));
+  
+  return Math.round(Math.max(basePrice, randomizedMinimumPrice));
 }
 
 // Get airline logo path
@@ -484,6 +481,20 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
   
   if (segments.length === 0) {
     return [];
+  }
+  
+  // Check if any segment has airports in the same city - return empty array if they do
+  for (const segment of segments) {
+    const fromAirport = airportsMap.get(segment.from);
+    const toAirport = airportsMap.get(segment.to);
+    
+    if (!fromAirport || !toAirport) {
+      return [];
+    }
+    
+    if (fromAirport.city === toAirport.city) {
+      return [];
+    }
   }
 
   // Create seeded random number generator based on all segments
@@ -601,6 +612,11 @@ function generateMultiCityFlights(fromCode: string, toCode: string, flightClass:
   const toAirport = airportsMap.get(toCode);
   
   if (!fromAirport || !toAirport) {
+    return [];
+  }
+  
+  // Check if airports are in the same city - return empty array if they are
+  if (fromAirport.city === toAirport.city) {
     return [];
   }
 
@@ -728,6 +744,11 @@ export function generateFlightsClient(fromCode: string, toCode: string, flightCl
   const toAirport = airportsMap.get(toCode);
   
   if (!fromAirport || !toAirport) {
+    return [];
+  }
+  
+  // Check if airports are in the same city - return empty array if they are
+  if (fromAirport.city === toAirport.city) {
     return [];
   }
   

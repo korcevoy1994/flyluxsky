@@ -24,7 +24,7 @@ export default function Home() {
     const fetchLocationAndAirport = async () => {
       try {
         // Switched to a more robust IP geolocation service
-        const response = await fetch('https://ipapi.co/json/');
+        const response = await fetch('/api/geolocation');
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
         }

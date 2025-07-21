@@ -7,7 +7,7 @@ import Navbar from '@/components/navbar';
 import FlightSearchFormVertical from '@/components/flight-search-form-vertical';
 import { useFlightSearch } from '@/hooks/useFlightSearch';
 import Image from 'next/image';
-import { ArrowLeftRight, Lock, ShieldCheck, Plane, Wifi, Coffee, Monitor, Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeftRight, ArrowDown, Lock, ShieldCheck, Plane, Wifi, Coffee, Monitor, Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateFlightsClient, generateMultiCityFlightsFromSegments } from '@/lib/flightGenerator';
 import type { GeneratedFlight, MultiCityFlight, FlightSegment } from '@/lib/flightGenerator';
 
@@ -42,6 +42,8 @@ const CountdownTimer = () => {
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                 <div className="bg-[#EC5E39] h-1.5 rounded-full" style={{ width: `${progress}%` }}></div>
             </div>
+
+            {/* Mobile Fixed Bottom Bar */}
         </div>
     );
 };
@@ -184,6 +186,8 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
                     <p className="text-sm text-gray-500">USD total</p>
                 </div>
             </div>
+
+
         </div>
     );
 };
@@ -418,6 +422,8 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     <p className="text-sm text-gray-500">USD</p>
                 </div>
             </div>
+
+            {/* Mobile Fixed Bottom Bar removed from here */}
         </div>
     );
 };
@@ -443,7 +449,6 @@ function SearchResultsContent() {
         selectedClass,
     } = flightSearch;
 
-    const [activeSort, setActiveSort] = useState('Best');
     const [selectedFlight, setSelectedFlight] = useState<number | null>(null);
 
     const [flights, setFlights] = useState<(GeneratedFlight | MultiCityFlight)[]>([]);
@@ -575,43 +580,42 @@ function SearchResultsContent() {
         });
     };
 
-    const sortOptions = {
-        Best: { price: 2023, duration: '1h 20 min' },
-        Cheapest: { price: 1984, duration: '1h 30 min' },
-        Fastest: { price: 2523, duration: '1h 10 min' },
-    };
     
 
 
 
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 py-8">
+        <div className="w-full max-w-7xl mx-auto px-4 py-8 pb-20 lg:pb-8">
             {/* Search Summary Header */}
-            <div className="bg-white rounded-2xl shadow-sm border p-6 mb-8">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-3">
+            <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-6 mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                        {/* Route information */}
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                             <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-3 py-1 rounded-full text-sm font-medium">{fromCode}</span>
-                                <span className="font-semibold">{fromAirport?.name}</span>
+                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{fromCode}</span>
+                                <span className="font-semibold text-sm sm:text-base">{fromAirport?.name}</span>
                             </div>
-                            <ArrowLeftRight size={20} className="text-gray-400"/>
+                            <ArrowLeftRight size={16} className="text-gray-400 hidden sm:block"/>
+                            <ArrowDown size={16} className="text-gray-400 block sm:hidden"/>
                             <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-3 py-1 rounded-full text-sm font-medium">{toCode}</span>
-                                <span className="font-semibold">{toAirport?.name}</span>
+                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{toCode}</span>
+                                <span className="font-semibold text-sm sm:text-base">{toAirport?.name}</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        
+                        {/* Trip details */}
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0">
                             <div className="flex items-center gap-1">
-                                <Calendar size={16} />
+                                <Calendar size={14} className="sm:w-4 sm:h-4"/>
                                 <span>{formatDate(departureDate)}</span>
                                 {tripType === 'Round Trip' && returnDate && (
                                     <span> - {formatDate(returnDate)}</span>
                                 )}
                             </div>
                             <div className="flex items-center gap-1">
-                                <Users size={16} />
+                                <Users size={14} className="sm:w-4 sm:h-4"/>
                                 <span>{passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</span>
                             </div>
                             <div className="flex items-center gap-1">
@@ -626,58 +630,52 @@ function SearchResultsContent() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
                 <div className="lg:col-span-2">
-                    {/* Sort Options */}
-                    <div className="flex items-center gap-4 mb-6">
-                        <span className="text-gray-600 font-medium">Sort by:</span>
-                        <div className="flex gap-2">
-                            {Object.entries(sortOptions).map(([key]) => (
-                                <button 
-                                    key={key} 
-                                    onClick={() => setActiveSort(key)} 
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                                        activeSort === key 
-                                            ? 'bg-[#0abab5] text-white shadow-md' 
-                                            : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    {key}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="ml-auto text-sm text-gray-500">
+                    {/* Flight Count */}
+                    <div className="mb-6">
+                        <div className="text-sm text-gray-500">
                             {flights.length} flights found
                         </div>
                     </div>
 
                     {/* Flight Cards */}
                     <div className="space-y-4">
-                        {flights.map((flight) => {
-                            if (isMultiCityFlight(flight)) {
-                                return (
-                                    <MultiCityFlightCard 
-                                        key={flight.id}
-                                        flight={flight}
-                                        isSelected={selectedFlight === flight.id}
-                                        onSelect={() => setSelectedFlight(flight.id)}
-                                        passengers={passengers}
-                                        departureDates={searchParams.getAll('departureDate')}
-                                    />
-                                );
-                            } else {
-                                return (
-                                    <FlightCard 
-                                        key={flight.id}
-                                        flight={flight}
-                                        isSelected={selectedFlight === flight.id}
-                                        onSelect={() => setSelectedFlight(flight.id)}
-                                        tripType={tripType}
-                                        passengers={passengers}
-                                        departureDate={departureDate}
-                                        returnDate={returnDate}
-                                    />
-                                );
-                            }
-                        })} 
+                        {flights.length === 0 ? (
+                            <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
+                                <div className="text-gray-400 mb-4">
+                                    <Plane size={48} className="mx-auto" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-800 mb-2">We didn't find anything</h3>
+                                <p className="text-gray-600">Try changing the terms of your request.</p>
+                            </div>
+                        ) : (
+                            flights.map((flight) => {
+                                if (isMultiCityFlight(flight)) {
+                                    return (
+                                        <MultiCityFlightCard 
+                                            key={flight.id}
+                                            flight={flight}
+                                            isSelected={selectedFlight === flight.id}
+                                            onSelect={() => setSelectedFlight(flight.id)}
+                                            passengers={passengers}
+                                            departureDates={searchParams.getAll('departureDate')}
+                                        />
+                                    );
+                                } else {
+                                    return (
+                                        <FlightCard 
+                                            key={flight.id}
+                                            flight={flight}
+                                            isSelected={selectedFlight === flight.id}
+                                            onSelect={() => setSelectedFlight(flight.id)}
+                                            tripType={tripType}
+                                            passengers={passengers}
+                                            departureDate={departureDate}
+                                            returnDate={returnDate}
+                                        />
+                                    );
+                                }
+                            })
+                        )} 
                     </div>
                 </div>
 
@@ -759,7 +757,9 @@ function SearchResultsContent() {
                         )}
 
                         {/* Search Form */}
-                        <FlightSearchFormVertical onSubmit={() => {}} />
+                        <div id="flight-search-form" className="flight-search-form-vertical">
+                            <FlightSearchFormVertical onSubmit={() => {}} />
+                        </div>
 
                         {/* Guarantees */}
                         <div className="bg-white rounded-2xl shadow-sm border p-6">
@@ -796,6 +796,43 @@ function SearchResultsContent() {
                         </div>
                     </div>
                 </div>
+                
+                {/* Mobile Fixed Bottom Bar */}
+                {selectedFlight && (
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-lg lg:hidden z-50">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-[#0abab5]/10 rounded-full flex items-center justify-center text-[#0abab5]">
+                                    <Plane size={16} />
+                                </div>
+                                <div>
+                                    <p className="font-medium text-sm">Selected Flight</p>
+                                    <p className="text-xs text-gray-500">
+                                        {(() => {
+                                            const foundFlight = flights.find((f: GeneratedFlight | MultiCityFlight) => f.id === selectedFlight);
+                                            if (!foundFlight) return "";
+                                            return `$${isMultiCityFlight(foundFlight) ? 
+                                                foundFlight.totalPrice * parseInt(passengers || '1') : 
+                                                foundFlight.price * parseInt(passengers || '1')}`;
+                                        })()}
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                className="bg-[#0abab5] text-white px-4 py-2 rounded-lg text-sm font-medium"
+                                onClick={() => {
+                                    // Scroll to the form
+                                    const formElement = document.getElementById('flight-search-form');
+                                    if (formElement) {
+                                        formElement.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                            >
+                                Get a free quote
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -804,7 +841,7 @@ function SearchResultsContent() {
 export default function SearchPage() {
     return (
         <div className="bg-gray-50/50">
-            <Navbar />
+            <Navbar isDarkBackground={false} />
             <main className="flex min-h-screen flex-col items-center justify-between pt-20">
                 <Suspense fallback={<div className="text-center py-10">Loading search results...</div>}>
                     <SearchResultsContent />

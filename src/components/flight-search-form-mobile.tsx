@@ -339,7 +339,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       }
     }
 
-    router.push(`/search?${query.toString()}`);
+    router.push(`/searching?${query.toString()}`);
   };
 
   const handleCitySelect = (result: GroupedSearchResult | Airport, type: 'from' | 'to') => {

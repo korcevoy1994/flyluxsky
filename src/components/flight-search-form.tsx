@@ -340,7 +340,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       }
     }
 
-    router.push(`/search?${query.toString()}`);
+    router.push(`/searching?${query.toString()}`);
   };
   
   const updatePassengerCount = (type: keyof PassengerCount, increment: boolean) => {
