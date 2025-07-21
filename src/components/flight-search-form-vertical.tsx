@@ -46,7 +46,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
       
       setSubmissionStatus('success')
       setFormData({ name: '', email: '', phone: '' })
-    } catch (error) {
+    } catch {
       setSubmissionStatus('error')
     } finally {
       setIsSubmitting(false)

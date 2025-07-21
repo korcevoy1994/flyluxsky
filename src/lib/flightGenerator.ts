@@ -16,8 +16,8 @@ class SeededRandom {
 
 // Create a daily seed based on current date and route
 function createDailySeed(fromCode: string, toCode: string, flightClass: string): number {
-  const today = new Date();
-  const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  // Fixed date to ensure consistent flight data
+  const dateString = '2024-01-15';
   const routeString = `${fromCode}-${toCode}-${flightClass}`;
   
   // Simple hash function to convert string to number
@@ -31,46 +31,103 @@ function createDailySeed(fromCode: string, toCode: string, flightClass: string):
   return Math.abs(hash);
 }
 
-interface Airport {
-  code: string;
-  name: string;
-  city: string;
-  country: string;
-  countryCode: string;
-  lat: number;
-  lon: number;
+
+
+export interface FlightSegment {
+  id: string;
+  airline: string;
+  logo: string;
+  flightNumber: string;
+  departure: { time: string; airport: string; city: string; date?: string };
+  arrival: { time: string; airport: string; city: string; date?: string };
+  duration: string;
+  stops: number;
+  stopoverAirports?: { code: string; city: string; country: string }[];
+  price: number;
+  class: string;
+  amenities: string[];
+  rating: number;
+  aircraft: string;
 }
 
-interface GeneratedFlight {
+export interface GeneratedFlight {
   id: number;
   airline: string;
   logo: string;
   flightNumber: string;
-  departure: { time: string; airport: string; city: string };
-  arrival: { time: string; airport: string; city: string };
+  departure: { time: string; airport: string; city: string; date?: string };
+  arrival: { time: string; airport: string; city: string; date?: string };
   duration: string;
   stops: number;
+  stopoverAirports?: { code: string; city: string; country: string }[];
   price: number;
   class: string;
   amenities: string[];
   rating: number;
   aircraft: string;
   seatsLeft: number;
+  segments?: FlightSegment[];
+  totalPrice?: number;
+  totalDuration?: string;
+  returnFlight?: {
+    airline: string;
+    logo: string;
+    flightNumber: string;
+    departure: { time: string; airport: string; city: string; date?: string };
+    arrival: { time: string; airport: string; city: string; date?: string };
+    duration: string;
+    stops: number;
+    stopoverAirports?: { code: string; city: string; country: string }[];
+    amenities: string[];
+    aircraft: string;
+  };
+}
+
+export interface MultiCityFlight {
+  id: number;
+  segments: FlightSegment[];
+  totalPrice: number;
+  totalDuration: string;
+  class: string;
+  seatsLeft: number;
 }
 
 // Common airlines data for client-side usage
 const commonAirlines = [
-  { name: 'Emirates', iata: 'EK', rating: 4.8, country: 'UAE', premium: true },
-  { name: 'Lufthansa', iata: 'LH', rating: 4.6, country: 'Germany', premium: false },
-  { name: 'Turkish Airlines', iata: 'TK', rating: 4.7, country: 'Turkey', premium: false },
-  { name: 'British Airways', iata: 'BA', rating: 4.5, country: 'UK', premium: false },
-  { name: 'Air France', iata: 'AF', rating: 4.4, country: 'France', premium: false },
-  { name: 'Singapore Airlines', iata: 'SQ', rating: 4.9, country: 'Singapore', premium: true },
-  { name: 'Qatar Airways', iata: 'QR', rating: 4.8, country: 'Qatar', premium: true },
-  { name: 'Etihad Airways', iata: 'EY', rating: 4.7, country: 'UAE', premium: true },
-  { name: 'Swiss International Air Lines', iata: 'LX', rating: 4.6, country: 'Switzerland', premium: false },
-  { name: 'KLM', iata: 'KL', rating: 4.5, country: 'Netherlands', premium: false }
+  { name: 'Emirates', iata: 'EK', rating: 4.8, country: 'UAE', premium: true, hubs: ['DXB', 'DWC'] },
+  { name: 'Lufthansa', iata: 'LH', rating: 4.6, country: 'Germany', premium: false, hubs: ['FRA', 'MUC'] },
+  { name: 'Turkish Airlines', iata: 'TK', rating: 4.7, country: 'Turkey', premium: false, hubs: ['IST', 'SAW'] },
+  { name: 'British Airways', iata: 'BA', rating: 4.5, country: 'UK', premium: false, hubs: ['LHR', 'LGW'] },
+  { name: 'Air France', iata: 'AF', rating: 4.4, country: 'France', premium: false, hubs: ['CDG', 'ORY'] },
+  { name: 'Singapore Airlines', iata: 'SQ', rating: 4.9, country: 'Singapore', premium: true, hubs: ['SIN'] },
+  { name: 'Qatar Airways', iata: 'QR', rating: 4.8, country: 'Qatar', premium: true, hubs: ['DOH'] },
+  { name: 'Etihad Airways', iata: 'EY', rating: 4.7, country: 'UAE', premium: true, hubs: ['AUH'] },
+  { name: 'Swiss International Air Lines', iata: 'LX', rating: 4.6, country: 'Switzerland', premium: false, hubs: ['ZUR', 'GVA'] },
+  { name: 'KLM', iata: 'KL', rating: 4.5, country: 'Netherlands', premium: false, hubs: ['AMS'] },
+  // US Airlines
+  { name: 'American Airlines', iata: 'AA', rating: 4.2, country: 'USA', premium: false, hubs: ['DFW', 'CLT', 'PHX', 'MIA'] },
+  { name: 'Delta Air Lines', iata: 'DL', rating: 4.3, country: 'USA', premium: false, hubs: ['ATL', 'DTW', 'MSP', 'SEA'] },
+  { name: 'United Airlines', iata: 'UA', rating: 4.1, country: 'USA', premium: false, hubs: ['ORD', 'DEN', 'IAH', 'SFO'] },
+  { name: 'Southwest Airlines', iata: 'WN', rating: 4.0, country: 'USA', premium: false, hubs: ['DAL', 'MDW', 'BWI', 'PHX'] },
+  { name: 'Alaska Airlines', iata: 'AS', rating: 4.4, country: 'USA', premium: false, hubs: ['SEA', 'ANC', 'PDX', 'LAX'] },
+  { name: 'JetBlue Airways', iata: 'B6', rating: 4.2, country: 'USA', premium: false, hubs: ['JFK', 'BOS', 'FLL', 'LGB'] },
+  { name: 'Spirit Airlines', iata: 'NK', rating: 3.5, country: 'USA', premium: false, hubs: ['FLL', 'DTW', 'LAS', 'ORD'] },
+  { name: 'Frontier Airlines', iata: 'F9', rating: 3.4, country: 'USA', premium: false, hubs: ['DEN', 'LAS', 'PHX', 'ORD'] },
+  { name: 'Hawaiian Airlines', iata: 'HA', rating: 4.3, country: 'USA', premium: false, hubs: ['HNL', 'OGG', 'KOA', 'LIH'] },
+  { name: 'Allegiant Air', iata: 'G4', rating: 3.6, country: 'USA', premium: false, hubs: ['LAS', 'SFB', 'PIE', 'BLI'] },
+  { name: 'Sun Country Airlines', iata: 'SY', rating: 3.8, country: 'USA', premium: false, hubs: ['MSP', 'LAS', 'DFW'] }
 ];
+
+// Основные международные хабы по регионам
+const majorHubs = {
+  'North America': ['JFK', 'LAX', 'ORD', 'DFW', 'ATL', 'DEN', 'SEA', 'YYZ', 'YVR'],
+  'Europe': ['LHR', 'CDG', 'FRA', 'AMS', 'IST', 'MUC', 'ZUR', 'VIE', 'CPH', 'ARN'],
+  'Asia': ['NRT', 'ICN', 'SIN', 'HKG', 'BKK', 'KUL', 'DEL', 'BOM', 'PVG', 'PEK'],
+  'Middle East': ['DXB', 'DOH', 'AUH', 'KWI', 'RUH'],
+  'Latin America': ['MEX', 'GRU', 'EZE', 'LIM', 'BOG', 'SCL', 'PTY'],
+  'Africa': ['CAI', 'JNB', 'ADD', 'LOS', 'CMN'],
+  'Oceania': ['SYD', 'MEL', 'AKL']
+};
 
 // Calculate distance between two airports
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -84,8 +141,159 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
+function calculateStops(distance: number, rng?: SeededRandom): number {
+  // Более реалистичная логика остановок на основе расстояния
+  if (distance < 500) {
+    // Короткие рейсы - обычно прямые
+    return 0;
+  } else if (distance < 2000) {
+    // Средние рейсы - редко с остановками
+    return (rng?.random() || Math.random()) > 0.9 ? 1 : 0;
+  } else if (distance < 6000) {
+    // Длинные рейсы - иногда с остановками
+    return (rng?.random() || Math.random()) > 0.7 ? 1 : 0;
+  } else {
+    // Очень длинные рейсы - часто с остановками
+    return (rng?.random() || Math.random()) > 0.4 ? 1 : 0;
+  }
+}
+
+// Определить регион аэропорта
+function getAirportRegion(airportCode: string): string | null {
+  for (const [region, codes] of Object.entries(majorHubs)) {
+    if (codes.includes(airportCode)) {
+      return region;
+    }
+  }
+  return null;
+}
+
+// Получить подходящие хабы для маршрута
+function getRealisticStopovers(
+  fromAirport: any,
+  toAirport: any,
+  airlineName: string,
+  rng?: SeededRandom
+): string[] {
+  const airline = commonAirlines.find(a => a.name === airlineName);
+  const fromRegion = getAirportRegion(fromAirport.code);
+  const toRegion = getAirportRegion(toAirport.code);
+  
+  let potentialHubs: string[] = [];
+  
+  // 1. Приоритет хабам авиакомпании
+  if (airline?.hubs) {
+    potentialHubs.push(...airline.hubs);
+  }
+  
+  // 2. Если маршрут межрегиональный, добавить основные хабы между регионами
+  if (fromRegion && toRegion && fromRegion !== toRegion) {
+    // Для трансатлантических рейсов
+    if ((fromRegion === 'North America' && toRegion === 'Europe') || 
+        (fromRegion === 'Europe' && toRegion === 'North America')) {
+      potentialHubs.push('LHR', 'CDG', 'FRA', 'AMS', 'JFK', 'ORD', 'ATL');
+    }
+    // Для рейсов в Азию
+    else if (fromRegion === 'North America' && toRegion === 'Asia') {
+      potentialHubs.push('NRT', 'ICN', 'SIN', 'HKG', 'SEA', 'LAX', 'SFO');
+    }
+    else if (fromRegion === 'Europe' && toRegion === 'Asia') {
+      potentialHubs.push('IST', 'DXB', 'DOH', 'SIN', 'HKG', 'FRA', 'AMS');
+    }
+    // Для рейсов через Ближний Восток
+    else if ((fromRegion === 'Europe' || fromRegion === 'North America') && 
+             (toRegion === 'Asia' || toRegion === 'Africa')) {
+      potentialHubs.push('DXB', 'DOH', 'AUH', 'IST');
+    }
+    // Для рейсов в Латинскую Америку
+    else if (fromRegion === 'North America' && toRegion === 'Latin America') {
+      potentialHubs.push('MEX', 'PTY', 'DFW', 'MIA');
+    }
+  }
+  
+  // 3. Добавить региональные хабы
+  if (fromRegion && fromRegion in majorHubs) {
+    potentialHubs.push(...majorHubs[fromRegion as keyof typeof majorHubs].slice(0, 3));
+  }
+  if (toRegion && toRegion in majorHubs) {
+    potentialHubs.push(...majorHubs[toRegion as keyof typeof majorHubs].slice(0, 3));
+  }
+  
+  // Убрать дубликаты и исключить аэропорты отправления/назначения
+  const uniqueHubs = [...new Set(potentialHubs)]
+    .filter(hub => hub !== fromAirport.code && hub !== toAirport.code);
+  
+  return uniqueHubs;
+}
+
+function selectStopoverAirports(
+  fromAirport: any,
+  toAirport: any,
+  stopsCount: number,
+  airlineName: string,
+  rng?: SeededRandom
+): { code: string; city: string; country: string }[] {
+  if (stopsCount === 0) return [];
+  
+  const airportsMap = new Map(airports.map(a => [a.code, a]));
+  const realisticHubs = getRealisticStopovers(fromAirport, toAirport, airlineName, rng);
+  
+  // Фильтровать только существующие в базе аэропорты
+  const availableHubs = realisticHubs
+    .map(code => airportsMap.get(code))
+    .filter(airport => airport !== undefined);
+  
+  if (availableHubs.length === 0) {
+    // Fallback к старой логике если нет подходящих хабов
+    const potentialStopovers = airports.filter(airport => {
+      if (airport.code === fromAirport.code || airport.code === toAirport.code) {
+        return false;
+      }
+      
+      const distanceFromOrigin = calculateDistance(
+        fromAirport.lat, fromAirport.lon,
+        airport.lat, airport.lon
+      );
+      const distanceToDestination = calculateDistance(
+        airport.lat, airport.lon,
+        toAirport.lat, toAirport.lon
+      );
+      const totalDistance = calculateDistance(
+        fromAirport.lat, fromAirport.lon,
+        toAirport.lat, toAirport.lon
+      );
+      
+      const detourDistance = distanceFromOrigin + distanceToDestination;
+      const detourRatio = detourDistance / totalDistance;
+      
+      return detourRatio <= 1.5 && distanceFromOrigin > 200 && distanceToDestination > 200;
+    });
+    
+    availableHubs.push(...potentialStopovers.slice(0, 5));
+  }
+  
+  // Выбрать случайные хабы
+  const selectedStopovers: { code: string; city: string; country: string }[] = [];
+  
+  for (let i = 0; i < stopsCount && availableHubs.length > 0; i++) {
+    const randomIndex = Math.floor((rng?.random() || Math.random()) * availableHubs.length);
+    const selectedAirport = availableHubs[randomIndex];
+    
+    selectedStopovers.push({
+      code: selectedAirport.code,
+      city: selectedAirport.city,
+      country: selectedAirport.country
+    });
+    
+    // Удалить выбранный аэропорт из списка
+    availableHubs.splice(randomIndex, 1);
+  }
+  
+  return selectedStopovers;
+}
+
 // Calculate flight duration based on distance
-function calculateDuration(distance: number, rng?: SeededRandom): string {
+function calculateDuration(distance: number, stopsCount: number = 0, rng?: SeededRandom): string {
   // Calculate duration based on average aircraft speed of 850 km/h
   const averageSpeed = 850; // km/h
   const flightTimeHours = distance / averageSpeed;
@@ -93,7 +301,11 @@ function calculateDuration(distance: number, rng?: SeededRandom): string {
   // Add taxi time and other delays (typically 30-60 minutes total)
   const randomValue = rng ? rng.random() : Math.random();
   const taxiAndDelayMinutes = 30 + randomValue * 30;
-  const totalMinutes = Math.round(flightTimeHours * 60 + taxiAndDelayMinutes);
+  
+  // Add layover time for flights with stops (typically 1-3 hours per stop)
+  const layoverMinutes = stopsCount * (60 + randomValue * 120); // 1-3 hours per stop
+  
+  const totalMinutes = Math.round(flightTimeHours * 60 + taxiAndDelayMinutes + layoverMinutes);
   
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
@@ -183,20 +395,34 @@ function getAirlineLogo(airlineName: string): string {
     'Qatar Airways': '/logos/emirates.svg', // Fallback to emirates for missing logos
     'Etihad Airways': '/logos/etihad-airways.svg',
     'Swiss International Air Lines': '/logos/swiss.png',
-    'KLM': '/logos/lufthansa.svg' // Fallback to lufthansa for missing logos
+    'KLM': '/logos/lufthansa.svg', // Fallback to lufthansa for missing logos
+    // US Airlines - using fallbacks to existing logos
+    'American Airlines': '/logos/emirates.svg',
+    'Delta Air Lines': '/logos/lufthansa.svg',
+    'United Airlines': '/logos/emirates.svg',
+    'Southwest Airlines': '/logos/lufthansa.svg',
+    'Alaska Airlines': '/logos/emirates.svg',
+    'JetBlue Airways': '/logos/lufthansa.svg',
+    'Spirit Airlines': '/logos/emirates.svg',
+    'Frontier Airlines': '/logos/lufthansa.svg',
+    'Hawaiian Airlines': '/logos/emirates.svg',
+    'Allegiant Air': '/logos/lufthansa.svg',
+    'Sun Country Airlines': '/logos/emirates.svg'
   };
   
   return logoMap[airlineName] || '/logos/emirates.svg';
 }
 
 // Get aircraft type based on distance
-function getAircraftType(distance: number): string {
+function getAircraftType(distance: number, rng?: SeededRandom): string {
+  const random = rng ? rng.random() : Math.random();
+  
   if (distance < 1000) {
-    return ['Airbus A320', 'Boeing 737-800', 'Embraer E190'][Math.floor(Math.random() * 3)];
+    return ['Airbus A320', 'Boeing 737-800', 'Embraer E190'][Math.floor(random * 3)];
   } else if (distance < 3000) {
-    return ['Airbus A321', 'Boeing 737 MAX', 'Airbus A330'][Math.floor(Math.random() * 3)];
+    return ['Airbus A321', 'Boeing 737 MAX', 'Airbus A330'][Math.floor(random * 3)];
   } else {
-    return ['Boeing 777-300ER', 'Airbus A350-900', 'Boeing 787-9'][Math.floor(Math.random() * 3)];
+    return ['Boeing 777-300ER', 'Airbus A350-900', 'Boeing 787-9'][Math.floor(random * 3)];
   }
 }
 
@@ -221,36 +447,39 @@ function getAmenities(airlineName: string, distance: number): string[] {
 }
 
 // Generate random flight times
-function generateFlightTimes(durationString: string, rng?: SeededRandom): { departure: string; arrival: string } {
+function generateFlightTimes(durationString: string, rng?: SeededRandom): { departure: string; arrival: string; arrivalDateOffset: number } {
   const randomValue1 = rng ? rng.random() : Math.random();
   const randomValue2 = rng ? rng.random() : Math.random();
   const departureHour = Math.floor(randomValue1 * 24);
   const departureMinute = Math.floor(randomValue2 * 4) * 15; // 0, 15, 30, 45
-  
+
   const departure = `${departureHour.toString().padStart(2, '0')}:${departureMinute.toString().padStart(2, '0')}`;
-  
+
   // Parse duration string (e.g., "7h 23m")
   const durationMatch = durationString.match(/(\d+)h\s*(\d+)m/);
   if (!durationMatch) {
-    return { departure, arrival: departure };
+    return { departure, arrival: departure, arrivalDateOffset: 0 };
   }
-  
+
   const durationHours = parseInt(durationMatch[1]);
   const durationMinutes = parseInt(durationMatch[2]);
-  
-  // Calculate arrival time by adding duration to departure
-  const departureDate = new Date();
-  departureDate.setHours(departureHour, departureMinute, 0, 0);
-  
-  const arrivalDate = new Date(departureDate.getTime() + (durationHours * 60 + durationMinutes) * 60 * 1000);
-  
-  const arrival = `${arrivalDate.getHours().toString().padStart(2, '0')}:${arrivalDate.getMinutes().toString().padStart(2, '0')}`;
-  
-  return { departure, arrival };
+
+  // Use a reference date (epoch) and work in UTC to calculate time of day and offset
+  const departureTime = new Date(0);
+  departureTime.setUTCHours(departureHour, departureMinute, 0, 0);
+
+  const arrivalTime = new Date(departureTime.getTime() + (durationHours * 60 + durationMinutes) * 60 * 1000);
+
+  const arrival = `${arrivalTime.getUTCHours().toString().padStart(2, '0')}:${arrivalTime.getUTCMinutes().toString().padStart(2, '0')}`;
+
+  // The offset is the number of full days that have passed since the reference date.
+  const arrivalDateOffset = Math.floor(arrivalTime.getTime() / (24 * 60 * 60 * 1000));
+
+  return { departure, arrival, arrivalDateOffset };
 }
 
 // Main function to generate flights for client-side usage
-function generateMultiCityFlightsFromSegments(segments: {from: string, to: string, date: string}[], flightClass: string): any[] {
+function generateMultiCityFlightsFromSegments(segments: {from: string, to: string, date: string}[], flightClass: string): MultiCityFlight[] {
   const airportsMap = new Map(airports.map(a => [a.code, a]));
   
   if (segments.length === 0) {
@@ -285,11 +514,24 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
         segmentTo.lon
       );
       
-      // Select airline for this segment
-      const airlineIndex = (optionIndex + i) % commonAirlines.length;
-      const airline = commonAirlines[airlineIndex];
+      // Filter airlines for this segment
+      const isDomesticUSA = segmentFrom.country === 'United States' && segmentTo.country === 'United States';
+      const availableAirlines = commonAirlines.filter(airline => {
+        // US airlines only for domestic US routes
+        if (airline.country === 'USA') {
+          return isDomesticUSA;
+        }
+        // International airlines for all routes except domestic US
+        return true;
+      });
       
-      const duration = calculateDuration(distance, rng);
+      // Select airline for this segment
+      const airlineIndex = (optionIndex + i) % availableAirlines.length;
+      const airline = availableAirlines[airlineIndex];
+      
+      const segmentStopsCount = calculateStops(distance, rng);
+      const segmentStopoverAirports = selectStopoverAirports(segmentFrom, segmentTo, segmentStopsCount, airline.name, rng);
+      const duration = calculateDuration(distance, segmentStopsCount, rng);
       const durationMinutes = parseInt(duration.split('h')[0]) * 60 + parseInt(duration.split('h')[1]?.split('m')[0] || '0');
       totalDurationMinutes += durationMinutes;
       
@@ -298,7 +540,14 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
       totalPrice += price;
       
       const amenities = getAmenities(airline.name, distance);
-      const aircraft = getAircraftType(distance);
+      const aircraft = getAircraftType(distance, rng);
+      
+      // Calculate arrival date for this segment
+      const segmentArrivalDate = (() => {
+        const depDate = new Date(segment.date + 'T00:00:00Z');
+        depDate.setUTCDate(depDate.getUTCDate() + times.arrivalDateOffset);
+        return depDate.toISOString().split('T')[0];
+      })();
       
       flightSegments.push({
         id: `${optionIndex}-${i}`,
@@ -315,10 +564,11 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
           time: times.arrival,
           airport: segmentTo.code,
           city: segmentTo.city,
-          date: segment.date
+          date: segmentArrivalDate
         },
         duration,
-        stops: rng.random() > 0.8 ? 1 : 0,
+        stops: segmentStopsCount,
+        stopoverAirports: segmentStopoverAirports,
         price,
         class: flightClass,
         amenities,
@@ -345,7 +595,7 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
   return multiCityFlights.sort((a, b) => a.totalPrice - b.totalPrice);
 }
 
-function generateMultiCityFlights(fromCode: string, toCode: string, flightClass: string): any[] {
+function generateMultiCityFlights(fromCode: string, toCode: string, flightClass: string): MultiCityFlight[] {
   const airportsMap = new Map(airports.map(a => [a.code, a]));
   const fromAirport = airportsMap.get(fromCode);
   const toAirport = airportsMap.get(toCode);
@@ -391,11 +641,26 @@ function generateMultiCityFlights(fromCode: string, toCode: string, flightClass:
         segmentTo.lon
       );
       
-      // Select airline for this segment
-      const airlineIndex = (optionIndex + i) % commonAirlines.length;
-      const airline = commonAirlines[airlineIndex];
+      // Filter airlines for this segment
+      const isDomesticUSA = segmentFrom.country === 'United States' && segmentTo.country === 'United States';
+      const availableAirlines = commonAirlines.filter(airline => {
+        // US airlines only for domestic US routes
+        if (airline.country === 'USA') {
+          return isDomesticUSA;
+        }
+        // International airlines for all routes except domestic US
+        return true;
+      });
       
-      const duration = calculateDuration(distance, rng);
+      // Select airline for this segment
+      const airlineIndex = (optionIndex + i) % availableAirlines.length;
+      const airline = availableAirlines[airlineIndex];
+      
+      // Calculate stops and stopover airports for this segment
+      const segmentStopsCount = calculateStops(distance, rng);
+      const segmentStopoverAirports = selectStopoverAirports(segmentFrom, segmentTo, segmentStopsCount, airline.name, rng);
+      
+      const duration = calculateDuration(distance, segmentStopsCount, rng);
       const durationMinutes = parseInt(duration.split('h')[0]) * 60 + parseInt(duration.split('h')[1]?.split('m')[0] || '0');
       totalDurationMinutes += durationMinutes;
       
@@ -404,7 +669,7 @@ function generateMultiCityFlights(fromCode: string, toCode: string, flightClass:
       totalPrice += price;
       
       const amenities = getAmenities(airline.name, distance);
-      const aircraft = getAircraftType(distance);
+      const aircraft = getAircraftType(distance, rng);
       
       segments.push({
         id: `${optionIndex}-${i}`,
@@ -422,7 +687,8 @@ function generateMultiCityFlights(fromCode: string, toCode: string, flightClass:
           city: segmentTo.city
         },
         duration,
-        stops: rng.random() > 0.8 ? 1 : 0,
+        stops: segmentStopsCount,
+        stopoverAirports: segmentStopoverAirports,
         price,
         class: flightClass,
         amenities,
@@ -451,7 +717,7 @@ function generateMultiCityFlights(fromCode: string, toCode: string, flightClass:
 
 export { generateMultiCityFlightsFromSegments };
 
-export function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One Way'): GeneratedFlight[] | any[] {
+export function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One Way', departureDate?: string, returnDate?: string): (GeneratedFlight | MultiCityFlight)[] {
   // Handle Multi-city flights differently
   if (tripType === 'Multi-city') {
     return generateMultiCityFlights(fromCode, toCode, flightClass);
@@ -476,16 +742,29 @@ export function generateFlightsClient(fromCode: string, toCode: string, flightCl
     toAirport.lon
   );
   
+  // Filter airlines based on route
+  const isDomesticUSA = fromAirport.country === 'United States' && toAirport.country === 'United States';
+  const availableAirlines = commonAirlines.filter(airline => {
+    // US airlines only for domestic US routes
+    if (airline.country === 'USA') {
+      return isDomesticUSA;
+    }
+    // International airlines for all routes except domestic US
+    return true;
+  });
+  
   // Select airlines deterministically based on seed
-  const shuffledAirlines = [...commonAirlines];
+  const shuffledAirlines = [...availableAirlines];
   for (let i = shuffledAirlines.length - 1; i > 0; i--) {
     const j = Math.floor(rng.random() * (i + 1));
     [shuffledAirlines[i], shuffledAirlines[j]] = [shuffledAirlines[j], shuffledAirlines[i]];
   }
-  const selectedAirlines = shuffledAirlines.slice(0, Math.min(5, commonAirlines.length));
+  const selectedAirlines = shuffledAirlines.slice(0, Math.min(5, availableAirlines.length));
   
   const flights = selectedAirlines.map((airline, index) => {
-    const duration = calculateDuration(distance, rng);
+    const stopsCount = calculateStops(distance, rng);
+    const stopoverAirports = selectStopoverAirports(fromAirport, toAirport, stopsCount, airline.name, rng);
+    const duration = calculateDuration(distance, stopsCount, rng);
     const times = generateFlightTimes(duration, rng);
     let price = calculatePrice(distance, airline.name, flightClass, fromAirport.country, toAirport.country, rng);
     
@@ -496,9 +775,16 @@ export function generateFlightsClient(fromCode: string, toCode: string, flightCl
       price = Math.round(price * 1.5); // Multi-city pricing per segment
     }
     const amenities = getAmenities(airline.name, distance);
-    const aircraft = getAircraftType(distance);
+    const aircraft = getAircraftType(distance, rng);
     
-    return {
+    // Calculate arrival date
+    const arrivalDate = departureDate ? (() => {
+      const depDate = new Date(departureDate + 'T00:00:00Z');
+      depDate.setUTCDate(depDate.getUTCDate() + times.arrivalDateOffset);
+      return depDate.toISOString().split('T')[0];
+    })() : undefined;
+    
+    const flight: GeneratedFlight = {
       id: index + 1,
       airline: airline.name,
       logo: getAirlineLogo(airline.name),
@@ -506,15 +792,18 @@ export function generateFlightsClient(fromCode: string, toCode: string, flightCl
       departure: {
         time: times.departure,
         airport: fromCode,
-        city: fromAirport.city
+        city: fromAirport.city,
+        date: departureDate
       },
       arrival: {
         time: times.arrival,
         airport: toCode,
-        city: toAirport.city
+        city: toAirport.city,
+        date: arrivalDate
       },
       duration,
-      stops: rng.random() > 0.7 ? 1 : 0, // 30% chance of 1 stop
+      stops: stopsCount,
+      stopoverAirports,
       price,
       class: flightClass,
       amenities,
@@ -522,6 +811,48 @@ export function generateFlightsClient(fromCode: string, toCode: string, flightCl
       aircraft,
       seatsLeft: Math.floor(rng.random() * 8) + 8 // Random seats left between 8-15
     };
+
+    // Generate return flight for Round Trip
+    if (tripType === 'Round Trip') {
+      const returnStopsCount = calculateStops(distance, rng);
+      const returnStopoverAirports = selectStopoverAirports(toAirport, fromAirport, returnStopsCount, airline.name, rng);
+      const returnDuration = calculateDuration(distance, returnStopsCount, rng);
+      const returnTimes = generateFlightTimes(returnDuration, rng);
+      const returnAmenities = getAmenities(airline.name, distance);
+      const returnAircraft = getAircraftType(distance, rng);
+      
+      // Calculate return arrival date
+      const returnArrivalDate = returnDate ? (() => {
+        const retDate = new Date(returnDate + 'T00:00:00Z');
+        retDate.setUTCDate(retDate.getUTCDate() + returnTimes.arrivalDateOffset);
+        return retDate.toISOString().split('T')[0];
+      })() : undefined;
+      
+      flight.returnFlight = {
+        airline: airline.name,
+        logo: getAirlineLogo(airline.name),
+        flightNumber: `${airline.iata} ${Math.floor(rng.random() * 9000) + 1000}`,
+        departure: {
+          time: returnTimes.departure,
+          airport: toCode,
+          city: toAirport.city,
+          date: returnDate
+        },
+        arrival: {
+          time: returnTimes.arrival,
+          airport: fromCode,
+          city: fromAirport.city,
+          date: returnArrivalDate
+        },
+        duration: returnDuration,
+        stops: returnStopsCount,
+        stopoverAirports: returnStopoverAirports,
+        amenities: returnAmenities,
+        aircraft: returnAircraft
+      };
+    }
+
+    return flight;
   });
   
   // Sort by price (cheapest first) and limit to 3 flights

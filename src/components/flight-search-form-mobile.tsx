@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Search, Users, Plus, X } from 'lucide-react'
 import {
@@ -229,29 +229,33 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   const [activeMultiIndex, setActiveMultiIndex] = useState<number>(0)
   const [departureFlash, setDepartureFlash] = useState(false)
   const [returnTabFlash, setReturnTabFlash] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
-  const [submissionMessage, setSubmissionMessage] = useState('');
+  const [isSubmitting] = useState(false);
+  const [submissionStatus] = useState<'success' | 'error' | null>(null);
+  const [submissionMessage] = useState('');
   const [showNearby, setShowNearby] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const router = useRouter();
 
-  const debouncedSearch = useCallback(debounce((value: string, type: 'from' | 'to') => {
-    if (value.length > 0) {
-      const filtered = searchAirportsGrouped(value, 10);
-      if (type === 'from') {
-        setFromSuggestions(filtered);
-      } else {
-        setToSuggestions(filtered);
-      }
-    } else {
-      if (type === 'from') {
-        setFromSuggestions([]);
-      } else {
-        setToSuggestions([]);
-      }
-    }
-  }, 200), []);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string, type: 'from' | 'to') => {
+        if (value.length > 1) {
+          const filtered = searchAirportsGrouped(value, 10);
+          if (type === 'from') {
+            setFromSuggestions(filtered);
+          } else {
+            setToSuggestions(filtered);
+          }
+        } else {
+          if (type === 'from') {
+            setFromSuggestions([]);
+          } else {
+            setToSuggestions([]);
+          }
+        }
+      }, 300),
+    [setFromSuggestions, setToSuggestions]
+  );
 
   useEffect(() => {
     if (coords && !fromInput && !toInput) {
@@ -313,22 +317,25 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       ];
       
       const segments = allSegments.map(s => 
-        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? s.date.toISOString().split('T')[0] : ''}`
+        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? `${s.date.getFullYear()}-${String(s.date.getMonth() + 1).padStart(2, '0')}-${String(s.date.getDate()).padStart(2, '0')}` : ''}`
       ).join('&');
-      query = new URLSearchParams(segments + `&tripType=${tripType}&passengers=${passengers.adults + passengers.children + passengers.infants}&class=${selectedClass}`);
+      query = new URLSearchParams(segments);
+      query.set('tripType', tripType);
+      query.set('passengers', (passengers.adults + passengers.children + passengers.infants).toString());
+      query.set('class', selectedClass);
     } else {
       const totalPassengers = passengers.adults + passengers.children + passengers.infants;
       query = new URLSearchParams({
         from: fromSelection?.code || '',
         to: toSelection?.code || '',
-        departureDate: departureDate ? departureDate.toISOString().split('T')[0] : '',
+        departureDate: departureDate ? `${departureDate.getFullYear()}-${String(departureDate.getMonth() + 1).padStart(2, '0')}-${String(departureDate.getDate()).padStart(2, '0')}` : '',
         tripType: tripType,
         passengers: totalPassengers.toString(),
         class: selectedClass,
       });
 
       if (tripType === 'Round Trip' && returnDate) {
-        query.set('returnDate', returnDate.toISOString().split('T')[0]);
+        query.set('returnDate', `${returnDate.getFullYear()}-${String(returnDate.getMonth() + 1).padStart(2, '0')}-${String(returnDate.getDate()).padStart(2, '0')}`);
       }
     }
 

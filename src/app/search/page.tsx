@@ -4,12 +4,12 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 
-// @ts-ignore
 import FlightSearchFormVertical from '@/components/flight-search-form-vertical';
 import { useFlightSearch } from '@/hooks/useFlightSearch';
 import Image from 'next/image';
-import { Clock, ArrowLeftRight, Lock, ShieldCheck, Pencil, Plane, Wifi, Coffee, Monitor, Filter, SlidersHorizontal, Calendar, Users } from 'lucide-react';
+import { ArrowLeftRight, Lock, ShieldCheck, Plane, Wifi, Coffee, Monitor, Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateFlightsClient, generateMultiCityFlightsFromSegments } from '@/lib/flightGenerator';
+import type { GeneratedFlight, MultiCityFlight, FlightSegment } from '@/lib/flightGenerator';
 
 // Mock data for airports to get full names
 import airports from '@/lib/airports.json';
@@ -46,7 +46,7 @@ const CountdownTimer = () => {
     );
 };
 
-const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departureDates }: { flight: any, isSelected: boolean, onSelect: () => void, passengers?: string, departureDates?: string[] }) => {
+const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departureDates }: { flight: MultiCityFlight, isSelected: boolean, onSelect: () => void, passengers?: string, departureDates?: string[] }) => {
     const getAmenityIcon = (amenity: string) => {
         switch (amenity) {
             case 'wifi': return <Wifi size={16} />;
@@ -59,7 +59,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
     // Format date for display
     const formatFlightDate = (dateString?: string) => {
         if (!dateString) return '';
-        const date = new Date(dateString);
+        const date = new Date(dateString + 'T00:00:00');
         return date.toLocaleDateString('en-US', { 
             month: 'short', 
             day: 'numeric',
@@ -93,7 +93,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
 
             {/* Flight Segments */}
             <div className="space-y-4">
-                {flight.segments?.map((segment: any, index: number) => (
+                {flight.segments?.map((segment: FlightSegment, index: number) => (
                     <div key={index} className="border border-gray-100 rounded-lg p-4">
                         {/* Segment Header */}
                         <div className="flex items-center justify-between mb-3">
@@ -132,7 +132,11 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
                                 <div className="text-center mt-1">
                                     <p className="text-xs font-medium text-gray-600">{segment.duration}</p>
                                     <p className="text-xs text-gray-400">
-                                        {segment.stops === 0 ? 'Non-stop' : `${segment.stops} stop${segment.stops > 1 ? 's' : ''}`}
+                                        {segment.stops === 0 ? 'Non-stop' : (
+                                            segment.stopoverAirports && segment.stopoverAirports.length > 0 
+                                                ? `${segment.stops} stop${segment.stops > 1 ? 's' : ''} via ${segment.stopoverAirports.map(airport => `${airport.code} (${airport.country})`).join(', ')}`
+                                                : `${segment.stops} stop${segment.stops > 1 ? 's' : ''}`
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -175,7 +179,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
                 </div>
                 <div className="text-right">
                     <p className="text-2xl font-bold text-[#0abab5]">
-                        ${flight.totalPrice * parseInt(passengers || '1')}
+                        ${('totalPrice' in flight ? flight.totalPrice : (flight as GeneratedFlight).price) * parseInt(passengers || '1')}
                     </p>
                     <p className="text-sm text-gray-500">USD total</p>
                 </div>
@@ -184,7 +188,8 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
     );
 };
 
-const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, departureDate, returnDate }: { flight: any, isSelected: boolean, onSelect: () => void, tripType?: string, passengers?: string, departureDate?: string, returnDate?: string }) => {
+const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, departureDate, returnDate }: { flight: GeneratedFlight, isSelected: boolean, onSelect: () => void, tripType?: string, passengers?: string, departureDate?: string, returnDate?: string }) => {
+    const [showReturnFlight, setShowReturnFlight] = useState(false);
     const getAmenityIcon = (amenity: string) => {
         switch (amenity) {
             case 'wifi': return <Wifi size={16} />;
@@ -197,30 +202,12 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
     // Use seats left from flight data
     const seatsLeft = flight.seatsLeft;
     
-    // Determine badges based on flight properties
-    const getBadges = () => {
-        const badges = [];
-        
-        // Best Deal badge for flights with good price/rating ratio
-        if (flight.rating >= 4.7 && flight.price < 2200) {
-            badges.push({ text: 'Best Deal', color: 'bg-green-500' });
-        }
-        
-        // Fastest badge for short duration flights
-        const durationMinutes = parseInt(flight.duration.split('h')[0]) * 60 + parseInt(flight.duration.split('h')[1]?.split('m')[0] || '0');
-        if (durationMinutes < 90) {
-            badges.push({ text: 'Fastest', color: 'bg-blue-500' });
-        }
-        
-        return badges;
-    };
-    
-    const badges = getBadges();
+
 
     // Format date for display
     const formatFlightDate = (dateString?: string) => {
         if (!dateString) return '';
-        const date = new Date(dateString);
+        const date = new Date(dateString + 'T00:00:00');
         return date.toLocaleDateString('en-US', { 
             month: 'short', 
             day: 'numeric',
@@ -235,16 +222,7 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
             }`}
             onClick={onSelect}
         >
-            {/* Badges */}
-            {badges.length > 0 && (
-                <div className="absolute top-4 right-4 flex gap-2 z-10">
-                    {badges.map((badge, index) => (
-                        <span key={index} className={`${badge.color} text-white text-xs font-medium px-2 py-1 rounded-full`}>
-                            {badge.text}
-                        </span>
-                    ))}
-                </div>
-            )}
+
             
             {/* Airline Header */}
             <div className="flex items-center justify-between mb-4">
@@ -270,8 +248,8 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     <p className="text-2xl font-bold text-gray-900">{flight.departure.time}</p>
                     <p className="text-sm text-gray-500">{flight.departure.airport}</p>
                     <p className="text-xs text-gray-400">{flight.departure.city}</p>
-                    {departureDate && (
-                        <p className="text-xs text-[#0abab5] font-medium mt-1">{formatFlightDate(departureDate)}</p>
+                    {flight.departure.date && (
+                        <p className="text-xs text-[#0abab5] font-medium mt-1">{formatFlightDate(flight.departure.date)}</p>
                     )}
                 </div>
                 
@@ -285,7 +263,11 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     <div className="text-center mt-2">
                         <p className="text-sm font-medium text-gray-600">{flight.duration}</p>
                         <p className="text-xs text-gray-400">
-                            {flight.stops === 0 ? 'Non-stop' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}
+                            {flight.stops === 0 ? 'Non-stop' : (
+                                flight.stopoverAirports && flight.stopoverAirports.length > 0 
+                                    ? `${flight.stops} stop${flight.stops > 1 ? 's' : ''} via ${flight.stopoverAirports.map(airport => `${airport.code} (${airport.country})`).join(', ')}`
+                                    : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`
+                            )}
                         </p>
                     </div>
                 </div>
@@ -294,9 +276,9 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     <p className="text-2xl font-bold text-gray-900">{flight.arrival.time}</p>
                     <p className="text-sm text-gray-500">{flight.arrival.airport}</p>
                     <p className="text-xs text-gray-400">{flight.arrival.city}</p>
-                    {(tripType === 'Round Trip' && returnDate ? returnDate : departureDate) && (
+                    {flight.arrival.date && (
                         <p className="text-xs text-[#0abab5] font-medium mt-1">
-                            {formatFlightDate(tripType === 'Round Trip' && returnDate ? returnDate : departureDate)}
+                            {formatFlightDate(flight.arrival.date)}
                         </p>
                     )}
                 </div>
@@ -324,6 +306,99 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                 </div>
             </div>
 
+            {/* Return Flight Toggle Button for Round Trip */}
+            {tripType === 'Round Trip' && flight.returnFlight && (
+                <div className="mb-4">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowReturnFlight(!showReturnFlight);
+                        }}
+                        className="flex items-center gap-2 text-sm text-[#0abab5] hover:text-[#0abab5]/80 transition-colors cursor-pointer"
+                    >
+                        {showReturnFlight ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {showReturnFlight ? 'Hide return flight' : 'Show return flight'}
+                    </button>
+                </div>
+            )}
+
+            {/* Return Flight Details */}
+            {tripType === 'Round Trip' && flight.returnFlight && showReturnFlight && (
+                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-2 mb-3">
+                        <ArrowLeftRight size={16} className="text-[#0abab5]" />
+                        <span className="text-sm font-medium text-gray-700">Return Flight</span>
+                    </div>
+                    
+                    {/* Return Flight Header */}
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                            {flight.returnFlight.logo && flight.returnFlight.logo.trim() !== '' ? (
+                                <Image src={flight.returnFlight.logo} alt={flight.returnFlight.airline} width={20} height={20} className="object-contain" />
+                            ) : (
+                                <Plane size={16} className="text-gray-400" />
+                            )}
+                        </div>
+                        <div>
+                            <p className="font-medium text-gray-800">{flight.returnFlight.airline}</p>
+                            <p className="text-xs text-gray-500">{flight.returnFlight.flightNumber} • {flight.returnFlight.aircraft}</p>
+                        </div>
+                    </div>
+
+                    {/* Return Flight Times */}
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">{flight.returnFlight.departure.time}</p>
+                            <p className="text-xs text-gray-500">{flight.returnFlight.departure.airport}</p>
+                            <p className="text-xs text-gray-400">{flight.returnFlight.departure.city}</p>
+                            {flight.returnFlight.departure.date && (
+                                <p className="text-xs text-[#0abab5] font-medium mt-1">{formatFlightDate(flight.returnFlight.departure.date)}</p>
+                            )}
+                        </div>
+                        
+                        <div className="flex-1 mx-4">
+                            <div className="flex items-center justify-center relative">
+                                <div className="w-full h-px bg-gray-300"></div>
+                                <div className="absolute bg-gray-50 px-2">
+                                    <Plane size={14} className="text-[#0abab5] transform rotate-90" />
+                                </div>
+                            </div>
+                            <div className="text-center mt-1">
+                                <p className="text-xs font-medium text-gray-600">{flight.returnFlight.duration}</p>
+                                <p className="text-xs text-gray-400">
+                                    {flight.returnFlight.stops === 0 ? 'Non-stop' : (
+                                        flight.returnFlight.stopoverAirports && flight.returnFlight.stopoverAirports.length > 0 
+                                            ? `${flight.returnFlight.stops} stop${flight.returnFlight.stops > 1 ? 's' : ''} via ${flight.returnFlight.stopoverAirports.map(airport => `${airport.code} (${airport.country})`).join(', ')}`
+                                            : `${flight.returnFlight.stops} stop${flight.returnFlight.stops > 1 ? 's' : ''}`
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">{flight.returnFlight.arrival.time}</p>
+                            <p className="text-xs text-gray-500">{flight.returnFlight.arrival.airport}</p>
+                            <p className="text-xs text-gray-400">{flight.returnFlight.arrival.city}</p>
+                            {flight.returnFlight.arrival.date && (
+                                <p className="text-xs text-[#0abab5] font-medium mt-1">{formatFlightDate(flight.returnFlight.arrival.date)}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Return Flight Amenities */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Amenities:</span>
+                        <div className="flex gap-1">
+                            {flight.returnFlight.amenities.map((amenity: string, index: number) => (
+                                <div key={index} className="text-[#0abab5]" title={amenity}>
+                                    {getAmenityIcon(amenity)}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Price */}
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
@@ -347,6 +422,10 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
 };
 
 
+function isMultiCityFlight(flight: MultiCityFlight | GeneratedFlight): flight is MultiCityFlight {
+    return 'segments' in flight && Array.isArray(flight.segments);
+}
+
 function SearchResultsContent() {
     const searchParams = useSearchParams();
     const flightSearch = useFlightSearch();
@@ -365,8 +444,8 @@ function SearchResultsContent() {
 
     const [activeSort, setActiveSort] = useState('Best');
     const [selectedFlight, setSelectedFlight] = useState<number | null>(null);
-    const [showFilters, setShowFilters] = useState(false);
-    const [flights, setFlights] = useState<any[]>([]);
+
+    const [flights, setFlights] = useState<(GeneratedFlight | MultiCityFlight)[]>([]);
 
     useEffect(() => {
         const trip = searchParams.get('tripType');
@@ -403,10 +482,10 @@ function SearchResultsContent() {
             }
         }
         if (departure) {
-            setDepartureDate(new Date(departure));
+            setDepartureDate(new Date(departure + 'T00:00:00'));
         }
         if (returnValue) {
-            setReturnDate(new Date(returnValue));
+            setReturnDate(new Date(returnValue + 'T00:00:00'));
         }
         if (pass) {
             setPassengers({ adults: parseInt(pass, 10), children: 0, infants: 0 });
@@ -454,7 +533,9 @@ function SearchResultsContent() {
             toCode = searchParams.get('to');
             
             if (fromCode && toCode && flightClass) {
-                const generatedFlights = generateFlightsClient(fromCode, toCode, flightClass, tripType);
+                const departure = searchParams.get('departureDate');
+                const returnValue = searchParams.get('returnDate');
+                const generatedFlights = generateFlightsClient(fromCode, toCode, flightClass, tripType, departure || undefined, returnValue || undefined);
                 setFlights(generatedFlights);
             }
         }
@@ -485,7 +566,7 @@ function SearchResultsContent() {
     // Format departure date
     const formatDate = (dateString: string | undefined) => {
         if (!dateString) return 'Dec 15, 2024';
-        const date = new Date(dateString);
+        const date = new Date(dateString + 'T00:00:00');
         return date.toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'short', 
@@ -499,17 +580,9 @@ function SearchResultsContent() {
         Fastest: { price: 2523, duration: '1h 10 min' },
     };
     
-    const firstClassMultiplier = 1.5;
 
-    const getPrice = (sortKey: keyof typeof sortOptions, flightClass: string) => {
-        let price = sortOptions[sortKey].price;
-        if (flightClass === 'First class') {
-            price *= firstClassMultiplier;
-        }
-        return price;
-    };
 
-    const selectedPrice = getPrice(activeSort as keyof typeof sortOptions, selectedClass);
+
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-8">
@@ -556,11 +629,11 @@ function SearchResultsContent() {
                     <div className="flex items-center gap-4 mb-6">
                         <span className="text-gray-600 font-medium">Sort by:</span>
                         <div className="flex gap-2">
-                            {Object.entries(sortOptions).map(([key, value]) => (
+                            {Object.entries(sortOptions).map(([key]) => (
                                 <button 
                                     key={key} 
                                     onClick={() => setActiveSort(key)} 
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                                         activeSort === key 
                                             ? 'bg-[#0abab5] text-white shadow-md' 
                                             : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -577,29 +650,33 @@ function SearchResultsContent() {
 
                     {/* Flight Cards */}
                     <div className="space-y-4">
-                        {flights.map((flight) => (
-                            tripType === 'Multi-city' ? (
-                                <MultiCityFlightCard 
-                                    key={flight.id}
-                                    flight={flight}
-                                    isSelected={selectedFlight === flight.id}
-                                    onSelect={() => setSelectedFlight(flight.id)}
-                                    passengers={passengers}
-                                    departureDates={searchParams.getAll('departureDate')}
-                                />
-                            ) : (
-                                <FlightCard 
-                                    key={flight.id}
-                                    flight={flight}
-                                    isSelected={selectedFlight === flight.id}
-                                    onSelect={() => setSelectedFlight(flight.id)}
-                                    tripType={tripType}
-                                    passengers={passengers}
-                                    departureDate={departureDate}
-                                    returnDate={returnDate}
-                                />
-                            )
-                        ))}
+                        {flights.map((flight) => {
+                            if (isMultiCityFlight(flight)) {
+                                return (
+                                    <MultiCityFlightCard 
+                                        key={flight.id}
+                                        flight={flight}
+                                        isSelected={selectedFlight === flight.id}
+                                        onSelect={() => setSelectedFlight(flight.id)}
+                                        passengers={passengers}
+                                        departureDates={searchParams.getAll('departureDate')}
+                                    />
+                                );
+                            } else {
+                                return (
+                                    <FlightCard 
+                                        key={flight.id}
+                                        flight={flight}
+                                        isSelected={selectedFlight === flight.id}
+                                        onSelect={() => setSelectedFlight(flight.id)}
+                                        tripType={tripType}
+                                        passengers={passengers}
+                                        departureDate={departureDate}
+                                        returnDate={returnDate}
+                                    />
+                                );
+                            }
+                        })} 
                     </div>
                 </div>
 
@@ -612,24 +689,57 @@ function SearchResultsContent() {
                                 <h3 className="font-semibold text-sm mb-2">Selected Flight</h3>
                                 {(() => {
                                     const flight = flights.find(f => f.id === selectedFlight);
-                                    return flight ? (
+                                    if (!flight) return null;
+
+                                    if (isMultiCityFlight(flight)) {
+                                        return (
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
+                                                        <Plane size={12} className="text-gray-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-sm">Multi-city Flight</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-center py-2 border border-gray-100 rounded">
+                                                    <p className="text-xl font-bold text-[#0abab5]">
+                                                        ${flight.totalPrice * parseInt(passengers || '1')}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        <span className="flex items-center justify-center gap-1">
+                                                            <Users size={10} />
+                                                            total for {passengers || '1'} passenger{parseInt(passengers || '1') > 1 ? 's' : ''}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <CountdownTimer />
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+
+                                    const generatedFlight = flight as GeneratedFlight;
+
+                                    return (
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2">
-                                                {flight.logo && flight.logo.trim() !== '' ? (
-                                                    <Image src={flight.logo} alt={flight.airline} width={20} height={20} className="object-contain" />
+                                                {generatedFlight.logo && generatedFlight.logo.trim() !== '' ? (
+                                                    <Image src={generatedFlight.logo} alt={generatedFlight.airline} width={20} height={20} className="object-contain" />
                                                 ) : (
                                                     <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
                                                         <Plane size={12} className="text-gray-400" />
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="font-medium text-sm">{flight.airline}</p>
-                                                    <p className="text-xs text-gray-500">{flight.flightNumber}</p>
+                                                    <p className="font-medium text-sm">{generatedFlight.airline}</p>
+                                                    <p className="text-xs text-gray-500">{generatedFlight.flightNumber}</p>
                                                 </div>
                                             </div>
                                             <div className="text-center py-2 border border-gray-100 rounded">
                                                 <p className="text-xl font-bold text-[#0abab5]">
-                                                    ${flight.price * parseInt(passengers || '1')}
+                                                    ${generatedFlight.price * parseInt(passengers || '1')}
                                                 </p>
                                                 <p className="text-xs text-gray-500">
                                                     <span className="flex items-center justify-center gap-1">
@@ -642,13 +752,13 @@ function SearchResultsContent() {
                                                 <CountdownTimer />
                                             </div>
                                         </div>
-                                    ) : null;
+                                    );
                                 })()}
                             </div>
                         )}
 
                         {/* Search Form */}
-                        <FlightSearchFormVertical {...flightSearch} />
+                        <FlightSearchFormVertical onSubmit={() => {}} />
 
                         {/* Guarantees */}
                         <div className="bg-white rounded-2xl shadow-sm border p-6">

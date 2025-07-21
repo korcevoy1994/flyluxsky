@@ -232,9 +232,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   type OpenPopover = 'trip' | 'class' | 'passengers' | 'departure' | 'return' | null
   const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null)
   const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
-  const [submissionMessage, setSubmissionMessage] = useState('');
+  const [isSubmitting] = useState(false);
+  const [submissionStatus] = useState<'success' | 'error' | null>(null);
+  const [submissionMessage] = useState('');
   
   const fromInputRef = useRef<HTMLInputElement>(null)
   const toInputRef = useRef<HTMLInputElement>(null)
@@ -318,7 +318,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       ];
       
       const segments = allSegments.map(s => 
-        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? s.date.toISOString().split('T')[0] : ''}`
+        `from=${s.fromSelection?.code}&to=${s.toSelection?.code}&departureDate=${s.date ? `${s.date.getFullYear()}-${String(s.date.getMonth() + 1).padStart(2, '0')}-${String(s.date.getDate()).padStart(2, '0')}` : ''}`
       ).join('&');
       query = new URLSearchParams(segments);
       query.set('tripType', tripType);
@@ -329,14 +329,14 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       query = new URLSearchParams({
         from: fromSelection?.code || '',
         to: toSelection?.code || '',
-        departureDate: departureDate ? departureDate.toISOString().split('T')[0] : '',
+        departureDate: departureDate ? `${departureDate.getFullYear()}-${String(departureDate.getMonth() + 1).padStart(2, '0')}-${String(departureDate.getDate()).padStart(2, '0')}` : '',
         tripType: tripType,
         passengers: totalPassengers.toString(),
         class: selectedClass,
       });
 
       if (tripType === 'Round Trip' && returnDate) {
-        query.set('returnDate', returnDate.toISOString().split('T')[0]);
+        query.set('returnDate', `${returnDate.getFullYear()}-${String(returnDate.getMonth() + 1).padStart(2, '0')}-${String(returnDate.getDate()).padStart(2, '0')}`);
       }
     }
 
