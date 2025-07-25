@@ -7,7 +7,7 @@ import { Calendar, Plane } from 'lucide-react';
 const deals = [
   {
     airline: 'Lufthansa',
-    logo: '/logos/lufthansa.svg', 
+    logo: '/logos/airlines/Lufthansa.svg', 
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -20,7 +20,7 @@ const deals = [
   },
   {
     airline: 'Singapore Airlines',
-    logo: '/logos/singapore-airlines.png',
+    logo: '/logos/airlines/Singapore Airlines.svg',
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -33,7 +33,7 @@ const deals = [
   },
   {
     airline: 'Etihad Airways',
-    logo: '/logos/etihad-airways.svg',
+    logo: '/logos/airlines/Etihad Airways (EY).svg',
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -46,7 +46,7 @@ const deals = [
   },
   {
     airline: 'Swiss',
-    logo: '/logos/swiss.png',
+    logo: '/logos/airlines/Swiss International Air Lines.svg',
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -59,7 +59,7 @@ const deals = [
   },
   {
     airline: 'Emirates',
-    logo: '/logos/emirates.svg',
+    logo: '/logos/airlines/Emirates (airline).svg',
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -72,7 +72,7 @@ const deals = [
   },
   {
     airline: 'Turkish Airlines',
-    logo: '/logos/turkish-airlines.png',
+    logo: '/logos/airlines/Turkish Airlines.svg',
     duration: '12h 0m',
     stops: 'Non stop',
     from: 'DXB',
@@ -147,8 +147,8 @@ const BestDealsSection = () => {
               >
                 <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Inter', sans-serif"}}>
                   {/* Top-Left: Airline */}
-                  <div className="flex items-center justify-center">
-                    <Image src={deal.logo} alt={`${deal.airline} logo`} width={120} height={30} className="h-auto max-h-[40px] object-contain" />
+                  <div className="flex items-center justify-center px-2">
+                    <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" />
                   </div>
 
                   {/* Top-Right: Duration */}
@@ -219,4 +219,4 @@ const BestDealsSection = () => {
   );
 };
 
-export default BestDealsSection; 
+export default BestDealsSection;

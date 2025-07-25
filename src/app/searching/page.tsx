@@ -2,145 +2,167 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Plane, Loader2 } from 'lucide-react';
-import Navbar from '@/components/navbar';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
 const SearchingContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [progress, setProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [displayPercentage, setDisplayPercentage] = useState(0);
+  const [checkedProviders, setCheckedProviders] = useState(0);
 
-  const searchSteps = [
-    "Searching for the best flights...",
-    "Comparing prices across airlines...",
-    "Finding exclusive deals...",
-    "Almost ready!"
-  ];
+  // Get airport codes from search params
+  const fromAirport = searchParams.get('from') || 'LAX';
+  const toAirport = searchParams.get('to') || 'SFO';
+
+  // Motion values for smooth animations
+  const pathProgress = useMotionValue(0);
+  const percentage = useTransform(pathProgress, (latest) => Math.round(latest * 100));
+  const providersCount = useTransform(pathProgress, (latest) => Math.round(latest * 15));
 
   useEffect(() => {
-    // Progress animation
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + 2.5; // 100% in 4 seconds (100/2.5 = 40 intervals * 100ms = 4000ms)
-      });
-    }, 100);
+    const unsubscribePercentage = percentage.on("change", (latest) => {
+      setDisplayPercentage(latest);
+    });
 
-    // Step animation
-    const stepInterval = setInterval(() => {
-      setCurrentStep(prev => {
-        if (prev >= searchSteps.length - 1) {
-          clearInterval(stepInterval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 1000); // Change step every second
+    const unsubscribeProviders = providersCount.on("change", (latest) => {
+      setCheckedProviders(latest);
+    });
 
-    // Redirect after 4 seconds
+    const pathAnimation = animate(pathProgress, 1, {
+      duration: 7,
+      ease: "easeInOut",
+    });
+
     const redirectTimer = setTimeout(() => {
       const queryString = searchParams.toString();
       router.replace(`/search?${queryString}`);
-    }, 4000);
+    }, 7500);
 
     return () => {
-      clearInterval(progressInterval);
-      clearInterval(stepInterval);
+      unsubscribePercentage();
+      unsubscribeProviders();
+      pathAnimation.stop();
       clearTimeout(redirectTimer);
     };
-  }, [router, searchParams, searchSteps.length]);
+  }, [pathProgress, percentage, router, searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
-      <Navbar isDarkBackground={false} />
-      
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
-        <div className="text-center max-w-md mx-auto px-6">
-          {/* Animated Plane Icon */}
-          <div className="relative mb-8">
-            <div className="w-24 h-24 mx-auto bg-[#0abab5] rounded-full flex items-center justify-center shadow-lg">
-              <Plane size={40} className="text-white animate-bounce" />
-            </div>
-            
-            {/* Floating dots animation */}
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#0abab5] rounded-full animate-ping opacity-75"></div>
-            <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-cyan-400 rounded-full animate-ping opacity-75" style={{animationDelay: '0.5s'}}></div>
-            <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-75" style={{animationDelay: '1s'}}></div>
-          </div>
-
-          {/* Search Status Text */}
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            {searchSteps[currentStep]}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
+      <div className="text-center">
+        {/* FLS Logo */}
+        <motion.div 
+          className="mb-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[#0abab5] to-[#0cd1cb] bg-clip-text text-transparent tracking-wider">
+            FLS
           </h1>
-          
-          <p className="text-gray-600 mb-8">
-            We're finding the perfect flights for your journey
-          </p>
+        </motion.div>
 
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-            <div 
-              className="bg-gradient-to-r from-[#0abab5] to-cyan-400 h-2 rounded-full transition-all duration-100 ease-out"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          
-          <div className="text-sm text-gray-500">
-            {Math.round(progress)}% complete
-          </div>
-
-          {/* Loading Spinner */}
-          <div className="mt-8 flex items-center justify-center space-x-2">
-            <Loader2 size={20} className="animate-spin text-[#0abab5]" />
-            <span className="text-sm text-gray-600">Processing your request...</span>
-          </div>
-
-          {/* Flight Route Preview */}
-          <div className="mt-8 p-4 bg-white rounded-lg shadow-sm border">
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-center">
-                <div className="font-semibold text-[#0abab5]">
-                  {searchParams.get('from') || 'DEP'}
-                </div>
-                <div className="text-xs text-gray-500">From</div>
-              </div>
-              
-              <div className="flex-1 mx-4">
-                <div className="h-px bg-gradient-to-r from-[#0abab5] to-cyan-400 relative">
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-[#0abab5] rounded-full animate-pulse"></div>
-                </div>
-              </div>
-              
-              <div className="text-center">
-                <div className="font-semibold text-[#0abab5]">
-                  {searchParams.get('to') || 'ARR'}
-                </div>
-                <div className="text-xs text-gray-500">To</div>
-              </div>
-            </div>
+        {/* Flight route animation */}
+        <motion.div 
+          className="relative w-96 h-48 mb-12 mx-auto"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <svg 
+            className="w-full h-full" 
+            viewBox="0 0 400 200" 
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <defs>
+              <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#0abab5" />
+                <stop offset="50%" stopColor="#0cd1cb" />
+                <stop offset="100%" stopColor="#0abab5" />
+              </linearGradient>
+            </defs>
             
-            <div className="mt-3 text-xs text-gray-500 text-center">
-              {searchParams.get('departureDate') && (
-                <span>Departure: {new Date(searchParams.get('departureDate') + 'T00:00:00').toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}</span>
-              )}
-              {searchParams.get('returnDate') && (
-                <span className="ml-2">• Return: {new Date(searchParams.get('returnDate') + 'T00:00:00').toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}</span>
-              )}
+            {/* Dotted background path */}
+            <path
+              d="M 50 150 C 150 50, 250 50, 350 150"
+              stroke="#e5e7eb"
+              strokeWidth="2"
+              strokeDasharray="5,5"
+              strokeLinecap="round"
+              fill="none"
+            />
+            
+            {/* Animated progress path */}
+            <motion.path
+              d="M 50 150 C 150 50, 250 50, 350 150"
+              stroke="url(#routeGradient)"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+              style={{ pathLength: pathProgress }}
+            />
+          </svg>
+          
+          {/* Airport codes */}
+          <motion.div 
+            className="absolute left-[12.5%] top-[75%] mt-4 transform -translate-x-1/2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="bg-gradient-to-r from-[#0abab5] to-[#0cd1cb] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+              {fromAirport}
             </div>
-          </div>
-        </div>
+          </motion.div>
+          
+          <motion.div 
+            className="absolute right-[12.5%] top-[75%] mt-4 transform translate-x-1/2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <div className="bg-gradient-to-r from-[#0abab5] to-[#0cd1cb] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+              {toAirport}
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Progress percentage */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <motion.div
+            className="text-4xl md:text-5xl font-bold"
+            key={displayPercentage}
+            initial={{ scale: 0.8, opacity: 0.8 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <span className="bg-gradient-to-r from-[#0abab5] to-[#0cd1cb] bg-clip-text text-transparent">
+              {displayPercentage}% complete
+            </span>
+          </motion.div>
+        </motion.div>
+
+        {/* Checked providers */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <motion.div
+            className="text-lg text-gray-600"
+            key={checkedProviders}
+            initial={{ scale: 0.9, opacity: 0.7 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          >
+            Checked {checkedProviders} of 15 providers
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
@@ -149,12 +171,10 @@ const SearchingContent = () => {
 const SearchingPage = () => {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
-        <Navbar isDarkBackground={false} />
-        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
-          <div className="text-center">
-            <Loader2 size={40} className="animate-spin text-[#0abab5] mx-auto mb-4" />
-            <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl font-bold bg-gradient-to-r from-[#0abab5] to-[#0cd1cb] bg-clip-text text-transparent tracking-wider">
+            FLS
           </div>
         </div>
       </div>

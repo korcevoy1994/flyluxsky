@@ -100,11 +100,11 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
                         {/* Segment Header */}
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center p-1">
                                     {segment.logo && segment.logo.trim() !== '' ? (
-                                        <Image src={segment.logo} alt={segment.airline} width={16} height={16} className="object-contain" />
+                                        <Image src={segment.logo} alt={segment.airline} width={28} height={28} className="object-contain w-full h-full" />
                                     ) : (
-                                        <Plane size={12} className="text-gray-400" />
+                                        <Plane size={20} className="text-gray-400" />
                                     )}
                                 </div>
                                 <span className="text-sm font-medium">{segment.airline}</span>
@@ -232,16 +232,16 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
             {/* Airline Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-2">
                         {flight.logo && flight.logo.trim() !== '' ? (
-                            <Image src={flight.logo} alt={flight.airline} width={24} height={24} className="object-contain" />
+                            <Image src={flight.logo} alt={flight.airline} width={48} height={48} className="object-contain w-full h-full" />
                         ) : (
-                            <Plane size={20} className="text-gray-400" />
+                            <Plane size={32} className="text-gray-400" />
                         )}
                     </div>
                     <div>
                         <p className="font-semibold text-gray-900">{flight.airline}</p>
-                        <p className="text-sm text-gray-500">{flight.flightNumber} • {flight.aircraft}</p>
+                        <p className="text-sm text-gray-500">{flight.flightNumber}</p>
                     </div>
                 </div>
 
@@ -346,7 +346,7 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                         </div>
                         <div>
                             <p className="font-medium text-gray-800">{flight.returnFlight.airline}</p>
-                            <p className="text-xs text-gray-500">{flight.returnFlight.flightNumber} • {flight.returnFlight.aircraft}</p>
+                            <p className="text-xs text-gray-500">{flight.returnFlight.flightNumber}</p>
                         </div>
                     </div>
 

@@ -1,0 +1,61 @@
+'use client';
+
+import { motion, useMotionValue, useTransform, useAnimationFrame } from 'framer-motion';
+import { useRef } from 'react';
+
+export default function FlightAnimation() {
+  const pathRef = useRef<SVGPathElement>(null);
+  const progress = useMotionValue(0);
+
+  useAnimationFrame((t) => {
+    const p = (t % 4000) / 4000; // цикл 4 секунды
+    progress.set(p);
+  });
+
+  const x = useTransform(progress, (p) => {
+    const path = pathRef.current;
+    if (!path) return 0;
+    const length = path.getTotalLength();
+    const point = path.getPointAtLength(p * length);
+    return point.x;
+  });
+
+  const y = useTransform(progress, (p) => {
+    const path = pathRef.current;
+    if (!path) return 0;
+    const length = path.getTotalLength();
+    const point = path.getPointAtLength(p * length);
+    return point.y;
+  });
+
+  return (
+    <div className="relative w-full h-[200px] flex justify-center items-center">
+      <svg width="600" height="200" className="absolute">
+        <path
+          ref={pathRef}
+          d="M100,150 Q300,0 500,150"
+          fill="transparent"
+          stroke="#0bc"
+          strokeWidth="4"
+        />
+      </svg>
+
+      <motion.div
+        className="absolute text-xl"
+        style={{ x, y }}
+      >
+        ✈️
+      </motion.div>
+
+      {/* Станции LAX / SFO */}
+      <div className="absolute left-[90px] bottom-[20px] text-center">
+        <div className="bg-cyan-500 text-white px-4 py-2 rounded-full font-bold">LAX</div>
+        <div className="text-xs mt-1 text-gray-600">FROM</div>
+      </div>
+      <div className="absolute right-[90px] bottom-[20px] text-center">
+        <div className="bg-cyan-500 text-white px-4 py-2 rounded-full font-bold">SFO</div>
+        <div className="text-xs mt-1 text-gray-600">TO</div>
+      </div>
+    </div>
+  );
+}
