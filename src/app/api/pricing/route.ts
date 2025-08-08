@@ -19,6 +19,20 @@ type BlobModule = {
 
 const dynamicImport = new Function('m', 'return import(m)') as (m: string) => Promise<unknown>
 
+function loadFromEnv(): PricingConfiguration | null {
+  try {
+    const raw = process.env.PRICING_CONFIG_JSON
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as PricingConfiguration
+    if (!parsed || !Array.isArray(parsed.regionPricing) || !Array.isArray(parsed.serviceClasses) || !Array.isArray(parsed.tripTypes)) {
+      return null
+    }
+    return parsed
+  } catch {
+    return null
+  }
+}
+
 async function loadFromBlob(): Promise<PricingConfiguration | null> {
   try {
     const blobClient = (await dynamicImport('@vercel/blob').catch(() => null)) as BlobModule | null
@@ -57,6 +71,11 @@ export async function GET() {
   if (blobConfig) {
     cachedConfig = blobConfig
     return NextResponse.json(blobConfig)
+  }
+  const envConfig = loadFromEnv()
+  if (envConfig) {
+    cachedConfig = envConfig
+    return NextResponse.json(envConfig)
   }
   if (cachedConfig) return NextResponse.json(cachedConfig)
   return NextResponse.json(defaultPricingConfig)

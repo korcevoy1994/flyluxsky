@@ -51,7 +51,8 @@ export default function AdminPricingPage() {
           if (!res.ok) throw new Error('Failed to publish pricing config')
           return res.json()
         })
-        .then(() => {
+        .then(async () => {
+          // Also update PRICING_CONFIG_JSON on server if supported through an admin endpoint (optional future)
           alert('Pricing configuration saved and published!')
         })
         .catch((err) => {
