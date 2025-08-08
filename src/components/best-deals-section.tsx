@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/legacy/image";
 import { Calendar, Plane } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { generateFlightsClient } from '@/lib/flightGenerator';
+import { generateFlightsClient, type GeneratedFlight, type MultiCityFlight } from '@/lib/flightGenerator';
 
 type DealCardData = {
   airline: string;
@@ -166,10 +166,13 @@ const BestDealsSection = () => {
         try {
           const flights = await generateFlightsClient(combo.from.code, combo.to.code, 'Business class', 'One-way', departureDate);
           if (flights && flights.length > 0) {
-            const sortedByPrice = [...flights].sort((a: any, b: any) => ((a.totalPrice || a.price) - (b.totalPrice || b.price)) as number);
-            const popularSorted = sortedByPrice.filter((f: any) => popularAirlines.includes(f.airline));
-            const f = (popularSorted[0] || sortedByPrice[0]) as any;
-            const price = f.totalPrice || f.price;
+            const generatedFlights = flights.filter((f): f is GeneratedFlight => 'flightNumber' in f);
+            if (generatedFlights.length === 0) continue;
+            const sortedByPrice = [...generatedFlights]
+              .sort((a, b) => ((a.totalPrice ?? a.price) - (b.totalPrice ?? b.price)));
+            const popularSorted = sortedByPrice.filter((f) => popularAirlines.includes(f.airline));
+            const f = (popularSorted[0] ?? sortedByPrice[0]);
+            const price = (f.totalPrice ?? f.price);
             out.push({
               airline: f.airline || 'Best fare',
               logo: f.logo || airlineLogoMap[f.airline] || '/logos/airlines/Emirates (airline).svg',
