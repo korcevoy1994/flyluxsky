@@ -41,7 +41,23 @@ export default function AdminPricingPage() {
   const handleSave = () => {
     try {
       savePricingConfig(config)
-      alert('Pricing configuration saved successfully!')
+      // Publish to API so new/incognito sessions can load the latest config
+      fetch('/api/pricing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to publish pricing config')
+          return res.json()
+        })
+        .then(() => {
+          alert('Pricing configuration saved and published!')
+        })
+        .catch((err) => {
+          console.error(err)
+          alert('Saved locally, but failed to publish to server API')
+        })
     } catch (error) {
       console.error('Failed to save configuration:', error)
       alert('Failed to save pricing configuration')

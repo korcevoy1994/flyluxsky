@@ -1,7 +1,7 @@
 import airports from './airports.json';
 import type { Airport } from './utils';
 import { pricingConfig } from './pricingConfig';
-import { loadPricingConfig, type PricingConfiguration } from './pricingAdmin';
+import { loadPricingConfig, type PricingConfiguration, ensurePricingConfigLoaded } from './pricingAdmin';
 
 
 class SeededRandom {
@@ -1292,6 +1292,11 @@ export { generateMultiCityFlightsFromSegments };
 
 export async function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One-way', departureDate?: string, returnDate?: string): Promise<(GeneratedFlight | MultiCityFlight)[]> {
   console.log('🛫 generateFlightsClient called with:', { fromCode, toCode, flightClass, tripType, departureDate, returnDate });
+
+  // Ensure pricing config is available even on first visit/incognito before any calculation happens
+  try {
+    await ensurePricingConfigLoaded();
+  } catch {}
 
   if (tripType === 'Multi-city') {
     return await generateMultiCityFlights(fromCode, toCode, flightClass);

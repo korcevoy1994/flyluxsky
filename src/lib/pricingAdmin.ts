@@ -194,6 +194,33 @@ export const loadPricingConfig = (): PricingConfiguration => {
   }
 }
 
+// Ensure pricing config is available in localStorage. If missing, try fetching from server.
+export const ensurePricingConfigLoaded = async (): Promise<PricingConfiguration> => {
+  try {
+    const stored = localStorage.getItem(PRICING_CONFIG_KEY)
+    if (stored) {
+      return JSON.parse(stored) as PricingConfiguration
+    }
+  } catch {
+    // ignore JSON issues and fall through to fetch
+  }
+
+  try {
+    const res = await fetch('/api/pricing', { cache: 'no-store' })
+    if (res.ok) {
+      const cfg = await res.json()
+      // best-effort persist for subsequent sync loads
+      try {
+        localStorage.setItem(PRICING_CONFIG_KEY, JSON.stringify(cfg))
+      } catch {}
+      return cfg as PricingConfiguration
+    }
+  } catch (err) {
+    console.warn('Failed to fetch pricing config from API, using defaults:', err)
+  }
+  return defaultPricingConfig
+}
+
 // Export configuration as JSON
 export const exportPricingConfig = (config: PricingConfiguration): string => {
   return JSON.stringify(config, null, 2)
