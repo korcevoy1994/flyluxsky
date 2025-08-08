@@ -7,13 +7,23 @@ const BLOB_PATH = `${BLOB_PREFIX}config.json`
 
 let cachedConfig: PricingConfiguration | null = null
 
-const dynamicImport = new Function('m', 'return import(m)') as (m: string) => Promise<any>
+type BlobListItem = { pathname: string; url: string; uploadedAt: string }
+type BlobModule = {
+  list: (args: { prefix: string }) => Promise<{ blobs: BlobListItem[] }>
+  put: (
+    path: string,
+    data: string,
+    opts: { access: 'public' | 'private'; contentType: string; addRandomSuffix: boolean }
+  ) => Promise<unknown>
+}
+
+const dynamicImport = new Function('m', 'return import(m)') as (m: string) => Promise<unknown>
 
 async function loadFromBlob(): Promise<PricingConfiguration | null> {
   try {
-    const blobClient = await dynamicImport('@vercel/blob').catch(() => null as any)
+    const blobClient = (await dynamicImport('@vercel/blob').catch(() => null)) as BlobModule | null
     if (!blobClient) return null
-    const { list } = blobClient as unknown as { list: (args: { prefix: string }) => Promise<{ blobs: Array<{ pathname: string; url: string; uploadedAt: string }> }> }
+    const { list } = blobClient
     const { blobs } = await list({ prefix: BLOB_PREFIX })
     const target = blobs.find(b => b.pathname === BLOB_PATH) || blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0]
     if (!target) return null
@@ -28,9 +38,9 @@ async function loadFromBlob(): Promise<PricingConfiguration | null> {
 
 async function saveToBlob(config: PricingConfiguration): Promise<PricingConfiguration | null> {
   try {
-    const blobClient = await dynamicImport('@vercel/blob').catch(() => null as any)
+    const blobClient = (await dynamicImport('@vercel/blob').catch(() => null)) as BlobModule | null
     if (!blobClient) return null
-    const { put } = blobClient as unknown as { put: (path: string, data: string, opts: { access: 'public' | 'private'; contentType: string; addRandomSuffix: boolean }) => Promise<unknown> }
+    const { put } = blobClient
     await put(BLOB_PATH, JSON.stringify(config), {
       access: 'public',
       contentType: 'application/json',
