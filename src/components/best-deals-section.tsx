@@ -3,92 +3,101 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/legacy/image";
 import { Calendar, Plane } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { generateFlightsClient } from '@/lib/flightGenerator';
 
-const deals = [
-  {
-    airline: 'Lufthansa',
-    logo: '/logos/airlines/Lufthansa.svg', 
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2450,
-  },
-  {
-    airline: 'Singapore Airlines',
-    logo: '/logos/airlines/Singapore Airlines.svg',
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2650,
-  },
-  {
-    airline: 'Etihad Airways',
-    logo: '/logos/airlines/Etihad Airways (EY).svg',
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2300,
-  },
-  {
-    airline: 'Swiss',
-    logo: '/logos/airlines/Swiss International Air Lines.svg',
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2550,
-  },
-  {
-    airline: 'Emirates',
-    logo: '/logos/airlines/Emirates (airline).svg',
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2850,
-  },
-  {
-    airline: 'Turkish Airlines',
-    logo: '/logos/airlines/Turkish Airlines.svg',
-    duration: '12h 0m',
-    stops: 'Non stop',
-    from: 'DXB',
-    fromCity: 'Dubai',
-    fromTime: '10:30 pm',
-    to: 'JFK',
-    toCity: 'New York',
-    toTime: '10:30 pm',
-    price: 2400,
-  },
+type DealCardData = {
+  airline: string;
+  logo: string;
+  duration: string;
+  stops: string;
+  from: string;
+  fromCity: string;
+  to: string;
+  toCity: string;
+  price: number;
+};
+
+const usOrigins = [
+  { code: 'JFK', city: 'New York' },
+  { code: 'LGA', city: 'New York' },
+  { code: 'EWR', city: 'Newark' },
+  { code: 'LAX', city: 'Los Angeles' },
+  { code: 'SFO', city: 'San Francisco' },
+  { code: 'SJC', city: 'San Jose' },
+  { code: 'SAN', city: 'San Diego' },
+  { code: 'SNA', city: 'Orange County' },
+  { code: 'ORD', city: 'Chicago' },
+  { code: 'MDW', city: 'Chicago' },
+  { code: 'DFW', city: 'Dallas' },
+  { code: 'IAH', city: 'Houston' },
+  { code: 'AUS', city: 'Austin' },
+  { code: 'ATL', city: 'Atlanta' },
+  { code: 'MIA', city: 'Miami' },
+  { code: 'FLL', city: 'Fort Lauderdale' },
+  { code: 'MCO', city: 'Orlando' },
+  { code: 'TPA', city: 'Tampa' },
+  { code: 'IAD', city: 'Washington, D.C.' },
+  { code: 'DCA', city: 'Washington, D.C.' },
+  { code: 'BOS', city: 'Boston' },
+  { code: 'SEA', city: 'Seattle' },
+  { code: 'PDX', city: 'Portland' },
+  { code: 'DEN', city: 'Denver' },
+  { code: 'PHX', city: 'Phoenix' },
+  { code: 'LAS', city: 'Las Vegas' },
+  { code: 'CLT', city: 'Charlotte' },
+  { code: 'DTW', city: 'Detroit' },
+  { code: 'MSP', city: 'Minneapolis' },
+  { code: 'BWI', city: 'Baltimore' },
+  { code: 'SLC', city: 'Salt Lake City' },
 ];
+
+const popularDestinations = [
+  { code: 'LHR', city: 'London' },
+  { code: 'CDG', city: 'Paris' },
+  { code: 'FRA', city: 'Frankfurt' },
+  { code: 'DXB', city: 'Dubai' },
+  { code: 'HND', city: 'Tokyo' },
+  { code: 'SIN', city: 'Singapore' },
+  { code: 'SYD', city: 'Sydney' },
+  { code: 'MAD', city: 'Madrid' },
+  { code: 'FCO', city: 'Rome' },
+  { code: 'AMS', city: 'Amsterdam' },
+];
+
+const popularAirlines = [
+  'Emirates', 'Qatar Airways', 'Singapore Airlines', 'Lufthansa', 'British Airways',
+  'Air France', 'Turkish Airlines', 'KLM', 'Swiss International Air Lines', 'Etihad Airways',
+  'Cathay Pacific', 'ANA All Nippon Airways', 'Japan Airlines', 'United Airlines', 'Delta Air Lines', 'American Airlines'
+];
+
+const airlineLogoMap: Record<string, string> = {
+  'Emirates': '/logos/airlines/Emirates (airline).svg',
+  'Qatar Airways': '/logos/airlines/Qatar Airways.svg',
+  'Singapore Airlines': '/logos/airlines/Singapore Airlines.svg',
+  'Lufthansa': '/logos/airlines/Lufthansa.svg',
+  'British Airways': '/logos/airlines/British Airways.svg',
+  'Air France': '/logos/airlines/Air France.svg',
+  'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
+  'KLM': '/logos/airlines/KLM.svg',
+  'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
+  'Etihad Airways': '/logos/airlines/Etihad Airways (EY).svg',
+  'Cathay Pacific': '/logos/airlines/Cathay Pacific.svg',
+  'ANA All Nippon Airways': '/logos/airlines/All Nippon Airways.svg',
+  'Japan Airlines': '/logos/airlines/Japan Airlines.svg',
+  'United Airlines': '/logos/airlines/United Airlines.svg',
+  'Delta Air Lines': '/logos/airlines/Delta Air Lines.svg',
+  'American Airlines': '/logos/airlines/American Airlines.svg',
+};
 
 const BestDealsSection = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [currentDate, setCurrentDate] = useState('');
+  const [deals, setDeals] = useState<DealCardData[]>([]);
+  const [showAll, setShowAll] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const today = new Date();
@@ -113,13 +122,109 @@ const BestDealsSection = () => {
     }
   }, []);
 
+  // Track viewport to decide how many cards to render (mobile shows all)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    const buildDeals = async () => {
+      const today = new Date();
+      const dep = new Date(today);
+      dep.setDate(dep.getDate() + 21);
+      const departureDate = `${dep.getFullYear()}-${String(dep.getMonth() + 1).padStart(2, '0')}-${String(dep.getDate()).padStart(2, '0')}`;
+
+      const pickRandom = <T,>(arr: T[], n: number) => {
+        const copy = [...arr];
+        const res: T[] = [];
+        while (res.length < n && copy.length) {
+          const idx = Math.floor(Math.random() * copy.length);
+          res.push(copy.splice(idx, 1)[0]);
+        }
+        return res;
+      };
+
+      const selectedOrigins = pickRandom(usOrigins, 10);
+      const selectedDestinations = pickRandom(popularDestinations, 8);
+      // Build combos in a round-robin fashion to interleave origins and maximize origin diversity in the first items
+      const combos: { from: { code: string; city: string }; to: { code: string; city: string } }[] = [];
+      const rounds = selectedDestinations.length;
+      for (let r = 0; r < rounds; r++) {
+        for (let oi = 0; oi < selectedOrigins.length; oi++) {
+          const o = selectedOrigins[oi];
+          const d = selectedDestinations[(oi + r) % selectedDestinations.length];
+          combos.push({ from: o, to: d });
+        }
+      }
+
+      const out: DealCardData[] = [];
+      for (const combo of combos.slice(0, 12)) {
+        try {
+          const flights = await generateFlightsClient(combo.from.code, combo.to.code, 'Business class', 'One-way', departureDate);
+          if (flights && flights.length > 0) {
+            const sortedByPrice = [...flights].sort((a: any, b: any) => ((a.totalPrice || a.price) - (b.totalPrice || b.price)) as number);
+            const popularSorted = sortedByPrice.filter((f: any) => popularAirlines.includes(f.airline));
+            const f = (popularSorted[0] || sortedByPrice[0]) as any;
+            const price = f.totalPrice || f.price;
+            out.push({
+              airline: f.airline || 'Best fare',
+              logo: f.logo || airlineLogoMap[f.airline] || '/logos/airlines/Emirates (airline).svg',
+              duration: f.duration || '—',
+              stops: f.stops === 0 ? 'Non stop' : `${f.stops} stop${f.stops > 1 ? 's' : ''}`,
+              from: combo.from.code,
+              fromCity: combo.from.city,
+              to: combo.to.code,
+              toCity: combo.to.city,
+              price: price,
+            });
+          }
+        } catch {
+          // ignore failures silently
+        }
+      }
+      // Ensure all first N cards have unique origins; if not enough unique, fill with remaining
+      const uniqueFirst: DealCardData[] = [];
+      const seenOrigins = new Set<string>();
+      for (const d of out) {
+        if (!seenOrigins.has(d.from)) {
+          uniqueFirst.push(d);
+          seenOrigins.add(d.from);
+        }
+        if (uniqueFirst.length >= Math.min(6, out.length)) break;
+      }
+      const remaining = out.filter(d => !uniqueFirst.includes(d));
+      setDeals([...uniqueFirst, ...remaining]);
+    };
+    buildDeals();
+  }, []);
+
+  const handleCardClick = (deal: DealCardData) => {
+    const today = new Date();
+    const dep = new Date(today);
+    dep.setDate(dep.getDate() + 21);
+    const departureDate = `${dep.getFullYear()}-${String(dep.getMonth() + 1).padStart(2, '0')}-${String(dep.getDate()).padStart(2, '0')}`;
+    const q = new URLSearchParams({
+      from: deal.from,
+      to: deal.to,
+      tripType: 'One-way',
+      passengers: '1',
+      class: 'Business class',
+      departureDate,
+    });
+    router.push(`/searching?${q.toString()}`);
+  };
+
   return (
     <section className="w-full overflow-x-hidden bg-[#F0FBFA] md:py-12">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 md:mb-12 px-4">
           <div className="flex justify-center items-center gap-4 flex-wrap">
             <h2 className="text-4xl md:text-5xl font-bold text-[#0D2B29] font-poppins capitalize">
-              Best Deal From Top Airlines
+              Best deal of the day
             </h2>
             <div className="bg-[#0D2B29] text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm md:text-base">
               <Calendar size={20} className="text-[#F0FBFA]" />
@@ -133,13 +238,14 @@ const BestDealsSection = () => {
           ref={scrollContainerRef}
           className="flex overflow-x-auto gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:pb-0 pl-4 md:pl-0 hide-scrollbar"
         >
-          {deals.map((deal, index) => (
+          {((isMobile || showAll) ? deals : deals.slice(0, 6)).map((deal, index) => (
             <div 
               key={index} 
               className="relative flex-shrink-0 w-[309px] aspect-[309/190] h-auto md:w-full cursor-pointer group"
               style={{ 
                 filter: 'drop-shadow(0px 4px 4px rgba(28, 94, 89, 0.05))'
               }}
+              onClick={() => handleCardClick(deal)}
             >
               <div 
                 className="w-full h-full bg-contain bg-no-repeat bg-center"
@@ -166,7 +272,7 @@ const BestDealsSection = () => {
                     <div className="text-left">
                       <p className="text-2xl md:text-3xl font-bold text-[#0D2B29]">{deal.from}</p>
                       <p className="text-sm text-[#1C5E59] mt-1">{deal.fromCity}</p>
-                      <p className="text-sm text-[#0D2B29] mt-1">{deal.fromTime}</p>
+                      <p className="text-sm text-[#0D2B29] mt-1">&nbsp;</p>
                     </div>
 
                     {/* Flight Path Graphic */}
@@ -182,7 +288,7 @@ const BestDealsSection = () => {
                     <div className="text-right">
                       <p className="text-2xl md:text-3xl font-bold text-[#0D2B29]">{deal.to}</p>
                       <p className="text-sm text-[#1C5E59] mt-1">{deal.toCity}</p>
-                      <p className="text-sm text-[#0D2B29] mt-1">{deal.toTime}</p>
+                      <p className="text-sm text-[#0D2B29] mt-1">&nbsp;</p>
                     </div>
                   </div>
                 </div>
@@ -193,9 +299,6 @@ const BestDealsSection = () => {
               </div>
             </div>
           ))}
-          <div className="relative flex-shrink-0 w-[309px] h-[190px] bg-[#0ABAB5] rounded-[24px] p-4 flex items-center justify-center text-center shadow-[0px_4px_4px_0px_rgba(28,94,89,0.05)] md:hidden">
-            <p className="text-white uppercase font-medium text-sm">more deals from top airlines</p>
-          </div>
         </div>
 
         {/* Progress Bar for mobile */}
@@ -208,11 +311,16 @@ const BestDealsSection = () => {
           </div>
         </div>
 
-        <div className="text-center mt-12 hidden md:block">
-            <button className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-inter">
-                View All Airlines
+        {(!showAll && deals.length > 6) && (
+          <div className="text-center mt-12 hidden md:block">
+            <button 
+              className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-inter"
+              onClick={() => setShowAll(true)}
+            >
+              View All Airlines
             </button>
-        </div>
+          </div>
+        )}
         
       </div>
     </section>

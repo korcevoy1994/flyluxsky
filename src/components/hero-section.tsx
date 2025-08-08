@@ -64,7 +64,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({coords, initialFromAirport}) =
         <AnimatePresence>
           {isSticky && (
           <motion.div
-              className="fixed top-0 left-0 right-0 z-40 bg-white shadow-lg"
+              className="fixed top-0 left-0 right-0 z-40 shadow-lg"
+              style={{ backgroundColor: '#0ABAB5' }}
               initial={{ y: -120, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -120, opacity: 0 }}

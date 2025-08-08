@@ -7,7 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRightIcon } from "./ui/arrow-right-icon"
 
-const NAVBAR_PHONE = "+1 (888)  830 7444"
+const NAVBAR_PHONE = "+1 888 830 7444"
 
 interface NavbarProps {
   isDarkBackground?: boolean;
@@ -39,8 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
     <>
       <header className="w-full px-4 py-2 flex items-center justify-between rounded-3xl max-w-[1280px] mx-auto mt-4 relative z-50">
         {/* Logo */}
-        <Link href="/" className="flex items-center select-none cursor-pointer" tabIndex={0} aria-label="FLS logo">
-          <span className={`font-bold text-[24px] leading-[1.5em] font-poppins uppercase tracking-tight ${isMenuOpen ? "text-[#0ABAB5]" : isDarkBackground ? "text-white" : "text-[#0ABAB5]"}`}>FLS</span>
+        <Link href="/" className="flex items-center select-none cursor-pointer" tabIndex={0} aria-label="fls logo">
+          <span className={`font-medium text-[24px] leading-[1.5em] font-poppins tracking-tight ${isMenuOpen ? "text-[#0ABAB5]" : isDarkBackground ? "text-white" : "text-[#0ABAB5]"}`}>fls</span>
         </Link>
         {/* Right side */}
         <div className="flex items-center gap-4">

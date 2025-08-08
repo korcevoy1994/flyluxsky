@@ -5,9 +5,10 @@ import { User, Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface ContactFormProps {
   onSubmit?: (data: { name: string; email: string; phone: string }) => void
+  variant?: 'brand' | 'neutral'
 }
 
-const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
+const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, variant = 'brand' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -53,37 +54,41 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
     }
   }
 
+  const isNeutral = variant === 'neutral'
+
   return (
     <div className="relative">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0ABAB5]/5 via-white to-[#E8F4F8]/30 rounded-3xl"></div>
+      {/* Background gradient (brand only) */}
+      {!isNeutral && (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#ec5e39]/10 via-[#ec5e39]/5 to-[#ec5e39]/15 rounded-3xl"></div>
+      )}
       
-      <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md mx-auto">
+      <div className={`${isNeutral ? 'relative bg-white rounded-3xl p-5 max-w-md mx-auto' : 'relative bg-[#ec5e39] backdrop-blur-sm rounded-3xl shadow-2xl border border-[#ec5e39]/30 p-5 max-w-md mx-auto'}`}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-[#0ABAB5] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Send size={24} className="text-white" />
+        <div className="text-center mb-5">
+          <div className={`${isNeutral ? 'w-12 h-12 bg-[#E8F4F8] rounded-2xl flex items-center justify-center mx-auto mb-3' : 'w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border border-white/30'}`}>
+            <Send size={20} className={`${isNeutral ? 'text-[#0ABAB5]' : 'text-white'}`} />
           </div>
-          <h2 className="font-poppins font-bold text-2xl text-[#0D2B29] mb-2">
+          <h2 className={`font-poppins font-bold text-xl ${isNeutral ? 'text-[#0D2B29]' : 'text-white'} mb-1`}>
             Get a free quote
           </h2>
-          <p className="font-poppins text-gray-600 text-sm">
+          <p className={`font-poppins text-xs ${isNeutral ? 'text-gray-600' : 'text-white/80'}`}>
             Please fill in your details below
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Field */}
           <div className="relative group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 focusedField === 'name' 
-                  ? 'bg-[#0ABAB5] shadow-lg scale-110' 
-                  : 'bg-[#E8F4F8]'
+                  ? (isNeutral ? 'bg-white scale-110' : 'bg-white shadow-lg scale-110')
+                  : (isNeutral ? 'bg-[#E8F4F8]' : 'bg-white/20 backdrop-blur-sm border border-white/30')
               }`}>
-                <User size={18} className={focusedField === 'name' ? 'text-white' : 'text-[#0ABAB5]'} />
+                <User size={16} className={focusedField === 'name' ? (isNeutral ? 'text-[#0ABAB5]' : 'text-[#ec5e39]') : (isNeutral ? 'text-[#0ABAB5]' : 'text-white')} />
               </div>
-              <label className="font-poppins text-sm font-bold text-[#0D2B29] uppercase tracking-wide">
+              <label className={`font-poppins text-xs font-bold uppercase tracking-wide ${isNeutral ? 'text-gray-700' : 'text-white'}`}>
                 Full Name
               </label>
             </div>
@@ -94,22 +99,22 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
               onFocus={() => setFocusedField('name')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your full name"
-              className="w-full bg-gray-50 rounded-xl p-4 font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-2 border-transparent outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300"
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               required
             />
           </div>
 
           {/* Email Field */}
           <div className="relative group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 focusedField === 'email' 
-                  ? 'bg-[#0ABAB5] shadow-lg scale-110' 
-                  : 'bg-[#E8F4F8]'
+                  ? (isNeutral ? 'bg-white scale-110' : 'bg-white shadow-lg scale-110')
+                  : (isNeutral ? 'bg-[#E8F4F8]' : 'bg-white/20 backdrop-blur-sm border border-white/30')
               }`}>
-                <Mail size={18} className={focusedField === 'email' ? 'text-white' : 'text-[#0ABAB5]'} />
+                <Mail size={16} className={focusedField === 'email' ? (isNeutral ? 'text-[#0ABAB5]' : 'text-[#ec5e39]') : (isNeutral ? 'text-[#0ABAB5]' : 'text-white')} />
               </div>
-              <label className="font-poppins text-sm font-bold text-[#0D2B29] uppercase tracking-wide">
+              <label className={`font-poppins text-xs font-bold uppercase tracking-wide ${isNeutral ? 'text-gray-700' : 'text-white'}`}>
                 Email Address
               </label>
             </div>
@@ -120,22 +125,22 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your email address"
-              className="w-full bg-gradient-to-r from-gray-50 to-[#F0FBFA]/50 rounded-xl p-4 font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-2 border-transparent outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300"
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               required
             />
           </div>
 
           {/* Phone Field */}
           <div className="relative group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 focusedField === 'phone' 
-                  ? 'bg-[#0ABAB5] shadow-lg scale-110' 
-                  : 'bg-[#E8F4F8]'
+                  ? (isNeutral ? 'bg-white scale-110' : 'bg-white shadow-lg scale-110')
+                  : (isNeutral ? 'bg-[#E8F4F8]' : 'bg-white/20 backdrop-blur-sm border border-white/30')
               }`}>
-                <Phone size={18} className={focusedField === 'phone' ? 'text-white' : 'text-[#0ABAB5]'} />
+                <Phone size={16} className={focusedField === 'phone' ? (isNeutral ? 'text-[#0ABAB5]' : 'text-[#ec5e39]') : (isNeutral ? 'text-[#0ABAB5]' : 'text-white')} />
               </div>
-              <label className="font-poppins text-sm font-bold text-[#0D2B29] uppercase tracking-wide">
+              <label className={`font-poppins text-xs font-bold uppercase tracking-wide ${isNeutral ? 'text-gray-700' : 'text-white'}`}>
                 Phone Number
               </label>
             </div>
@@ -146,7 +151,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
               onFocus={() => setFocusedField('phone')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your phone number"
-              className="w-full bg-gradient-to-r from-gray-50 to-[#F0FBFA]/50 rounded-xl p-4 font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-2 border-transparent outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300"
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               required
             />
           </div>
@@ -155,21 +160,21 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-4 px-6 rounded-xl font-poppins font-bold text-white transition-all duration-300 transform ${
+            className={`w-full py-3 px-5 rounded-xl font-poppins font-bold transition-all duration-300 transform ${
               isSubmitting
-                ? 'bg-gray-400 cursor-not-allowed scale-95'
-                : 'bg-[#0ABAB5] hover:bg-[#089691] hover:shadow-2xl hover:scale-105 active:scale-95'
-            } shadow-lg`}
+                ? 'bg-gray-400 text-white cursor-not-allowed scale-95'
+                : (isNeutral ? 'bg-[#0ABAB5] text-white hover:bg-[#099e99] hover:scale-105 active:scale-95' : 'bg-white text-[#ec5e39] hover:bg-white/90 hover:scale-105 active:scale-95')
+            }`}
           >
             <div className="flex items-center justify-center gap-2">
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Submitting...</span>
                 </>
               ) : (
                 <>
-                  <Send size={18} />
+                  <Send size={16} />
                   <span>Get a free quote</span>
                 </>
               )}

@@ -177,10 +177,10 @@ const BottomSheet: React.FC<{ open: boolean, onClose: () => void, children: Reac
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-t-2xl shadow-lg w-full h-1/2 p-4 animate-slide-up flex flex-col">
+      <div className="relative bg-white rounded-t-2xl shadow-lg w-full h-[85vh] p-4 animate-slide-up flex flex-col">
         <button className="absolute right-4 top-4" onClick={onClose}><X size={24} /></button>
         <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="flex-1">{children}</div>
       </div>
     </div>
   )
@@ -444,7 +444,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
 
   const handleRemoveSegment = (idx: number) => {
     if (multiSegments.length === 1) {
-      setTripType('One way')
+      setTripType('One-way')
       setMultiSegments([])
       setMultiPopovers([])
       setMultiFromSuggestions([])
@@ -502,7 +502,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     })
   }
 
-  const [openSheet, setOpenSheet] = useState<null | 'trip' | 'class' | 'passengers'>(null)
+  const [openSheet, setOpenSheet] = useState<null | 'passengers'>(null)
 
   // Для анимации departure date:
   // const [departureFlash, setDepartureFlash] = useState(false)
@@ -546,34 +546,50 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
 
   return (
     <div className="w-full max-w-md mx-auto p-0 overflow-x-hidden">
-      {/* Top Controls */}
-      {/* Верхний ряд кнопок */}
-      <div className="flex justify-center mb-4 overflow-x-hidden md:hidden gap-3">
-        {/* Trip Type */}
-        <button
-          onClick={() => setOpenSheet('trip')}
-          className="flex-1 min-w-[120px] rounded-full px-6 py-3 bg-white border border-gray-200 font-poppins font-semibold text-[14px] text-[#0D2B29] flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer"
-          tabIndex={0}
-        >
-          <span>{tripType}</span>
-          <ChevronDown size={16} className="ml-2 text-[#ec5e39]" />
-        </button>
-        {/* Class */}
-        <button
-          onClick={() => setOpenSheet('class')}
-          className="flex-1 min-w-[120px] rounded-full px-6 py-3 bg-white border border-gray-200 font-poppins font-semibold text-[14px] text-[#0D2B29] flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer"
-          tabIndex={0}
-        >
-          <span>{selectedClass}</span>
-          <ChevronDown size={16} className="ml-2 text-[#ec5e39]" />
-        </button>
+      {/* Trip Type Selection */}
+      <div className="flex justify-center mb-4 overflow-x-hidden md:hidden">
+        <div className="bg-white rounded-full p-1 shadow-lg relative">
+          <div className="flex relative">
+            {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
+              const isSelected = type === tripType;
+              
+              return (
+                <button
+                   key={type}
+                   onClick={() => setTripType(type)}
+                   className={`relative px-4 py-2 font-poppins font-medium text-xs transition-colors duration-200 cursor-pointer flex-1 whitespace-nowrap ${
+                     isSelected 
+                       ? 'text-white' 
+                       : 'text-[#0D2B29] hover:text-[#0ABAB5]'
+                   }`}
+                   tabIndex={0}
+                 >
+                   {isSelected && (
+                     <motion.div
+                       layoutId="activeTabMobile"
+                       className="absolute inset-0 bg-[#0ABAB5] rounded-full"
+                       initial={{ opacity: 1 }}
+                       animate={{ opacity: 1 }}
+                       transition={{
+                         type: "spring",
+                         stiffness: 300,
+                         damping: 30
+                       }}
+                     />
+                   )}
+                   <span className="relative z-10">{type}</span>
+                 </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Main Form */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden autocomplete-container">
         {/* From */}
         <div className="px-4 py-4 border-b border-gray-100" onClick={() => { setCityTab('from'); setCitySheetOpen(true) }}>
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
               <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="text-[#0ABAB5]" />
             </div>
@@ -587,6 +603,15 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
               <div className="bg-[#0ABAB5] text-white font-bold text-xs rounded-lg px-2 py-1">
                 {fromSelection.code}
               </div>
+            )}
+            {(fromInput || fromSelection) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setFromInput(''); setFromSelection(null); setFromSuggestions([]); }}
+                className="ml-1 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                aria-label="Clear from"
+              >
+                <X size={16} />
+              </button>
             )}
           </div>
         </div>
@@ -619,6 +644,15 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 {toSelection.code}
               </div>
             )}
+            {(toInput || toSelection) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setToInput(''); setToSelection(null); setToSuggestions([]); }}
+                className="ml-1 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                aria-label="Clear to"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -648,7 +682,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
           </div>
 
           {/* Return - только для Round Trip */}
-          {tripType === 'Round Trip' && (
+            {tripType === 'Round Trip' && (
             <div className="w-1/2 calendar-container">
               <div 
                 className="px-4 py-4 cursor-pointer"
@@ -679,14 +713,14 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
               <Users size={16} className="text-[#0ABAB5]" />
             </div>
-            <div className="flex-1">
-              <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">
-                {passengers.adults + passengers.children + passengers.infants} {passengers.adults + passengers.children + passengers.infants === 1 ? 'Passenger' : 'Passengers'}
+              <div className="flex-1">
+                <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">
+                  {passengers.adults + passengers.children + passengers.infants} {passengers.adults + passengers.children + passengers.infants === 1 ? 'Passenger' : 'Passengers'}
+                </div>
+                <div className="font-poppins text-base text-gray-500">
+                  {(selectedClass || '').replace(' class', '')}
+                </div>
               </div>
-              <div className="font-poppins text-xs text-gray-500 mt-1">
-                {passengers.adults} {passengers.adults === 1 ? 'Adult' : 'Adults'}{passengers.children > 0 ? `, ${passengers.children} ${passengers.children === 1 ? 'Child' : 'Children'}` : ''}{passengers.infants > 0 ? `, ${passengers.infants} ${passengers.infants === 1 ? 'Infant' : 'Infants'}` : ''}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -795,7 +829,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         </div>
       )}
 
-      {/* Search Button - для One way и Round Trip */}
+      {/* Search Button - для One-way и Round Trip */}
       {tripType !== 'Multi-city' && (
         <button 
           onClick={handleSearch}
@@ -859,7 +893,18 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                   setActiveModal(null)
                 }
               }}
-              minDate={calendarMode === 'departure' ? new Date() : departureDate || new Date()}
+              minDate={(calendarMode === 'departure') ? new Date() : (() => {
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
+                if (departureDate) {
+                  const dep = new Date(departureDate);
+                  dep.setHours(0,0,0,0);
+                  return dep.getTime() <= today.getTime() ? tomorrow : dep;
+                }
+                return tomorrow;
+              })()}
               departureFlash={departureFlash}
               onDepartureFlashEnd={() => setDepartureFlash(false)}
             />
@@ -993,35 +1038,9 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         </div>
       )}
 
-      {/* BottomSheet для TripType */}
-      <BottomSheet open={openSheet === 'trip'} onClose={() => setOpenSheet(null)}>
-        <h2 className="font-poppins font-semibold text-lg text-[#0D2B29] mb-4 text-center">Trip Type</h2>
-        {['One way', 'Round Trip', 'Multi-city'].map((type) => (
-          <button
-            key={type}
-            onClick={() => { setTripType(type); setOpenSheet(null) }}
-            className="w-full px-4 py-4 text-left hover:bg-[#F0FBFA] cursor-pointer font-poppins text-[#0D2B29] text-base first:rounded-t-xl last:rounded-b-xl"
-            tabIndex={0}
-          >
-            {type}
-          </button>
-        ))}
-      </BottomSheet>
 
-      {/* BottomSheet для Class */}
-      <BottomSheet open={openSheet === 'class'} onClose={() => setOpenSheet(null)}>
-        <h2 className="font-poppins font-semibold text-lg text-[#0D2B29] mb-4 text-center">Class</h2>
-        {['Business class', 'First class'].map((cls) => (
-          <button
-            key={cls}
-            onClick={() => { setSelectedClass(cls); setOpenSheet(null) }}
-            className="w-full px-4 py-4 text-left hover:bg-[#F0FBFA] cursor-pointer font-poppins text-[#0D2B29] text-base first:rounded-t-xl last:rounded-b-xl"
-            tabIndex={0}
-          >
-            {cls}
-          </button>
-        ))}
-      </BottomSheet>
+
+
 
       {/* BottomSheet для Passengers */}
       <BottomSheet open={openSheet === 'passengers'} onClose={() => setOpenSheet(null)}>
@@ -1100,6 +1119,27 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
               >
                 +
               </button>
+            </div>
+          </div>
+          
+          {/* Service Class */}
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <h3 className="font-poppins font-medium text-[#0D2B29] mb-3">Service Class</h3>
+            <div className="flex flex-col gap-2">
+              {['Business class', 'First class'].map((cls) => (
+                <button
+                  key={cls}
+                  onClick={() => setSelectedClass(cls)}
+                  className={`w-full px-4 py-3 text-left rounded-xl font-poppins text-[#0D2B29] text-base transition-colors ${
+                    selectedClass === cls 
+                      ? 'bg-[#0ABAB5] text-white' 
+                      : 'bg-gray-50 hover:bg-[#F0FBFA]'
+                  }`}
+                  tabIndex={0}
+                >
+                  {cls}
+                </button>
+              ))}
             </div>
           </div>
         </div>

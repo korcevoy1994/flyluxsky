@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Users, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import {
   searchAirportsGrouped,
@@ -229,7 +230,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   const [showFromSuggestions, setShowFromSuggestions] = useState(false)
   const [showToSuggestions, setShowToSuggestions] = useState(false)
   
-  type OpenPopover = 'trip' | 'class' | 'passengers' | 'departure' | 'return' | null
+  type OpenPopover = 'trip' | 'passengers' | 'departure' | 'return' | null
   const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null)
   const [openPopover, setOpenPopover] = useState<OpenPopover>(null)
   const [isSubmitting] = useState(false);
@@ -363,6 +364,21 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     setFromSelection(toSelection)
     setToSelection(tempSelection)
   }
+
+  // Compute minimum selectable return date: not today
+  const getMinReturnDate = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    if (departureDate) {
+      const dep = new Date(departureDate);
+      dep.setHours(0, 0, 0, 0);
+      // If departure is today or before, force at least tomorrow; else allow same-day return (not requested to forbid)
+      return dep.getTime() <= today.getTime() ? tomorrow : dep;
+    }
+    return tomorrow;
+  };
   
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -403,9 +419,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     setMultiPopovers(pops => pops.map((v, i) => i === idx ? open : v))
   }
   const handleRemoveSegment = (idx: number) => {
-    // Если удаляется последняя дополнительная форма, переключаемся на One way
+    // Если удаляется последняя дополнительная форма, переключаемся на One-way
     if (multiSegments.length === 1) {
-      setTripType('One way');
+      setTripType('One-way');
       // Явно очищаем все состояния для multi-city
       setMultiSegments([]);
       setMultiPopovers([]);
@@ -508,70 +524,55 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   //   }
   // }, [departureDate, returnDate, setReturnDate])
   
+  // Set tripType to Round Trip when in sticky mode
+  useEffect(() => {
+    if (isSticky && tripType !== 'Round Trip') {
+      setTripType('Round Trip');
+    }
+  }, [isSticky, tripType, setTripType]);
+  
   return (
     <div className="w-full max-w-[1280px] mx-auto">
-      {/* Top Controls */}
-      <div className={`flex items-center justify-center gap-6 ${isSticky ? 'mb-4' : 'mb-6'}`}>
-        {/* Trip Type */}
-        <div className="relative dropdown-container">
-          <button
-            onClick={() => handleTogglePopover('trip')}
-            className={`flex items-center gap-2 bg-white border border-transparent rounded-full font-poppins font-semibold text-[14px] text-[#0D2B29] hover:bg-gray-50 transition-colors cursor-pointer ${isSticky ? 'px-4 py-2' : 'px-6 py-3'}`}
-            tabIndex={0}
-            aria-label="Trip type"
-          >
-            <span>{tripType}</span>
-            <ChevronDown size={14} className={`text-[#ec5e39] transition-transform duration-300 ${openPopover === 'trip' ? 'rotate-180' : ''}`} />
-          </button>
-          {openPopover === 'trip' && (
-            <div className="absolute top-full left-0 mt-2 w-full min-w-[200px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2">
-              {['One way', 'Round Trip', 'Multi-city'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setTripType(type)
-                    handleTogglePopover(null)
-                  }}
-                  className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer font-poppins text-[#0D2B29] text-sm first:rounded-t-xl last:rounded-b-xl"
-                  tabIndex={0}
-                >
-                  {type}
-                </button>
-              ))}
+      {/* Trip Type Selection - Hidden in sticky mode */}
+      {!isSticky && (
+        <div className={`flex items-center justify-center mb-6`}>
+          <div className="bg-white rounded-full p-1 shadow-lg relative">
+            <div className="flex relative">
+              {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
+                const isSelected = type === tripType;
+                
+                return (
+                  <button
+                    key={type}
+                    onClick={() => setTripType(type)}
+                    className={`relative px-6 py-3 font-poppins font-medium text-sm transition-colors duration-200 cursor-pointer flex-1 whitespace-nowrap ${
+                      isSelected 
+                        ? 'text-white' 
+                        : 'text-[#0D2B29] hover:text-[#0ABAB5]'
+                    }`}
+                    tabIndex={0}
+                  >
+                    {isSelected && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute inset-0 bg-[#0ABAB5] rounded-full"
+                        initial={{ opacity: 1 }}
+                        animate={{ opacity: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30
+                        }}
+                      />
+                    )}
+                    <span className="relative z-10">{type}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
-        
-        {/* Class */}
-        <div className="relative dropdown-container">
-          <button
-            onClick={() => handleTogglePopover('class')}
-            className={`flex items-center gap-2 bg-white border border-transparent rounded-full font-poppins font-semibold text-[14px] text-[#0D2B29] hover:bg-gray-50 transition-colors cursor-pointer ${isSticky ? 'px-4 py-2' : 'px-6 py-3'}`}
-            tabIndex={0}
-            aria-label="Class"
-          >
-            <span>{selectedClass}</span>
-            <ChevronDown size={14} className={`text-[#ec5e39] transition-transform duration-300 ${openPopover === 'class' ? 'rotate-180' : ''}`} />
-          </button>
-          {openPopover === 'class' && (
-            <div className="absolute top-full left-0 mt-2 w-full min-w-[200px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-2">
-              {['Business class', 'First class'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setSelectedClass(type)
-                    handleTogglePopover(null)
-                  }}
-                  className="w-full px-4 py-3 text-left hover:bg-[#F0FBFA] cursor-pointer font-poppins text-[#0D2B29] text-sm first:rounded-t-xl last:rounded-b-xl"
-                  tabIndex={0}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
         {/* Main Form - Horizontal Layout */}
         <div className="flex flex-row w-full">
           <div className={`bg-white rounded-full shadow-lg flex items-center gap-1 w-full ${isSticky ? 'p-1' : 'p-2'}`}>
@@ -606,6 +607,15 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                     <div className="bg-[#0ABAB5] text-white font-semibold text-xs rounded-lg px-2 py-0.5 ml-2">
                       {fromSelection.code}
                     </div>
+                  )}
+                  {(fromInput || fromSelection) && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setFromInput(''); setFromSelection(null); setFromSuggestions([]); setShowFromSuggestions(false); }}
+                      className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      aria-label="Clear from"
+                    >
+                      <X size={14} />
+                    </button>
                   )}
                 </div>
               </div>
@@ -746,6 +756,15 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                     <div className="bg-[#0ABAB5] text-white font-semibold text-xs rounded-lg px-2 py-0.5 ml-2">
                       {toSelection.code}
                     </div>
+                  )}
+                  {(toInput || toSelection) && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setToInput(''); setToSelection(null); setToSuggestions([]); setShowToSuggestions(false); }}
+                      className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      aria-label="Clear to"
+                    >
+                      <X size={14} />
+                    </button>
                   )}
                 </div>
               </div>
@@ -889,8 +908,8 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               )}
             </div>
             
-            {/* Return Date - for Round trip only */}
-            {tripType === 'Round Trip' && (
+            {/* Return Date - for Round Trip only */}
+          {tripType === 'Round Trip' && (
               <div className="relative border-l border-gray-100 flex-1">
                 <div
                   className={`flex items-center gap-3 cursor-pointer h-full px-4 ${isSticky ? 'py-2' : 'py-4'}`}
@@ -914,7 +933,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                         setReturnDate(date)
                         setOpenPopover(null)
                       }}
-                      minDate={departureDate || new Date()}
+                      minDate={getMinReturnDate()}
                     />
                   </div>
                 )}
@@ -935,9 +954,13 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                     <Users size={16} className="text-[#0ABAB5]" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">PASSENGERS</div>
-                    <div className={`w-full font-poppins font-medium border-none outline-none bg-transparent ${getTotalPassengers() > 1 ? 'text-[#0D2B29]' : 'text-gray-400'}`}>
-                      {getTotalPassengers()} {getTotalPassengers() === 1 ? 'Passenger' : 'Passengers'}
+                    <div className="leading-tight">
+                      <div className={`w-full font-poppins text-xs font-semibold uppercase ${getTotalPassengers() >= 1 ? 'text-[#0D2B29]' : 'text-gray-400'} mb-1`}>
+                        {getTotalPassengers()} {getTotalPassengers() === 1 ? 'Passenger' : 'Passengers'}
+                      </div>
+                      <div className="font-poppins font-medium text-base text-gray-500">
+                        {(selectedClass || '').replace(' class', '')}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1019,6 +1042,27 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                       >
                         +
                       </button>
+                    </div>
+                  </div>
+                  
+                  {/* Service Class */}
+                  <div className="mt-6 pt-4 border-t border-gray-200">
+                    <h3 className="font-poppins font-medium text-[#0D2B29] mb-3">Service Class</h3>
+                    <div className="flex flex-col gap-2">
+                      {['Business class', 'First class'].map((cls) => (
+                        <button
+                          key={cls}
+                          onClick={() => setSelectedClass(cls)}
+                          className={`w-full px-4 py-3 text-center rounded-xl font-poppins text-[#0D2B29] text-sm transition-colors ${
+                             selectedClass === cls 
+                               ? 'bg-[#0ABAB5] text-white' 
+                               : 'bg-gray-50 hover:bg-[#F0FBFA]'
+                           }`}
+                          tabIndex={0}
+                        >
+                          {cls}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1145,11 +1189,11 @@ const MultiCitySegment: React.FC<{
           onClick={() => { fromInputRef.current?.focus(); }}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); fromInputRef.current?.focus(); } }}
         >
-          <div className="flex items-center gap-3 w-full">
+              <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
               <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" />
             </div>
-            <div className="flex-1">
+                <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
               <input
                 ref={fromInputRef}
@@ -1168,6 +1212,15 @@ const MultiCitySegment: React.FC<{
                 {segment.fromSelection.code}
               </div>
             )}
+                {(segment.from || segment.fromSelection) && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onChange('from', ''); onChange('fromSelection', null); }}
+                    className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    aria-label="Clear from"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
           </div>
         </div>
         {showFromSuggestions && fromSuggestions.length > 0 && (
@@ -1219,11 +1272,11 @@ const MultiCitySegment: React.FC<{
           onClick={() => { toInputRef.current?.focus(); }}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); fromInputRef.current?.focus(); } }}
         >
-          <div className="flex items-center gap-3 w-full">
+              <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
               <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" />
             </div>
-            <div className="flex-1">
+                <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
               <input
                 ref={toInputRef}
@@ -1242,6 +1295,15 @@ const MultiCitySegment: React.FC<{
                 {segment.toSelection.code}
               </div>
             )}
+                {(segment.to || segment.toSelection) && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onChange('to', ''); onChange('toSelection', null); }}
+                    className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    aria-label="Clear to"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
           </div>
         </div>
         {showToSuggestions && toSuggestions.length > 0 && (

@@ -5,6 +5,8 @@ import Image from "next/image";
 import useEmblaCarousel, { UseEmblaCarouselType } from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { searchAirportsGrouped, GroupedSearchResult, getNearbyAirports } from '@/lib/utils';
 
 // Interfaces and Data
 interface Deal {
@@ -174,8 +176,8 @@ function useDealsCarousel() {
 }
 
 // Components
-const DealCard = ({ deal }: { deal: Deal }) => (
-  <div className="relative w-full h-full rounded-3xl overflow-hidden cursor-pointer group">
+const DealCard = ({ deal, onClick }: { deal: Deal, onClick: () => void }) => (
+  <div className="relative w-full h-full rounded-3xl overflow-hidden cursor-pointer group" onClick={onClick}>
     {/* Background Image */}
     <Image 
       src={deal.image} 
@@ -210,6 +212,80 @@ const DealCard = ({ deal }: { deal: Deal }) => (
 // Main Component
 export default function CarouselDeals() {
   const { emblaRef, emblaApi, scrollProgress, scrollPrev, scrollNext, selectedIndex } = useDealsCarousel();
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const cityCodeMap: Record<string, string> = {
+    Amsterdam: 'AMS',
+    Istanbul: 'IST',
+    Dubai: 'DXB',
+    Sydney: 'SYD',
+    Paris: 'CDG',
+    London: 'LHR',
+    Rome: 'FCO',
+    Madrid: 'MAD',
+    Athens: 'ATH',
+    Lisbon: 'LIS',
+  };
+
+  const pickDestinationCode = (city: string, country: string): string => {
+    // Prefer hard map for reliability
+    if (cityCodeMap[city]) return cityCodeMap[city];
+    const results: GroupedSearchResult[] = searchAirportsGrouped(city, 10);
+    const byCity = results.find(r => r.type === 'city' && r.country?.toLowerCase() === country.toLowerCase());
+    if (byCity && byCity.airports && byCity.airports.length > 0) return byCity.airports[0].code;
+    const byCountry = results.find(r => r.country?.toLowerCase() === country.toLowerCase());
+    if (byCountry) return byCountry.code || 'MUC';
+    // Fallback to first result airport if exists
+    if (results.length > 0) {
+      if (results[0].type === 'city' && results[0].airports && results[0].airports.length > 0) return results[0].airports[0].code;
+      return results[0].code || 'MUC';
+    }
+    return 'MUC';
+  };
+
+  const formatDate = (d: Date) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const handleDealClick = async (deal: Deal) => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    try {
+      // Determine origin via geolocation API
+      let originCode = 'LHR';
+      try {
+        const res = await fetch('/api/geolocation');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.latitude && data?.longitude) {
+            const nearest = getNearbyAirports(data.latitude, data.longitude, 1);
+            if (nearest && nearest.length > 0) originCode = nearest[0].code;
+          }
+        }
+      } catch {
+        // ignore, fallback stays
+      }
+
+      const destinationCode = pickDestinationCode(deal.city, deal.country);
+      const departure = new Date();
+      departure.setDate(departure.getDate() + 14);
+      const query = new URLSearchParams({
+        from: originCode,
+        to: destinationCode,
+        tripType: 'One-way',
+        passengers: '1',
+        class: 'Business class',
+        departureDate: formatDate(departure),
+      });
+      router.push(`/searching?${query.toString()}`);
+    } finally {
+      setIsNavigating(false);
+    }
+  };
   
   const getScale = (index: number) => {
     const diff = Math.abs(index - selectedIndex);
@@ -225,10 +301,10 @@ export default function CarouselDeals() {
     const diff = Math.abs(index - selectedIndex);
     const distance = Math.min(diff, deals.length - diff);
 
-    if (distance === 0) return 0;      // Center card - no blur
-    if (distance === 1) return 2;      // Adjacent cards - slight blur
-    if (distance === 2) return 4;      // Side cards - more blur
-    return 4; // Default for other slides
+    if (distance === 0) return 0;        // Center card - no blur
+    if (distance === 1) return 0.5;      // Adjacent cards - minimal blur
+    if (distance === 2) return 1;        // Side cards - very small blur
+    return 1; // Default for other slides
   };
 
   const onMouseEnter = useCallback(() => {
@@ -263,7 +339,7 @@ export default function CarouselDeals() {
               }}
               transition={{ type: "spring", stiffness: 400, damping: 40 }}
             >
-              <DealCard deal={deal} />
+              <DealCard deal={deal} onClick={() => handleDealClick(deal)} />
             </motion.div>
           ))}
         </div>
