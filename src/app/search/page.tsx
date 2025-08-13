@@ -505,6 +505,91 @@ function SearchResultsContentHeader() {
     );
 }
 
+function FlightInformationBlock() {
+    const searchParams = useSearchParams();
+    const tripType = searchParams.get('tripType') || (searchParams.get('returnDate') ? 'Round Trip' : 'One-way');
+    let fromCode, toCode;
+    let allFromCodes: string[] = [];
+    let allToCodes: string[] = [];
+    
+    if (tripType === 'Multi-city') {
+        // For multi-city, get all from/to parameters
+        const fromParams = searchParams.getAll('from');
+        const toParams = searchParams.getAll('to');
+        
+        allFromCodes = fromParams;
+        allToCodes = toParams;
+        
+        // Use first and last destinations for display
+        fromCode = fromParams[0] || 'LHR';
+        toCode = toParams[toParams.length - 1] || 'MUC';
+    } else {
+        fromCode = searchParams.get('from') || 'LHR';
+        toCode = searchParams.get('to') || 'MUC';
+    }
+    const passengers = searchParams.get('passengers') || '1';
+    const departureDate = searchParams.get('departureDate') || undefined;
+    const returnDate = searchParams.get('returnDate') || searchParams.get('return') || undefined;
+
+    const fromAirport = airportsMap.get(fromCode);
+    const toAirport = airportsMap.get(toCode);
+    
+    // Format departure date
+    const formatDate = (dateString: string | undefined) => {
+        if (!dateString) return 'Dec 15, 2024';
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    };
+
+    return (
+        <div className="w-full max-w-7xl mx-auto px-4">
+            {/* Flight Information Block */}
+            <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-6 mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                        {/* Route information */}
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <div className="flex items-center gap-2">
+                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{fromCode}</span>
+                                <span className="font-semibold text-sm sm:text-base">{fromAirport?.city || fromCode}</span>
+                            </div>
+                            <ArrowLeftRight size={16} className="text-gray-400 hidden sm:block"/>
+                            <ArrowDown size={16} className="text-gray-400 block sm:hidden"/>
+                            <div className="flex items-center gap-2">
+                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{toCode}</span>
+                                <span className="font-semibold text-sm sm:text-base">{toAirport?.city || toCode}</span>
+                            </div>
+                        </div>
+                        
+                        {/* Trip details */}
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0">
+                            <div className="flex items-center gap-1">
+                                <Calendar size={14} className="sm:w-4 sm:h-4"/>
+                                <span>{formatDate(departureDate)}</span>
+                                {tripType === 'Round Trip' && returnDate && (
+                                    <span> - {formatDate(returnDate)}</span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Users size={14} className="sm:w-4 sm:h-4"/>
+                                <span>{passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="w-2 h-2 bg-[#0abab5] rounded-full"></span>
+                                <span>{searchParams.get('class') || 'Economy'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function SearchResultsContentMain() {
     const searchParams = useSearchParams();
     const flightSearch = useFlightSearch();
@@ -666,45 +751,6 @@ function SearchResultsContentMain() {
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-8 pb-20 lg:pb-8">
-            {/* Search Summary Header */}
-            <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-6 mb-8">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                        {/* Route information */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{fromCode}</span>
-                                <span className="font-semibold text-sm sm:text-base">{fromAirport?.name}</span>
-                            </div>
-                            <ArrowLeftRight size={16} className="text-gray-400 hidden sm:block"/>
-                            <ArrowDown size={16} className="text-gray-400 block sm:hidden"/>
-                            <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{toCode}</span>
-                                <span className="font-semibold text-sm sm:text-base">{toAirport?.name}</span>
-                            </div>
-                        </div>
-                        
-                        {/* Trip details */}
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0">
-                            <div className="flex items-center gap-1">
-                                <Calendar size={14} className="sm:w-4 sm:h-4"/>
-                                <span>{formatDate(departureDate)}</span>
-                                {tripType === 'Round Trip' && returnDate && (
-                                    <span> - {formatDate(returnDate)}</span>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Users size={14} className="sm:w-4 sm:h-4"/>
-                                <span>{passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 bg-[#0abab5] rounded-full"></span>
-                                <span>{selectedClass}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
@@ -1019,6 +1065,13 @@ export default function SearchPage() {
                         <SearchResultsContentHeader />
                     </Suspense>
                 </div>
+            </div>
+            
+            {/* Flight Information Block moved under background */}
+            <div className="relative -mt-4 z-10">
+                <Suspense fallback={<div className="text-center py-10">Loading search results...</div>}>
+                    <FlightInformationBlock />
+                </Suspense>
             </div>
             
             {/* Main content with light background */}
