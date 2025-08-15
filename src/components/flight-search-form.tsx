@@ -589,7 +589,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               >
                 <div className="flex items-center gap-1 w-full">
                   <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" />
+                    <Image src="/icons/airport-from.svg" width={16} height={11} alt="from" />
                   </div>
                   <div className="flex-1">
                     <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -807,7 +807,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                                                       <Image
                                                         src="/icons/airport-to.svg"
                                                         width={24}
-                                                        height={24}
+                                                        height={18}
                                                         alt="to"
                                                         className="mr-3 h-auto w-auto"
                                                       />

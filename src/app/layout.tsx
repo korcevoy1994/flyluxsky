@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Poppins, Ubuntu } from "next/font/google";
+import { Poppins, Ubuntu, Inter } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
 import MarketingScripts from "@/components/marketing-scripts";
+import CriticalStyles from "@/components/critical-styles";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,6 +15,11 @@ const ubuntu = Ubuntu({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-ubuntu",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -47,7 +53,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${ubuntu.variable} font-sans`}>
+      <head>
+        <CriticalStyles />
+
+        <link rel="preload" href="/logos/hero/emirates.png" as="image" type="image/png" />
+        <link rel="preload" href="/logos/hero/lufthansa.png" as="image" type="image/png" />
+        <link rel="preload" href="/logos/hero/qatar.png" as="image" type="image/png" />
+        <link rel="preload" href="/logos/hero/swiss.png" as="image" type="image/png" />
+        <link rel="preload" href="/logos/hero/turkish.png" as="image" type="image/png" />
+        <link rel="preload" href="/logos/hero/united.png" as="image" type="image/png" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+      </head>
+      <body className={`${poppins.variable} ${ubuntu.variable} ${inter.variable} font-sans`}>
         <MarketingScripts />
         {children}
         <Footer />

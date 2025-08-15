@@ -10,9 +10,13 @@ import { useFlightSearch } from '@/hooks/useFlightSearch';
 import Image from 'next/image';
 import { ArrowLeftRight, Wifi, Coffee, Monitor, Users, ChevronDown, ChevronUp, X } from 'lucide-react';
 // Local SVG from public as a component via next/image
-const AirportFromIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
-    <Image src="/icons/airport-from.svg" alt="" width={size} height={size} className={className} />
-);
+const AirportFromIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => {
+    const aspectRatio = 24/17; // Original SVG dimensions
+    const height = Math.round(size / aspectRatio);
+    return (
+        <Image src="/icons/airport-from.svg" alt="" width={size} height={height} className={className} />
+    );
+};
 import { generateFlightsClient, generateMultiCityFlightsFromSegments } from '@/lib/flightGenerator';
 import type { GeneratedFlight, MultiCityFlight, FlightSegment } from '@/lib/flightGenerator';
 

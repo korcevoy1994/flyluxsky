@@ -82,7 +82,7 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial, o
   >
     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden relative">
       {testimonial.avatar ? (
-        <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} />
+        <Image src={testimonial.avatar} alt={testimonial.name} width={56} height={56} className="w-full h-full object-cover" />
       ) : (
         <div className="w-full h-full bg-[#0ABAB5] flex items-center justify-center">
           <span className="text-white font-bold text-lg">

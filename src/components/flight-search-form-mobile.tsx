@@ -593,7 +593,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         <div className="px-4 py-4 border-b border-gray-100" onClick={() => { setCityTab('from'); setCitySheetOpen(true) }}>
             <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-              <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="text-[#0ABAB5]" />
+              <Image src="/icons/airport-from.svg" width={16} height={11} alt="from" className="text-[#0ABAB5]" />
             </div>
             <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -1235,7 +1235,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-from.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
+                              <Image src="/icons/airport-from.svg" width={20} height={14} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={fromInput}/></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={fromInput}/></div>
@@ -1299,7 +1299,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
+                              <Image src="/icons/airport-to.svg" width={20} height={15} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={toInput}/></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={toInput}/></div>
@@ -1482,7 +1482,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Image src="/icons/airport-to.svg" width={20} height={20} alt="airport" className="mr-3 h-auto w-auto" />
+                              <Image src="/icons/airport-to.svg" width={20} height={15} alt="airport" className="mr-3 h-auto w-auto" />
                               <div>
                                 <div className="font-poppins font-medium text-[#0D2B29]"><HighlightedText text={formatAirportName(airport.name)} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
                                 <div className="font-poppins text-sm text-gray-500"><HighlightedText text={airport.country} highlight={multiSegments[multiCityActiveIndex]?.to || ''} /></div>
