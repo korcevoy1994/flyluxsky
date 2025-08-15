@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import airportsData from '@/lib/airports.json'
 import React from 'react'
+import { Users } from 'lucide-react'
 
 type Airport = { code: string; city?: string; name?: string }
 
@@ -66,7 +67,7 @@ export default function FlightSummaryChips({ variant = 'hero' }: { variant?: Fli
               <span className="text-[#0D2B29]/20">•</span>
 
               <span className="inline-flex items-center gap-2">
-                <Image src="/icons/clock.svg" alt="" width={16} height={16} />
+                <Users size={16} className="text-[#0ABAB5]" />
                 <span>{pax} passenger{pax > 1 ? 's' : ''}</span>
               </span>
 
