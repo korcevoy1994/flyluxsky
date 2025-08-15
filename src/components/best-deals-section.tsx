@@ -72,7 +72,7 @@ const popularAirlines = [
 ];
 
 const airlineLogoMap: Record<string, string> = {
-  'Emirates': '/logos/airlines/Emirates (airline).svg',
+  'Emirates': '/logos/airlines/Emirates.svg',
   'Qatar Airways': '/logos/airlines/Qatar Airways.svg',
   'Singapore Airlines': '/logos/airlines/Singapore Airlines.svg',
   'Lufthansa': '/logos/airlines/Lufthansa.svg',
@@ -81,13 +81,15 @@ const airlineLogoMap: Record<string, string> = {
   'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
   'KLM': '/logos/airlines/KLM.svg',
   'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
-  'Etihad Airways': '/logos/airlines/Etihad Airways (EY).svg',
+  'Etihad Airways': '/logos/airlines/Etihad Airways.svg',
   'Cathay Pacific': '/logos/airlines/Cathay Pacific.svg',
   'ANA All Nippon Airways': '/logos/airlines/All Nippon Airways.svg',
   'Japan Airlines': '/logos/airlines/Japan Airlines.svg',
   'United Airlines': '/logos/airlines/United Airlines.svg',
   'Delta Air Lines': '/logos/airlines/Delta Air Lines.svg',
   'American Airlines': '/logos/airlines/American Airlines.svg',
+  'Qantas': '/logos/airlines/Qantas.svg',
+  'Qantas Airways': '/logos/airlines/Qantas.svg',
 };
 
 const BestDealsSection = () => {
@@ -175,7 +177,7 @@ const BestDealsSection = () => {
             const price = (f.totalPrice ?? f.price);
             out.push({
               airline: f.airline || 'Best fare',
-              logo: f.logo || airlineLogoMap[f.airline] || '/logos/airlines/Emirates (airline).svg',
+              logo: f.logo || airlineLogoMap[f.airline] || '/logos/airlines/Emirates.svg',
               duration: f.duration || '—',
               stops: f.stops === 0 ? 'Non stop' : `${f.stops} stop${f.stops > 1 ? 's' : ''}`,
               from: combo.from.code,
@@ -217,6 +219,9 @@ const BestDealsSection = () => {
       passengers: '1',
       class: 'Business class',
       departureDate,
+      selectedAirline: deal.airline,
+      selectedPrice: String(deal.price),
+      selectedDuration: deal.duration === '—' ? '8h 30m' : deal.duration, // Use fallback duration if invalid
     });
     router.push(`/searching?${q.toString()}`);
   };
@@ -317,10 +322,10 @@ const BestDealsSection = () => {
         {(!showAll && deals.length > 6) && (
           <div className="text-center mt-12 hidden md:block">
             <button 
-              className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-inter"
+              className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-inter cursor-pointer"
               onClick={() => setShowAll(true)}
             >
-              View All Airlines
+              More Deals
             </button>
           </div>
         )}

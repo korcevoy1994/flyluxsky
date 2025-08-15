@@ -40,10 +40,10 @@ export default function Home() {
             setNearestAirport(nearby[0]);
           }
         } else {
-          console.error("Failed to get location from IP API:", data.error ? data.reason : "Unknown error");
+          // Failed to get location from IP API
         }
       } catch (error) {
-        console.error("Error fetching IP geolocation:", error);
+        // Error fetching IP geolocation
       }
     };
 

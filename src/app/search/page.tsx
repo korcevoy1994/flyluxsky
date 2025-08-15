@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
+import FlightSummaryChips from '@/components/flight-summary-chips'
 import { Suspense, useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 
@@ -198,7 +199,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departu
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, departureDate, returnDate }: { flight: GeneratedFlight, isSelected: boolean, onSelect: () => void, tripType?: string, passengers?: string, departureDate?: string, returnDate?: string }) => {
-    console.log('💰 Flight price debug:', { flightId: flight.id, price: flight.price, passengers, calculation: flight.price * parseInt(passengers || '1') });
+    // Flight price calculation
     const [showReturnFlight, setShowReturnFlight] = useState(false);
     const getAmenityIcon = (amenity: string) => {
         switch (amenity) {
@@ -440,70 +441,7 @@ function isMultiCityFlight(flight: MultiCityFlight | GeneratedFlight): flight is
     return 'segments' in flight && Array.isArray(flight.segments);
 }
 
-function SearchResultsContentHeader() {
-    const searchParams = useSearchParams();
-    const tripType = searchParams.get('tripType') || (searchParams.get('returnDate') ? 'Round Trip' : 'One-way');
-    let fromCode, toCode;
-    let allFromCodes: string[] = [];
-    let allToCodes: string[] = [];
-    
-    if (tripType === 'Multi-city') {
-        // For multi-city, get all from/to parameters
-        const fromParams = searchParams.getAll('from');
-        const toParams = searchParams.getAll('to');
-        
-        allFromCodes = fromParams;
-        allToCodes = toParams;
-        
-        // Use first and last destinations for display
-        fromCode = fromParams[0] || 'LHR';
-        toCode = toParams[toParams.length - 1] || 'MUC';
-    } else {
-        fromCode = searchParams.get('from') || 'LHR';
-        toCode = searchParams.get('to') || 'MUC';
-    }
-
-    const fromAirport = airportsMap.get(fromCode);
-    const toAirport = airportsMap.get(toCode);
-
-    return (
-        <div className="w-full max-w-7xl mx-auto px-4">
-            {/* Route Display */}
-            <div className="text-center mb-8">
-                {tripType === 'Multi-city' && allFromCodes.length > 0 && allToCodes.length > 0 ? (
-                    <>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-2 tracking-tight">
-                            {allFromCodes.map((code, index) => {
-                                const airport = airportsMap.get(code);
-                                const nextCode = allToCodes[index];
-                                const nextAirport = airportsMap.get(nextCode);
-                                return (
-                                    <span key={index}>
-                                        {airport?.city || code}
-                                        {index < allFromCodes.length - 1 && " → "}
-                                        {index === allFromCodes.length - 1 && nextAirport && ` → ${nextAirport.city || nextCode}`}
-                                    </span>
-                                );
-                            })}
-                        </h1>
-                        <p className="text-lg sm:text-xl text-white/80">
-                            Multi-city journey
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-2 tracking-tight">
-                            {fromAirport?.city || fromCode} → {toAirport?.city || toCode}
-                        </h1>
-                        <p className="text-lg sm:text-xl text-white/80">
-                            {fromAirport?.name} to {toAirport?.name}
-                        </p>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-}
+// Removed old header block (replaced by unified FlightSummaryChips)
 
 function SearchResultsContentMain() {
     const searchParams = useSearchParams();
@@ -585,7 +523,7 @@ function SearchResultsContentMain() {
                 const dateParams = searchParams.getAll('departureDate');
                 const flightClass = searchParams.get('class') || 'Business class';
                 
-                console.log('Multi-city params:', { fromParams, toParams, dateParams, flightClass });
+                // Multi-city params
                 
                 if (fromParams.length > 0 && toParams.length > 0 && fromParams.length === toParams.length) {
                     const segments: { from: string; to: string; date: string }[] = fromParams.map((from, index) => ({
@@ -594,9 +532,9 @@ function SearchResultsContentMain() {
                         date: dateParams[index] || '2024-12-15'
                     }));
                     
-                    console.log('Generating multi-city flights with segments:', segments);
+                    // Generating multi-city flights
                     const generatedFlights = await generateMultiCityFlightsFromSegments(segments, flightClass);
-                    console.log('Generated multi-city flights:', generatedFlights);
+                    // Generated multi-city flights
                     setFlights(generatedFlights);
                 }
             } else {
@@ -609,13 +547,29 @@ function SearchResultsContentMain() {
                 const finalToCode = toCode || 'MUC';
                 const finalFlightClass = flightClass || 'Business class';
                 
-                console.log('Generating flights with:', { fromCode: finalFromCode, toCode: finalToCode, flightClass: finalFlightClass, tripType });
+                // Generating flights
                 
                 if (finalFromCode && finalToCode && finalFlightClass) {
                     const departure = searchParams.get('departureDate');
                     const returnValue = searchParams.get('returnDate');
-                    const generatedFlights = await generateFlightsClient(finalFromCode, finalToCode, finalFlightClass, tripType, departure || undefined, returnValue || undefined);
-                    console.log('Generated flights:', generatedFlights);
+                    
+                    // Get selected flight parameters from URL
+                    const selectedAirline = searchParams.get('selectedAirline');
+                    const selectedPrice = searchParams.get('selectedPrice');
+                    const selectedDuration = searchParams.get('selectedDuration');
+                    
+                    let selectedFlight = undefined;
+                    if (selectedAirline && selectedPrice && selectedDuration) {
+                        selectedFlight = {
+                            airline: selectedAirline,
+                            price: parseInt(selectedPrice),
+                            duration: selectedDuration
+                        };
+                        // Selected flight to include
+                    }
+                    
+                    const generatedFlights = await generateFlightsClient(finalFromCode, finalToCode, finalFlightClass, tripType, departure || undefined, returnValue || undefined, selectedFlight);
+                    // Generated flights
                     setFlights(generatedFlights);
                 }
             }
@@ -623,6 +577,50 @@ function SearchResultsContentMain() {
         
         generateFlights();
     }, [searchParams]);
+
+    // Auto-select flight based on URL parameters
+    useEffect(() => {
+        const selectedAirline = searchParams.get('selectedAirline');
+        const selectedPrice = searchParams.get('selectedPrice');
+        const selectedDuration = searchParams.get('selectedDuration');
+        
+        if (selectedAirline && selectedPrice && selectedDuration && flights.length > 0) {
+            // Find the flight that matches the selected parameters
+            const targetPrice = parseInt(selectedPrice);
+            const flightIndex = flights.findIndex((flight) => {
+                if (isMultiCityFlight(flight)) {
+                    return false; // Skip multi-city flights for now
+                }
+                const regularFlight = flight as GeneratedFlight;
+                // More lenient matching: allow greater price variance and up to 2h duration difference
+                const extractHours = (d: string) => {
+                    const m = d.match(/(\d+)h/);
+                    return m ? parseInt(m[1]) : 0;
+                };
+                return regularFlight.airline === selectedAirline && 
+                       Math.abs((regularFlight.totalPrice || regularFlight.price) - targetPrice) <= 100 &&
+                       Math.abs(extractHours(regularFlight.duration) - extractHours(selectedDuration)) <= 2;
+            });
+            
+            if (flightIndex !== -1) {
+                setSelectedFlight(flightIndex);
+                // Auto-selected flight at index
+            } else {
+                // If exact match not found, select the first flight from the same airline
+                const airlineIndex = flights.findIndex((flight) => {
+                    if (isMultiCityFlight(flight)) {
+                        return false;
+                    }
+                    return (flight as GeneratedFlight).airline === selectedAirline;
+                });
+                
+                if (airlineIndex !== -1) {
+                    setSelectedFlight(airlineIndex);
+                    // Auto-selected flight by airline at index
+                }
+            }
+        }
+    }, [flights, searchParams]);
 
     const tripType = searchParams.get('tripType') || (searchParams.get('returnDate') ? 'Round Trip' : 'One-way');
     let fromCode, toCode;
@@ -665,46 +663,7 @@ function SearchResultsContentMain() {
     const [isMobileQuoteOpen, setIsMobileQuoteOpen] = useState(false);
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 py-8 pb-20 lg:pb-8">
-            {/* Search Summary Header */}
-            <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-6 mb-8">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                        {/* Route information */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{fromCode}</span>
-                                <span className="font-semibold text-sm sm:text-base">{fromAirport?.name}</span>
-                            </div>
-                            <ArrowLeftRight size={16} className="text-gray-400 hidden sm:block"/>
-                            <ArrowDown size={16} className="text-gray-400 block sm:hidden"/>
-                            <div className="flex items-center gap-2">
-                                <span className="bg-[#0abab5] text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{toCode}</span>
-                                <span className="font-semibold text-sm sm:text-base">{toAirport?.name}</span>
-                            </div>
-                        </div>
-                        
-                        {/* Trip details */}
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0">
-                            <div className="flex items-center gap-1">
-                                <Calendar size={14} className="sm:w-4 sm:h-4"/>
-                                <span>{formatDate(departureDate)}</span>
-                                {tripType === 'Round Trip' && returnDate && (
-                                    <span> - {formatDate(returnDate)}</span>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Users size={14} className="sm:w-4 sm:h-4"/>
-                                <span>{passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 bg-[#0abab5] rounded-full"></span>
-                                <span>{selectedClass}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="w-full max-w-7xl mx-auto px-4 py-6 pb-20 lg:pb-8">
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
@@ -752,7 +711,7 @@ function SearchResultsContentMain() {
                                 if (variant === 'bar') {
                                     return (
                                         <div className="bg-white rounded-xl shadow-sm border mb-4">
-                                            <button type="button" className="w-full flex items-center justify-between px-3 py-2" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
+                        <button type="button" className="w-full flex items-center justify-between px-3 py-2 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
                                                 <div className="flex-1 min-w-0">
                                                     {isMultiCityFlight(flights[selectedFlight]) ? (() => {
                                                         const mc = flights[selectedFlight] as MultiCityFlight;
@@ -911,7 +870,7 @@ function SearchResultsContentMain() {
                                 // default card
                                 return (
                                     <div className="bg-white rounded-xl shadow-sm border mb-4">
-                                        <button type="button" className="w-full flex items-center justify-between px-4 py-3" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
+                        <button type="button" className="w-full flex items-center justify-between px-4 py-3 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
                                             <div className="flex-1 min-w-0">
                                                 {isMultiCityFlight(flights[selectedFlight]) ? (() => {
                                                     const mc = flights[selectedFlight] as MultiCityFlight;
@@ -994,7 +953,7 @@ function SearchResultsContentMain() {
                 <div className="fixed inset-0 z-[60] flex flex-col justify-end lg:hidden">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileQuoteOpen(false)} />
                     <div className="relative bg-white rounded-t-2xl shadow-lg w-full h-[85vh] p-4 animate-slide-up flex flex-col">
-                        <button className="absolute right-4 top-4" onClick={() => setIsMobileQuoteOpen(false)} aria-label="Close">
+                        <button className="absolute right-4 top-4 cursor-pointer" onClick={() => setIsMobileQuoteOpen(false)} aria-label="Close">
                             <X size={24} />
                         </button>
                         <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
@@ -1007,6 +966,30 @@ function SearchResultsContentMain() {
         </div>
     );
 }
+function HeroRouteText() {
+    const sp = useSearchParams();
+    const fromCode = sp.get('from') || '';
+    const toCode = sp.get('to') || '';
+    const fromAirport = airportsMap.get(fromCode) as Airport | undefined;
+    const toAirport = airportsMap.get(toCode) as Airport | undefined;
+    const fromCity = fromAirport?.city || fromAirport?.name || fromCode || '';
+    const toCity = toAirport?.city || toAirport?.name || toCode || '';
+
+    if (!fromCity && !toCity) return null;
+
+    return (
+        <div className="mx-auto max-w-7xl px-4 pt-10 pb-10">
+            <div className="text-center text-white">
+                <div className="text-[32px] md:text-[40px] font-semibold">
+                    {fromCity || '—'} 
+                    <span className="opacity-80 mx-2">→</span> 
+                    {toCity || '—'}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function SearchPage() {
     return (
         <div className="bg-gray-50/50">
@@ -1014,13 +997,16 @@ export default function SearchPage() {
             <div className="relative w-full bg-[#0ABAB5] pb-8">
                 <div className="absolute inset-0 -z-10 bg-[#0ABAB5] w-full h-full" />
                 <Navbar isDarkBackground={true} />
-                <div className="pt-20">
-                    <Suspense fallback={<div className="text-center py-10">Loading search results...</div>}>
-                        <SearchResultsContentHeader />
-                    </Suspense>
-                </div>
+                <Suspense fallback={null}>
+                    <HeroRouteText />
+                </Suspense>
             </div>
             
+            {/* Flight summary under BG */}
+            <Suspense fallback={null}>
+                <FlightSummaryChips variant="default" />
+            </Suspense>
+
             {/* Main content with light background */}
             <main className="flex min-h-screen flex-col items-center justify-between">
                 <Suspense fallback={<div className="text-center py-10">Loading search results...</div>}>

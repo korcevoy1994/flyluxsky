@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { User, Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface ContactFormProps {
@@ -9,6 +10,8 @@ interface ContactFormProps {
 }
 
 const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, variant = 'brand' }) => {
+  const router = useRouter()
+  const sp = useSearchParams()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -41,12 +44,16 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
       
-      if (onSubmit) {
-        onSubmit(formData)
-      }
-      
-      setSubmissionStatus('success')
-      setFormData({ name: '', email: '', phone: '' })
+      if (onSubmit) onSubmit(formData)
+      // Build thank-you URL with current search context if present
+      const query = new URLSearchParams()
+      const keys = ['from','to','departureDate','returnDate','passengers','class','tripType'] as const
+      keys.forEach(k => {
+        const v = sp.get(k)
+        if (v) query.set(k, v)
+      })
+      router.push(`/thank-you${query.toString() ? `?${query.toString()}` : ''}`)
+      return
     } catch {
       setSubmissionStatus('error')
     } finally {

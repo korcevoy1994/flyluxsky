@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRightIcon } from "./ui/arrow-right-icon"
+import useOfferId from "@/hooks/useOfferId"
 
 const NAVBAR_PHONE = "+1 888 830 7444"
 
@@ -15,6 +16,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const offerId = useOfferId()
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -44,6 +46,14 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
         </Link>
         {/* Right side */}
         <div className="flex items-center gap-4">
+          {/* Offer ID badge */}
+          {offerId && (
+            <div className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-full border ${isDarkBackground ? 'border-white/30 text-white' : 'border-[#0ABAB5]/30 text-[#0D2B29]'} bg-white/10 backdrop-blur-sm`}
+                 title="Your Offer ID">
+              <span className={`text-xs ${isDarkBackground ? 'text-white/90' : 'text-[#0D2B29]/80'}`}>Offer ID</span>
+              <span className={`text-xs font-semibold ${isDarkBackground ? 'text-white' : 'text-[#0ABAB5]'} select-all`}>#{offerId}</span>
+            </div>
+          )}
           {/* Phone CTA */}
           <Button
             variant="default"

@@ -84,6 +84,10 @@
   --font-inter: 'Inter', sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -293,6 +297,35 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Simple cursor pointer for flight class buttons */
+.flight-class-pointer {
+  cursor: pointer !important;
+}
+
+.flight-class-pointer:hover,
+.flight-class-pointer:active,
+.flight-class-pointer:focus,
+.flight-class-pointer:focus-visible,
+.flight-class-pointer:focus-within {
+  cursor: pointer !important;
+}
+
+/* Force cursor on parent containers */
+.flight-class-pointer * {
+  cursor: pointer !important;
+}
+
+/* Override any focus states that might interfere */
+button.flight-class-pointer {
+  cursor: pointer !important;
+}
+
+button.flight-class-pointer:hover,
+button.flight-class-pointer:active,
+button.flight-class-pointer:focus {
+  cursor: pointer !important;
 }
 
 

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from "next/legacy/image";
+import { useRouter } from 'next/navigation';
+import { searchAirportsGrouped } from '@/lib/utils';
 
 const popularDestinations = [
   { 
@@ -115,23 +117,16 @@ const popularDestinations = [
 ];
 
 const topAirlines = [
-  'Singapore Airlines', 'Lufthansa Airlines', 'American Airlines', 'Emirates Airlines',
-  'Nippon Airways', 'Qantas Airways', 'Turkish Airlines'
+  { name: 'Singapore Airlines', href: '/airlines/singapore-airlines' },
+  { name: 'Lufthansa Airlines', href: '/airlines/lufthansa-airlines' },
+  { name: 'American Airlines', href: '/airlines/american-airlines' },
+  { name: 'Emirates Airlines', href: '/airlines/emirates-airlines' },
+  { name: 'Nippon Airways', href: '/airlines/nippon-airways' },
+  { name: 'Qantas Airways', href: '/airlines/qantas-airways' },
+  { name: 'Turkish Airlines', href: '/airlines/turkish-airlines' }
 ];
 
-const topCountries = [
-  'United Arab Emirates Business Class Flights', 'United Kingdom Business Class Flights',
-  'Netherlands Business Class Flights', 'Singapore Business Class Flights',
-  'Germany Business Class Flights', 'Australia Business Class Flights',
-  'Portugal Business Class Flights'
-];
-
-const topCities = [
-  'Amsterdam Business Class Flights', 'Singapore Business Class Flights',
-  'Barcelona Business Class Flights', 'Frankfurt Business Class Flights',
-  'Istanbul Business Class Flights', 'London Business Class Flights',
-  'Sydney Business Class Flights'
-];
+// topCountries and topCities moved inside Footer component to avoid hydration mismatch
 
 const socialLinks = [
   { name: 'instagram', icon: '/icons/footer/instagram.svg' },
@@ -149,6 +144,47 @@ const paymentMethods = [
 
 const DestinationAccordion = ({ dest, isOpen, onToggle }: { dest: typeof popularDestinations[0], isOpen: boolean, onToggle: () => void }) => {
   const hasFlights = dest.flights.length > 0;
+  const router = useRouter();
+
+  const handleFlightClick = (flight: { from: string; to: string; savings: number }) => {
+    // Find airports for from and to cities
+    const fromResults = searchAirportsGrouped(flight.from, 5);
+    const toResults = searchAirportsGrouped(flight.to, 5);
+    
+    let fromCode = '';
+    let toCode = '';
+    
+    // Get the first airport code from search results
+    if (fromResults.length > 0) {
+      if (fromResults[0].type === 'city' && fromResults[0].airports && fromResults[0].airports.length > 0) {
+        fromCode = fromResults[0].airports[0].code;
+      } else if (fromResults[0].code) {
+        fromCode = fromResults[0].code;
+      }
+    }
+    
+    if (toResults.length > 0) {
+      if (toResults[0].type === 'city' && toResults[0].airports && toResults[0].airports.length > 0) {
+        toCode = toResults[0].airports[0].code;
+      } else if (toResults[0].code) {
+        toCode = toResults[0].code;
+      }
+    }
+    
+    // Create search URL with parameters
+    if (fromCode && toCode) {
+      const searchParams = new URLSearchParams({
+        from: fromCode,
+        to: toCode,
+        tripType: 'One-way',
+        passengers: '1',
+        class: 'Business',
+        departureDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
+      });
+      
+      router.push(`/searching?${searchParams.toString()}`);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
@@ -174,10 +210,14 @@ const DestinationAccordion = ({ dest, isOpen, onToggle }: { dest: typeof popular
         <div className="overflow-hidden">
           <div className="px-4 pt-2 pb-4 space-y-2">
             {dest.flights.map((flight, index) => (
-              <a href="#" key={index} className="flex justify-between items-center text-xs hover:bg-gray-100 p-2 rounded-lg">
+              <button 
+                key={index} 
+                onClick={() => handleFlightClick(flight)}
+                className="w-full flex justify-between items-center text-xs hover:bg-gray-100 p-2 rounded-lg cursor-pointer transition-colors"
+              >
                 <span className="text-[#0D2B29]">{flight.from} – {flight.to}</span>
                 <span className="text-[#1C5E59]">save up to ${flight.savings}</span>
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -189,6 +229,29 @@ const DestinationAccordion = ({ dest, isOpen, onToggle }: { dest: typeof popular
 
 const Footer = () => {
   const [openDestination, setOpenDestination] = useState<string | null>(null);
+  const [topCountries, setTopCountries] = useState<{ name: string; href: string }[]>([]);
+  const [topCities, setTopCities] = useState<{ name: string; href: string }[]>([]);
+
+  useEffect(() => {
+    // Initialize data only on client to avoid hydration mismatch
+    setTopCountries([
+      { name: 'United Kingdom Business Class Flights', href: '/countries/united-kingdom' },
+      { name: 'Portugal Business Class Flights', href: '/countries/portugal' },
+      { name: 'Greece Business Class Flights', href: '/countries/greece' },
+      { name: 'France Business Class Flights', href: '/countries/france' },
+      { name: 'Spain Business Class Flights', href: '/countries/spain' },
+      { name: 'Italy Business Class Flights', href: '/countries/italy' }
+    ]);
+
+    setTopCities([
+      { name: 'London Business Class Flights', href: '/cities/london' },
+      { name: 'Madrid Business Class Flights', href: '/cities/madrid' },
+      { name: 'Athens Business Class Flights', href: '/cities/athens' },
+      { name: 'Rome Business Class Flights', href: '/cities/rome' },
+      { name: 'Paris Business Class Flights', href: '/cities/paris' },
+      { name: 'Lisbon Business Class Flights', href: '/cities/lisbon' }
+    ]);
+  }, []);
 
   return (
     <footer className="relative bg-white text-[#0D2B29] pt-12 overflow-hidden font-poppins">
@@ -258,8 +321,8 @@ const Footer = () => {
             </div>
 
             <div className="space-y-2 text-center md:text-left">
-                <a href="#" className="block bg-white py-2 px-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-gray-50 transition-colors border border-gray-200/80 text-center text-[#0D2B29]">Reviews</a>
-                <a href="#" className="block bg-white py-2 px-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-gray-50 transition-colors border border-gray-200/80 text-center text-[#0D2B29]">Contacts</a>
+                <a href="/reviews" className="block bg-white py-2 px-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-gray-50 transition-colors border border-gray-200/80 text-center text-[#0D2B29]">Reviews</a>
+                <a href="/contact" className="block bg-white py-2 px-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-gray-50 transition-colors border border-gray-200/80 text-center text-[#0D2B29]">Contacts</a>
             </div>
         </section>
 
@@ -276,8 +339,8 @@ const Footer = () => {
             </div>
 
             <div className="flex gap-4 text-sm uppercase text-black font-medium order-3">
-                <a href="#" className="hover:text-black/70 transition-colors">Privacy policy</a>
-                <a href="#" className="hover:text-black/70 transition-colors">Terms of Use</a>
+                <a href="/privacy" className="hover:text-black/70 transition-colors">Privacy policy</a>
+                <a href="/terms" className="hover:text-black/70 transition-colors">Terms of Use</a>
             </div>
         </section>
       </div>
@@ -306,20 +369,25 @@ const ContactMethod = ({ icon, title, description, href, iconBgColor = 'bg-trans
     );
 };
 
-const LinkList = ({ title, links }: { title: string, links: string[] }) => (
+const LinkList = ({ title, links }: { title: string, links: string[] | { name: string; href: string }[] }) => (
     <div className="space-y-4">
         <h3 className="text-lg font-semibold uppercase text-[#033836] tracking-wide">{title}</h3>
         <ul className="space-y-2">
-            {links.map(link => (
-                <li key={link}>
-                    <a href="#" className="text-sm text-[#0D2B29]/75 hover:text-[#0D2B29] transition-colors leading-tight block">
-                        {link}
-                    </a>
-                </li>
-            ))}
+            {links && links.length > 0 && links.map(link => {
+                const isStringArray = typeof link === 'string';
+                const linkText = isStringArray ? link : link.name;
+                const linkHref = isStringArray ? '#' : link.href;
+                return (
+                    <li key={linkText}>
+                        <a href={linkHref} className="text-sm text-[#0D2B29]/75 hover:text-[#0D2B29] transition-colors leading-tight block">
+                            {linkText}
+                        </a>
+                    </li>
+                );
+            })}
         </ul>
     </div>
 );
 
 
-export default Footer; 
+export default Footer;

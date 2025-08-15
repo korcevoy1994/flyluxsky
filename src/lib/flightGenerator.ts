@@ -108,8 +108,10 @@ const commonAirlines = [
   { name: 'TAP Air Portugal', iata: 'TP', rating: 4.2, country: 'Portugal', premium: false, hubs: ['LIS'], continent: 'Europe' },
   { name: 'LOT Polish Airlines', iata: 'LO', rating: 4.1, country: 'Poland', premium: false, hubs: ['WAW'], continent: 'Europe' },
   { name: 'Tarom', iata: 'RO', rating: 4.0, country: 'Romania', premium: false, hubs: ['OTP'], continent: 'Europe' },
+  { name: 'Turkish Airlines', iata: 'TK', rating: 4.3, country: 'Turkey', premium: false, hubs: ['IST'], continent: 'Europe' },
 
 
+  // North America Airlines
   { name: 'American Airlines', iata: 'AA', rating: 4.2, country: 'USA', premium: true, hubs: ['DFW', 'CLT', 'PHX', 'MIA'], domestic: true, continent: 'North America' },
   { name: 'Delta Air Lines', iata: 'DL', rating: 4.3, country: 'USA', premium: true, hubs: ['ATL', 'DTW', 'MSP', 'SEA'], domestic: true, continent: 'North America' },
   { name: 'United Airlines', iata: 'UA', rating: 4.1, country: 'USA', premium: true, hubs: ['ORD', 'DEN', 'IAH', 'SFO'], domestic: true, continent: 'North America' },
@@ -468,7 +470,7 @@ function selectStopoverAirports(
       country: selectedAirport.country
     });
     
-    // Удалить выбранный аэропорт из списка
+    // Remove selected airport from the list
     availableHubs.splice(randomIndex, 1);
   }
   
@@ -588,7 +590,7 @@ function calculatePriceWithAdminConfig(distance: number, airlineName: string, fl
       }
     }
   } catch (error) {
-    console.warn('Failed to load admin pricing config, falling back to default:', error);
+    // Failed to load admin pricing config, falling back to default
   }
   
   // Fallback to original pricing logic
@@ -747,10 +749,13 @@ function getAirlineLogo(airlineName: string): string {
     'VA': 'Virgin Australia',
     'NZ': 'Air New Zealand',
     'JQ': 'Jetstar Airways',
-    'FJ': 'Fiji Airways'
+    'FJ': 'Fiji Airways',
+    'Qantas Airways': 'Qantas',
+    'Turkish': 'Turkish Airlines',
+    'TK': 'Turkish Airlines'
   };
   
-
+  
   const resolvedAirlineName = alternativeNameMap[airlineName] || airlineName;
   
 
@@ -826,10 +831,11 @@ function getAirlineLogo(airlineName: string): string {
     'Virgin Australia': '/logos/airlines/Virgin Australia.svg',
     'Air New Zealand': '/logos/airlines/Air New Zealand.svg',
     'Jetstar Airways': '/logos/airlines/Jetstar Airways.svg',
-    'Fiji Airways': '/logos/airlines/Fiji Airways.svg'
+    'Fiji Airways': '/logos/airlines/Fiji Airways.svg',
+    'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg'
   };
   
-
+  
   if (logoMap[resolvedAirlineName]) {
     return logoMap[resolvedAirlineName];
   }
@@ -909,16 +915,18 @@ function getAirlineLogo(airlineName: string): string {
     'virgin': '/logos/airlines/Virgin Australia.svg',
     'airnewzealand': '/logos/airlines/Air New Zealand.svg',
     'jetstar': '/logos/airlines/Jetstar Airways.svg',
-    'fiji': '/logos/airlines/Fiji Airways.svg'
+    'fiji': '/logos/airlines/Fiji Airways.svg',
+    'turkishairlines': '/logos/airlines/Turkish Airlines.svg',
+    'turkish': '/logos/airlines/Turkish Airlines.svg'
   };
   
-
+  
   if (alternativeMap[normalizedName]) {
     return alternativeMap[normalizedName];
   }
   
 
-  return '/logos/airlines/Emirates (airline).svg';
+  return '/logos/airlines/Emirates.svg';
 }
 
 
@@ -1272,7 +1280,7 @@ async function generateMultiCityFlights(fromCode: string, toCode: string, flight
         tripMultiplier = multiCityConfig.multiplier;
       }
     } catch (error) {
-      console.warn('Failed to load admin config for trip multiplier, using fallback:', error);
+      // Failed to load admin config for trip multiplier, using fallback
     }
     
     multiCityFlights.push({
@@ -1290,8 +1298,8 @@ async function generateMultiCityFlights(fromCode: string, toCode: string, flight
 
 export { generateMultiCityFlightsFromSegments };
 
-export async function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One-way', departureDate?: string, returnDate?: string): Promise<(GeneratedFlight | MultiCityFlight)[]> {
-  console.log('🛫 generateFlightsClient called with:', { fromCode, toCode, flightClass, tripType, departureDate, returnDate });
+export async function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One-way', departureDate?: string, returnDate?: string, selectedFlight?: { airline: string; price: number; duration: string }): Promise<(GeneratedFlight | MultiCityFlight)[]> {
+  // generateFlightsClient called
 
   // Ensure pricing config is available even on first visit/incognito before any calculation happens
   try {
@@ -1307,11 +1315,11 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
   const toAirport = airportsMap.get(toCode);
   
   if (!fromAirport || !toAirport) {
-    console.log('❌ Airport not found:', { fromAirport: !!fromAirport, toAirport: !!toAirport });
+    // Airport not found
     return [];
   }
   
-  console.log('✅ Airports found:', { from: fromAirport.name, to: toAirport.name });
+  // Airports found
   
 
   if (fromAirport.city === toAirport.city) {
@@ -1520,7 +1528,7 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
         }
       }
     } catch (error) {
-      console.warn('Failed to load trip type multipliers from admin config, using defaults:', error);
+      // Failed to load trip type multipliers from admin config, using defaults
       // Fallback to hardcoded values
       if (tripType === 'Round Trip') {
         price = Math.round(price * 1.8);
@@ -1634,14 +1642,111 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
     filteredFlights = [...filteredFlights, ...additionalFlights];
   }
   
-  const finalFlights = filteredFlights.sort((a, b) => a.price - b.price).slice(0, 3);
-  console.log('✈️ Generated flights:', finalFlights.map(f => ({ 
-    id: f.id, 
-    airline: f.airline, 
-    price: f.price, 
-    totalPrice: f.totalPrice,
-    class: f.class 
-  })));
+  let finalFlights = filteredFlights.sort((a, b) => a.price - b.price).slice(0, 3);
+  
+  // If a specific flight was selected, ensure it's included in the results
+  if (selectedFlight) {
+    // Looking for selected flight
+
+    // Normalize airline name (e.g., 'Qantas Airways' -> 'Qantas') for matching
+    const normalizedAirlineName = (() => {
+      switch (selectedFlight.airline) {
+        case 'Qantas Airways':
+          return 'Qantas';
+        case 'SWISS':
+        case 'Swiss':
+          return 'Swiss International Air Lines';
+        case 'JAL':
+          return 'Japan Airlines';
+        case 'ANA':
+        case 'Nippon Airways':
+        case 'All Nippon':
+          return 'All Nippon Airways';
+        case 'Qatar':
+          return 'Qatar Airways';
+        case 'Etihad':
+          return 'Etihad Airways';
+        default:
+          return selectedFlight.airline;
+      }
+    })();
+
+    const targetAirline = commonAirlines.find(airline => airline.name === normalizedAirlineName);
+    if (targetAirline) {
+      // Check if the selected flight is already in the results with more lenient criteria
+      const existingFlight = finalFlights.find(f => {
+        const priceMatch = Math.abs(f.price - selectedFlight.price) <= 100; // Increased tolerance
+        const airlineMatch = f.airline === normalizedAirlineName;
+        // More lenient duration matching - extract numbers and compare
+        const extractHours = (duration: string) => {
+          const match = duration.match(/(\d+)h/);
+          return match ? parseInt(match[1]) : 0;
+        };
+        const durationMatch = Math.abs(extractHours(f.duration) - extractHours(selectedFlight.duration)) <= 2; // 2 hour tolerance
+        
+        // Checking existing flight
+        
+        return airlineMatch && priceMatch && durationMatch;
+      });
+      
+      if (!existingFlight) {
+        // Creating exact selected flight to ensure it appears in results
+        // Create the selected flight with exact parameters
+        const seed = createDailySeed(fromCode + normalizedAirlineName, toCode, flightClass);
+        const rng = new SeededRandom(seed);
+        
+        const stopsCount = calculateStops(distance, rng);
+        const stopoverAirports = selectStopoverAirports(fromAirport, toAirport, stopsCount, targetAirline.name, rng);
+        const times = generateFlightTimes(selectedFlight.duration, rng);
+        const amenities = getAmenities(targetAirline.name, distance);
+        
+        const arrivalDate = departureDate ? (() => {
+          const depDate = new Date(departureDate + 'T00:00:00Z');
+          depDate.setUTCDate(depDate.getUTCDate() + times.arrivalDateOffset);
+          return depDate.toISOString().split('T')[0];
+        })() : undefined;
+        
+        const selectedFlightObj: GeneratedFlight = {
+          id: 999, // Special ID for selected flight
+          airline: targetAirline.name,
+          logo: getAirlineLogo(targetAirline.name),
+          flightNumber: `${targetAirline.iata} ${Math.floor(rng.random() * 9000) + 1000}`,
+          departure: {
+            time: times.departure,
+            airport: fromCode,
+            city: fromAirport.city,
+            date: departureDate
+          },
+          arrival: {
+            time: times.arrival,
+            airport: toCode,
+            city: toAirport.city,
+            date: arrivalDate
+          },
+          duration: selectedFlight.duration,
+          stops: stopsCount,
+          stopoverAirports,
+          price: selectedFlight.price,
+          class: flightClass,
+          amenities,
+          rating: targetAirline.rating,
+          seatsLeft: Math.floor(rng.random() * 8) + 8
+        };
+        
+        // Place the selected flight first and keep the original top-3 intact after it
+        finalFlights = [selectedFlightObj, ...finalFlights];
+        // Added selected flight as 1st result
+      } else {
+        // Move the existing matching flight to the first position
+        finalFlights = [existingFlight, ...finalFlights.filter(f => f.id !== existingFlight.id)];
+        // Selected flight already exists — moved to 1st position
+      }
+    } else {
+      // Target airline not found
+    }
+  }
+  
+  // Generated flights
 
   return finalFlights;
 }

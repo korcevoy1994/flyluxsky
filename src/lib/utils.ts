@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export { airports };
 
-// Типы для аэропортов
+// Types for airports
 export interface Airport {
   name: string;
   code: string;
@@ -21,7 +21,7 @@ export interface Airport {
   lon: number;
 }
 
-// Интерфейс для группированных результатов
+// Interface for grouped results
 export interface GroupedSearchResult {
   type: 'city' | 'airport';
   id: string;
@@ -61,7 +61,7 @@ const fuseOptions = {
 
 const fuse = new Fuse(allSearchableItems, fuseOptions);
 
-// Функция для группированного поиска аэропортов
+// Function for grouped airport search
 export function searchAirportsGrouped(query: string, limit = 10): GroupedSearchResult[] {
   if (!query || query.length < 2) return [];
 
@@ -104,12 +104,12 @@ export function searchAirportsGrouped(query: string, limit = 10): GroupedSearchR
 
   const results: GroupedSearchResult[] = [...metropolisResults];
   
-  // Сортируем города по релевантности
+  // Sort cities by relevance
   const sortedCities = Array.from(cityGroups.entries()).sort(([, airportsA], [, airportsB]) => {
     return airportsB.length - airportsA.length;
   });
   
-  // Добавляем города с аэропортами
+  // Add cities with airports
   for (const [cityName, cityAirports] of sortedCities) {
     if (results.length >= limit) break;
     
@@ -142,7 +142,7 @@ export function searchAirportsGrouped(query: string, limit = 10): GroupedSearchR
   return results.slice(0, limit);
 }
 
-// Получение популярных аэропортов
+// Get popular airports
 export function getPopularAirports(limit = 20): Airport[] {
   const popularCodes = ['JFK', 'LAX', 'LHR', 'CDG', 'DXB', 'NRT', 'SIN', 'FRA', 'AMS', 'ICN', 'BKK', 'HND', 'BCN', 'MAD', 'FCO'];
   

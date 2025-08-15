@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import useEmblaCarousel, { UseEmblaCarouselType } from 'embla-carousel-react';
 import TestimonialModal from './testimonial-modal';
+import { ensureReviewsConfigLoaded } from '@/lib/reviewsAdmin';
 
 // Interfaces and Data
 interface Testimonial {
@@ -13,65 +15,6 @@ interface Testimonial {
   date: string;
   review: string;
 }
-
-const testimonials: Testimonial[] = [
-    {
-        name: "John Cirillo",
-        avatar: "/images/avatars/avatar-john-cirillo.png",
-        rating: 5,
-        date: "Mar 6, 2025",
-        review: "Daniel Hoffman provided excellent customer service for my recent inquiry. He was quick to respond and is certainly an asset for his company..."
-      },
-      {
-        name: "Mrs. Deborah Rydberg",
-        avatar: "/images/avatars/avatar-deborah-rydberg.png",
-        rating: 5,
-        date: "Mar 6, 2025",
-        review: "Anthony was able to get us last minute flights to Paris. The ones we originally chose were sold out by the time I got the forms completed..."
-      },
-      {
-        name: "denise",
-        avatar: "/images/avatars/avatar-denise.png",
-        rating: 5,
-        date: "Mar 6, 2025",
-        review: "Daniel is extremely helpful at finding us the flight we wanted at the price we never expected! He is responsive and thorough and will walk you..."
-      },
-      {
-        name: "earl gress",
-        avatar: "/images/avatars/avatar-earl-gress.png",
-        rating: 5,
-        date: "Mar 6, 2025",
-        review: "Sergio our personal customer service representative was able to make our Buck List trip to Ireland a reality. His professionalism and attention..."
-      },
-      {
-        name: "Sarah Mitchell",
-        avatar: "", 
-        rating: 5,
-        date: "Mar 5, 2025",
-        review: "Amazing service! They found me the perfect flight within my budget and the booking process was seamless. Highly recommend for all your travel needs."
-      },
-      {
-        name: "Michael Johnson",
-        avatar: "", 
-        rating: 5,
-        date: "Mar 4, 2025",
-        review: "The team went above and beyond to help me change my flight dates. Professional, efficient, and genuinely caring customer service. Thank you!"
-      },
-      {
-        name: "Emily Davis",
-        avatar: "", 
-        rating: 5,
-        date: "Mar 3, 2025",
-        review: "Best travel booking experience I've ever had. The staff was knowledgeable, friendly, and helped me save hundreds on my international flight."
-      },
-      {
-        name: "Robert Wilson",
-        avatar: "", 
-        rating: 5,
-        date: "Mar 2, 2025",
-        review: "Outstanding service from start to finish. They made my complex multi-city trip planning effortless and stress-free. Will definitely use again!"
-      }
-];
 
 // Custom Hook for Carousel Logic
 function useTestimonialCarousel() {
@@ -141,7 +84,7 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial, o
       {testimonial.avatar ? (
         <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} />
       ) : (
-        <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+        <div className="w-full h-full bg-[#0ABAB5] flex items-center justify-center">
           <span className="text-white font-bold text-lg">
             {testimonial.name.split(' ').map(n => n[0]).join('').toUpperCase()}
           </span>
@@ -151,13 +94,40 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial, o
     <h3 className="text-lg font-medium text-[#0D2B29] uppercase font-poppins">{testimonial.name}</h3>
     <StarRating rating={testimonial.rating} />
     <p className="text-sm text-[#0D2B29] font-poppins">{testimonial.date}</p>
-    <p className="text-sm text-[#0D2B29] font-poppins leading-relaxed line-clamp-3">{testimonial.review}</p>
+    <p className="text-sm text-[#0D2B29] font-poppins leading-relaxed line-clamp-3 break-words max-w-full">{testimonial.review}</p>
   </div>
 );
 
 // Main Component
 export default function TestimonialsSection() {
+  const router = useRouter();
   const { emblaRef, scrollProgress, scrollPrev, scrollNext, prevBtnDisabled, nextBtnDisabled, selectedTestimonial, handleOpenModal, handleCloseModal } = useTestimonialCarousel();
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const reviews = await ensureReviewsConfigLoaded();
+        if (!mounted) return;
+        const mapped: Testimonial[] = (reviews as unknown[]).map((row) => {
+          const r = row as ApiReviewRow
+          return {
+            name: r.name || '',
+            avatar: (r.avatar ?? r.avatar_url) || '',
+            rating: Math.max(1, Math.min(5, Number(r.rating ?? 5))),
+            date: r.date || r.review_date || (r.created_at ? r.created_at.slice(0, 10) : '') || '',
+            review: (r.review ?? r.text) || ''
+          }
+        })
+        setTestimonials(mapped);
+      } catch (e) {
+        // Failed to load reviews, showing empty list
+        setTestimonials([]);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <section className="w-full max-w-[1280px] mx-auto bg-white rounded-3xl py-8 px-2 lg:p-12 flex flex-col items-center gap-8 lg:gap-12">
@@ -190,7 +160,7 @@ export default function TestimonialsSection() {
 
         <div className="overflow-hidden py-4" ref={emblaRef}>
             <div className="flex gap-6 pl-6 lg:pl-10">
-                {testimonials.map((testimonial, index) => (
+                {testimonials.slice(0, 12).map((testimonial: Testimonial, index: number) => (
                     <TestimonialCard key={index} testimonial={testimonial} onClick={() => handleOpenModal(testimonial)} />
                 ))}
             </div>
@@ -210,7 +180,10 @@ export default function TestimonialsSection() {
         </div>
       </div>
 
-      <button className="bg-[#0ABAB5] text-white px-8 py-4 rounded-full font-inter font-medium text-lg uppercase hover:bg-[#0ABAB5]/90 transition-colors cursor-pointer">
+      <button 
+        onClick={() => router.push('/reviews')}
+        className="bg-[#0ABAB5] text-white px-8 py-4 rounded-full font-inter font-medium text-lg uppercase hover:bg-[#0ABAB5]/90 transition-colors cursor-pointer"
+      >
         view all reviews
       </button>
 
@@ -219,4 +192,17 @@ export default function TestimonialsSection() {
       )}
     </section>
   );
-} 
+}
+
+// Type for API row to avoid any
+interface ApiReviewRow {
+  name?: string
+  avatar?: string
+  avatar_url?: string
+  date?: string
+  review_date?: string
+  created_at?: string
+  rating?: number | string
+  review?: string
+  text?: string
+}

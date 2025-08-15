@@ -7,23 +7,23 @@ export async function POST(req: NextRequest) {
   const KOMMO_API_TOKEN = process.env.KOMMO_API_TOKEN;
 
   if (!KOMMO_API_BASE_URL || !KOMMO_API_TOKEN) {
-    console.error('Kommo API credentials are not set in .env.local');
+    // Kommo API credentials are not set in .env.local
     return NextResponse.json({ message: 'Server configuration error.' }, { status: 500 });
   }
 
   const leadTitle = `New Flight Request: ${from} to ${to}`;
 
   // =================================================================
-  // ВАЖНО: Замени 12345 на реальные ID полей из твоего Kommo
+  // IMPORTANT: Replace 12345 with real field IDs from your Kommo
   // =================================================================
   const customFields = [
-    { field_id: 5616, values: [{ value: from }] },         // <-- ID для поля "From"
-    { field_id: 5618, values: [{ value: to }] },           // <-- ID для поля "To"
-    { field_id: 5620, values: [{ value: tripType }] },      // <-- ID для поля "Trip-Type"
-    { field_id: 5622, values: [{ value: departureDate }] }, // <-- ID для поля "Departure-Date"
-    { field_id: 5624, values: [{ value: returnDate }] },    // <-- ID для поля "Return-Date"
-    { field_id: 5626, values: [{ value: passengers }] },    // <-- ID для поля "Passengers"
-    { field_id: 5678, values: [{ value: flightClass }] },   // <-- ID для поля "Class"
+    { field_id: 5616, values: [{ value: from }] },         // <-- ID for "From" field
+    { field_id: 5618, values: [{ value: to }] },           // <-- ID for "To" field
+    { field_id: 5620, values: [{ value: tripType }] },      // <-- ID for "Trip-Type" field
+    { field_id: 5622, values: [{ value: departureDate }] }, // <-- ID for "Departure-Date" field
+    { field_id: 5624, values: [{ value: returnDate }] },    // <-- ID for "Return-Date" field
+    { field_id: 5626, values: [{ value: passengers }] },    // <-- ID for "Passengers" field
+    { field_id: 5678, values: [{ value: flightClass }] },   // <-- ID for "Class" field
   ];
 
   const complexLead = [
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
           },
         ],
       },
-      custom_fields_values: customFields.filter(field => field.values[0].value), // Отправляем только заполненные поля
+      custom_fields_values: customFields.filter(field => field.values[0].value), // Send only filled fields
     },
   ];
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Kommo API error:', errorData);
+      // Kommo API error
       return NextResponse.json({ message: 'Failed to create lead in CRM.', details: errorData }, { status: response.status });
     }
 
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Lead created successfully!', data }, { status: 200 });
 
   } catch (error) {
-    console.error('Error sending request to Kommo API:', error);
+    // Error sending request to Kommo API
     return NextResponse.json({ message: 'An unexpected error occurred.' }, { status: 500 });
   }
-} 
+}

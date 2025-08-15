@@ -56,7 +56,7 @@ export const useFlightSearch = (initialFromAirport?: Airport | null) => {
       setMultiShowToSuggestions([false]);
       setMultiActiveInputs([]);
     }
-  }, [tripType, multiSegments.length]);
+  }, [tripType]);
 
   return {
     fromInput, setFromInput,

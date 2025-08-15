@@ -13,6 +13,16 @@ const config: Config = {
         ubuntu: ['Ubuntu', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'marquee-reverse': {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+      },
       animation: {
         'fade-in': 'fade-in 0.6s ease-out',
         'slide-up': 'slide-up 0.6s ease-out',
@@ -32,10 +42,12 @@ const config: Config = {
         'radar-pulse': 'radar-pulse 3s ease-in-out infinite',
         'float-geometric': 'float-geometric 4s ease-in-out infinite',
         'path-draw': 'path-draw 3s ease-in-out infinite',
+        'marquee': 'marquee 28s linear infinite',
+        'marquee-reverse': 'marquee-reverse 30s linear infinite',
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 };
 
 export default config;

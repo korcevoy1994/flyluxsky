@@ -64,7 +64,7 @@ const TestimonialModal: React.FC<TestimonialModalProps> = ({ testimonial, onClos
                     {testimonial.avatar ? (
                         <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} />
                     ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+                        <div className="w-full h-full bg-[#0ABAB5] flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">
                             {testimonial.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </span>
@@ -99,4 +99,4 @@ const TestimonialModal: React.FC<TestimonialModalProps> = ({ testimonial, onClos
   );
 };
 
-export default TestimonialModal; 
+export default TestimonialModal;

@@ -60,7 +60,7 @@ interface FlightSearchFormMobileProps {
   coords: Coordinates | null;
 }
 
-// Календарь со скроллом по месяцам
+// Calendar with scrollable months
 const ScrollableCalendar: React.FC<{
   selectedDate: Date | null;
   onDateSelect: (date: Date) => void;
@@ -99,12 +99,12 @@ const ScrollableCalendar: React.FC<{
     
     const days = []
     
-    // Пустые дни в начале месяца
+    // Empty days at the beginning of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null)
     }
     
-    // Дни месяца
+    // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day))
     }
@@ -178,7 +178,7 @@ const BottomSheet: React.FC<{ open: boolean, onClose: () => void, children: Reac
     <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-t-2xl shadow-lg w-full h-[85vh] p-4 animate-slide-up flex flex-col">
-        <button className="absolute right-4 top-4" onClick={onClose}><X size={24} /></button>
+      <button className="absolute right-4 top-4 cursor-pointer" onClick={onClose}><X size={24} /></button>
         <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
         <div className="flex-1">{children}</div>
       </div>
@@ -293,7 +293,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       setMultiShowFromSuggestions(shows => shows.map(() => false))
       setMultiShowToSuggestions(shows => shows.map(() => false))
     }
-  }, [tripType, multiSegments.length, setMultiSegments, setMultiPopovers, setMultiFromSuggestions, setMultiToSuggestions, setMultiShowFromSuggestions, setMultiShowToSuggestions])
+  }, [tripType, multiSegments.length])
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
@@ -493,7 +493,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
     
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [setMultiPopovers, setMultiShowFromSuggestions, setMultiShowToSuggestions])
+  }, [])
 
   const updatePassengerCount = (type: 'adults' | 'children' | 'infants', increment: boolean) => {
     setPassengers(prev => {
@@ -545,10 +545,10 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-0 overflow-x-hidden">
+    <div className="w-full max-w-md mx-auto p-0">
       {/* Trip Type Selection */}
-      <div className="flex justify-center mb-4 overflow-x-hidden md:hidden">
-        <div className="bg-white rounded-full p-1 shadow-lg relative">
+      <div className="flex justify-center mb-4" style={{ zIndex: 10, pointerEvents: 'auto' }}>
+        <div className="bg-white rounded-full p-1 ring-1 ring-gray-200 relative" style={{ zIndex: 15, pointerEvents: 'auto' }}>
           <div className="flex relative">
             {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
               const isSelected = type === tripType;
@@ -562,12 +562,14 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                        ? 'text-white' 
                        : 'text-[#0D2B29] hover:text-[#0ABAB5]'
                    }`}
+                   style={{ pointerEvents: 'auto', zIndex: 20, touchAction: 'manipulation' }}
                    tabIndex={0}
                  >
                    {isSelected && (
                      <motion.div
                        layoutId="activeTabMobile"
                        className="absolute inset-0 bg-[#0ABAB5] rounded-full"
+                       style={{ pointerEvents: 'none' }}
                        initial={{ opacity: 1 }}
                        animate={{ opacity: 1 }}
                        transition={{
@@ -1130,11 +1132,12 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                 <button
                   key={cls}
                   onClick={() => setSelectedClass(cls)}
-                  className={`w-full px-4 py-3 text-left rounded-xl font-poppins text-[#0D2B29] text-base transition-colors ${
+                  className={`flight-class-pointer w-full px-4 py-3 text-left rounded-xl font-poppins text-[#0D2B29] text-base transition-colors ${
                     selectedClass === cls 
                       ? 'bg-[#0ABAB5] text-white' 
                       : 'bg-gray-50 hover:bg-[#F0FBFA]'
                   }`}
+                  style={{cursor: 'pointer !important'}}
                   tabIndex={0}
                 >
                   {cls}
@@ -1211,7 +1214,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                  <div key={result.id}>
                   {result.type === 'city' ? (
                     <>
-                      {/* Заголовок города */}
+                      {/* City header */}
                       <div 
                         className="px-4 py-2 bg-gray-50 flex items-center border-b border-gray-100 cursor-pointer hover:bg-gray-100"
                         onClick={() => handleCitySelect(result, 'from')}

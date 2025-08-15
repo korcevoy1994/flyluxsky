@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Save, Plus, Trash2, Download, Upload, RotateCcw } from 'lucide-react'
+import { Save, Plus, Trash2, Download, Upload } from 'lucide-react'
 import {
   defaultPricingConfig,
   savePricingConfig,
   loadPricingConfig,
+  ensurePricingConfigLoaded,
   exportPricingConfig,
   importPricingConfig,
   type PricingConfiguration,
@@ -23,16 +24,28 @@ export default function AdminPricingPage() {
   const [config, setConfig] = useState<PricingConfiguration>(defaultPricingConfig)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load configuration on component mount
+  // Load configuration on component mount: prefer server, fallback to local/default
   useEffect(() => {
-    try {
-      const loadedConfig = loadPricingConfig()
-      setConfig(loadedConfig)
-    } catch (error) {
-      console.error('Failed to load configuration:', error)
-      setConfig(defaultPricingConfig)
-    } finally {
-      setIsLoading(false)
+    let cancelled = false
+    const load = async () => {
+      try {
+        const serverCfg = await ensurePricingConfigLoaded()
+        if (!cancelled) setConfig(serverCfg)
+      } catch (error) {
+        // Failed to load configuration from server, using local
+        try {
+          const local = loadPricingConfig()
+          if (!cancelled) setConfig(local)
+        } catch (e) {
+          if (!cancelled) setConfig(defaultPricingConfig)
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
     }
   }, [])
 
@@ -47,29 +60,23 @@ export default function AdminPricingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
       })
-        .then((res) => {
-          if (!res.ok) throw new Error('Failed to publish pricing config')
-          return res.json()
-        })
-        .then(async () => {
-          // Also update PRICING_CONFIG_JSON on server if supported through an admin endpoint (optional future)
-          alert('Pricing configuration saved and published!')
+        .then(async (res) => {
+          const backend = res.headers.get('x-pricing-write') || 'unknown'
+          if (!res.ok) throw new Error(`Failed to publish pricing config (backend=${backend})`)
+          await res.json()
+          alert(`Pricing configuration saved (backend: ${backend})`)
         })
         .catch((err) => {
-          console.error(err)
+          // Error occurred
           alert('Saved locally, but failed to publish to server API')
         })
     } catch (error) {
-      console.error('Failed to save configuration:', error)
+      // Failed to save configuration
       alert('Failed to save pricing configuration')
     }
   }
 
-  const handleReset = () => {
-    if (confirm('Are you sure you want to reset to default configuration? This will lose all current changes.')) {
-      setConfig(defaultPricingConfig)
-    }
-  }
+
 
   const handleExport = () => {
     try {
@@ -84,7 +91,7 @@ export default function AdminPricingPage() {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } catch (error) {
-      console.error('Failed to export configuration:', error)
+      // Failed to export configuration
       alert('Failed to export configuration')
     }
   }
@@ -101,7 +108,7 @@ export default function AdminPricingPage() {
         setConfig(importedConfig)
         alert('Configuration imported successfully!')
       } catch (error) {
-        console.error('Failed to import configuration:', error)
+        // Failed to import configuration
         alert('Failed to import configuration. Please check the file format.')
       }
     }
@@ -203,7 +210,7 @@ export default function AdminPricingPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0ABAB5] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading pricing configuration...</p>
@@ -213,10 +220,10 @@ export default function AdminPricingPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#0D2B29]">Flight Pricing Management</h1>
+          <h2 className="text-2xl font-bold text-[#0D2B29]">Flight Pricing Management</h2>
           <p className="text-gray-600 mt-1">
             Last updated: {new Date(config.lastUpdated).toLocaleString()}
           </p>
@@ -244,10 +251,7 @@ export default function AdminPricingPage() {
               className="hidden"
             />
           </label>
-          <Button onClick={handleReset} variant="destructive">
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
-          </Button>
+
         </div>
       </div>
 

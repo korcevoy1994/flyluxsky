@@ -365,6 +365,13 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     setToSelection(tempSelection)
   }
 
+  // Validation helpers for enabling Search button(s)
+  const isMainFormComplete = !!fromSelection && !!toSelection && !!departureDate && (tripType !== 'Round Trip' || !!returnDate) && getTotalPassengers() >= 1 && !!selectedClass
+  const isMultiCityComplete = tripType !== 'Multi-city' || (
+    !!fromSelection && !!toSelection && !!departureDate &&
+    multiSegments.every(seg => !!seg.fromSelection && !!seg.toSelection && !!seg.date)
+  )
+
   // Compute minimum selectable return date: not today
   const getMinReturnDate = () => {
     const today = new Date();
@@ -524,19 +531,14 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   //   }
   // }, [departureDate, returnDate, setReturnDate])
   
-  // Set tripType to Round Trip when in sticky mode
-  useEffect(() => {
-    if (isSticky && tripType !== 'Round Trip') {
-      setTripType('Round Trip');
-    }
-  }, [isSticky, tripType, setTripType]);
+
   
   return (
     <div className="w-full max-w-[1280px] mx-auto">
-      {/* Trip Type Selection - Hidden in sticky mode */}
+      {/* Trip Type Selection */}
       {!isSticky && (
-        <div className={`flex items-center justify-center mb-6`}>
-          <div className="bg-white rounded-full p-1 shadow-lg relative">
+      <div className={`flex items-center justify-center mb-6`}>
+          <div className="bg-white rounded-full p-1 ring-1 ring-gray-200 relative">
             <div className="flex relative">
               {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
                 const isSelected = type === tripType;
@@ -572,7 +574,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             </div>
           </div>
         </div>
-      )}
+        )}
         {/* Main Form - Horizontal Layout */}
         <div className="flex flex-row w-full">
           <div className={`bg-white rounded-full shadow-lg flex items-center gap-1 w-full ${isSticky ? 'p-1' : 'p-2'}`}>
@@ -1053,11 +1055,12 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                         <button
                           key={cls}
                           onClick={() => setSelectedClass(cls)}
-                          className={`w-full px-4 py-3 text-center rounded-xl font-poppins text-[#0D2B29] text-sm transition-colors ${
+                          className={`flight-class-pointer w-full px-4 py-3 text-center rounded-xl font-poppins text-[#0D2B29] text-sm transition-colors ${
                              selectedClass === cls 
                                ? 'bg-[#0ABAB5] text-white' 
                                : 'bg-gray-50 hover:bg-[#F0FBFA]'
                            }`}
+                          style={{cursor: 'pointer !important'}}
                           tabIndex={0}
                         >
                           {cls}
@@ -1072,7 +1075,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             {tripType !== 'Multi-city' && (
               <button
                 onClick={handleSearch}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isMainFormComplete}
                 className="bg-[#EC5E39] text-white font-normal text-lg font-poppins px-10 py-5 rounded-full hover:bg-opacity-90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EC5E39] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSubmitting ? 'Sending...' : 'Search'}
@@ -1132,7 +1135,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             </div>
             <button
               onClick={handleSearch}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isMultiCityComplete}
               className="bg-[#EC5E39] text-white px-10 py-4 rounded-full font-poppins font-semibold text-lg hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               tabIndex={0}
               aria-label="Search flights"
