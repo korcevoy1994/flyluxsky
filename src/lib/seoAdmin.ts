@@ -46,7 +46,7 @@ export const loadSeoMeta = (): SeoMeta => {
     if (stored) {
       return { ...DEFAULT_SEO_META, ...JSON.parse(stored) }
     }
-  } catch (error) {
+  } catch {
     // Error loading SEO meta from localStorage
   }
   
@@ -58,7 +58,7 @@ export const saveSeoMeta = (seoMeta: SeoMeta): void => {
   
   try {
     localStorage.setItem(SEO_META_KEY, JSON.stringify(seoMeta))
-  } catch (error) {
+  } catch {
     // Error saving SEO meta to localStorage
   }
 }
@@ -68,7 +68,7 @@ export const resetSeoMeta = (): void => {
   
   try {
     localStorage.removeItem(SEO_META_KEY)
-  } catch (error) {
+  } catch {
     // Error resetting SEO meta
   }
 }

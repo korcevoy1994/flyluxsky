@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Users, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
+import { ArrowLeftRight, Calendar as CalendarIcon, Users, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import {
   searchAirportsGrouped,
   GroupedSearchResult,
@@ -540,7 +540,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       <div className={`flex items-center justify-center mb-6`}>
           <div className="bg-white rounded-full p-1 ring-1 ring-gray-200 relative">
             <div className="flex relative">
-              {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
+              {['Round Trip', 'One-way', 'Multi-city'].map((type) => {
                 const isSelected = type === tripType;
                 
                 return (

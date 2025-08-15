@@ -1,7 +1,7 @@
 import airports from './airports.json';
 import type { Airport } from './utils';
 import { pricingConfig } from './pricingConfig';
-import { loadPricingConfig, type PricingConfiguration, ensurePricingConfigLoaded } from './pricingAdmin';
+import { loadPricingConfig, ensurePricingConfigLoaded } from './pricingAdmin';
 
 
 class SeededRandom {
@@ -589,7 +589,7 @@ function calculatePriceWithAdminConfig(distance: number, airlineName: string, fl
         return Math.round(finalPrice);
       }
     }
-  } catch (error) {
+  } catch {
     // Failed to load admin pricing config, falling back to default
   }
   
@@ -1130,7 +1130,7 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
           const adminConfig = loadPricingConfig();
           const multiCityConfig = adminConfig.tripTypes.find(tt => tt.name === 'Multi-city');
           return Math.round(totalPrice * (multiCityConfig?.multiplier || 1.2));
-        } catch (error) {
+        } catch {
           return Math.round(totalPrice * 1.2); // Fallback
         }
       })(),
@@ -1279,7 +1279,7 @@ async function generateMultiCityFlights(fromCode: string, toCode: string, flight
       if (multiCityConfig) {
         tripMultiplier = multiCityConfig.multiplier;
       }
-    } catch (error) {
+    } catch {
       // Failed to load admin config for trip multiplier, using fallback
     }
     
@@ -1527,7 +1527,7 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
           price = Math.round(price * 1.5);
         }
       }
-    } catch (error) {
+    } catch {
       // Failed to load trip type multipliers from admin config, using defaults
       // Fallback to hardcoded values
       if (tripType === 'Round Trip') {

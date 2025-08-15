@@ -42,7 +42,7 @@ export default function SeoMeta(props: SeoMetaProps) {
           const data = await response.json()
           setSeoMeta(data)
         }
-      } catch (error) {
+      } catch {
         // Failed to load SEO meta
       }
     }

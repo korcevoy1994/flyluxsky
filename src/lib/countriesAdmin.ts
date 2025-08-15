@@ -94,7 +94,7 @@ export const loadCountriesContent = async (): Promise<Record<string, CountryCont
         return { ...DEFAULT_COUNTRY_CONTENT, ...parsed }
       }
     }
-  } catch (error) {
+  } catch {
     // Failed to load countries content from localStorage
   }
   return DEFAULT_COUNTRY_CONTENT
@@ -105,7 +105,7 @@ export const saveCountriesContent = (content: Record<string, CountryContent>) =>
     if (typeof window !== 'undefined') {
       localStorage.setItem(COUNTRY_CONTENT_KEY, JSON.stringify(content))
     }
-  } catch (error) {
+  } catch {
     // Failed to save countries content to localStorage
   }
 }

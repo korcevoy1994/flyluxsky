@@ -95,7 +95,7 @@ export const saveReviewsConfig = (reviews: ReviewData[]): void => {
       lastUpdated: new Date().toISOString()
     }
     localStorage.setItem(REVIEWS_CONFIG_KEY, JSON.stringify(config))
-  } catch (error) {
+  } catch {
     // Failed to save reviews configuration
     throw new Error('Failed to save reviews configuration')
   }
@@ -110,7 +110,7 @@ export const loadReviewsConfig = (): ReviewData[] => {
       return config.reviews || defaultReviews
     }
     return defaultReviews
-  } catch (error) {
+  } catch {
     // Failed to load reviews configuration
     return defaultReviews
   }
@@ -127,15 +127,15 @@ export const ensureReviewsConfigLoaded = async (): Promise<ReviewData[]> => {
       const rawReviews = Array.isArray(data?.reviews) ? data.reviews : []
       
       // Map Supabase schema to ReviewData format
-      const reviews: ReviewData[] = rawReviews.map((row: any) => ({
+      const reviews: ReviewData[] = rawReviews.map((row: Record<string, unknown>) => ({
         id: row.id || generateReviewId(),
         name: row.name || '',
         avatar: row.avatar_url || '',
         rating: Math.max(1, Math.min(5, Number(row.rating ?? 5))),
-        date: row.review_date || (row.created_at ? new Date(row.created_at).toLocaleDateString() : ''),
+        date: row.review_date || (row.created_at && typeof row.created_at === 'string' ? new Date(row.created_at).toLocaleDateString() : ''),
         review: row.text || '',
-        created_at: row.created_at,
-        updated_at: row.updated_at
+        created_at: typeof row.created_at === 'string' ? row.created_at : undefined,
+        updated_at: typeof row.updated_at === 'string' ? row.updated_at : undefined
       }))
       
       if (reviews.length > 0) {
@@ -215,7 +215,7 @@ export const importReviewsConfig = (jsonString: string): ReviewData[] => {
         updated_at: new Date().toISOString()
       }
     })
-  } catch (error) {
+  } catch {
     // Failed to import reviews configuration
     throw new Error('Invalid JSON format or reviews structure')
   }

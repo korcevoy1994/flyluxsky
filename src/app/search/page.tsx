@@ -8,7 +8,7 @@ import Navbar from '@/components/navbar';
 import FlightSearchFormVertical from '@/components/flight-search-form-vertical';
 import { useFlightSearch } from '@/hooks/useFlightSearch';
 import Image from 'next/image';
-import { ArrowLeftRight, ArrowDown, Lock, ShieldCheck, Wifi, Coffee, Monitor, Calendar, Users, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ArrowLeftRight, Wifi, Coffee, Monitor, Users, ChevronDown, ChevronUp, X } from 'lucide-react';
 // Local SVG from public as a component via next/image
 const AirportFromIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
     <Image src="/icons/airport-from.svg" alt="" width={size} height={size} className={className} />
@@ -53,7 +53,7 @@ const CountdownTimer = () => {
     );
 };
 
-const MultiCityFlightCard = ({ flight, isSelected, onSelect, passengers, departureDates }: { flight: MultiCityFlight, isSelected: boolean, onSelect: () => void, passengers?: string, departureDates?: string[] }) => {
+const MultiCityFlightCard = ({ flight, isSelected, onSelect, departureDates }: { flight: MultiCityFlight, isSelected: boolean, onSelect: () => void, departureDates?: string[] }) => {
     const getAmenityIcon = (amenity: string) => {
         switch (amenity) {
             case 'wifi': return <Wifi size={16} />;
@@ -677,7 +677,6 @@ function SearchResultsContentMain() {
                                         flight={flight}
                                         isSelected={selectedFlight === index}
                                         onSelect={() => setSelectedFlight(index)}
-                                        passengers={passengers}
                                         departureDates={searchParams.getAll('departureDate')}
                                     />
                                 ) : (

@@ -336,7 +336,7 @@ export const loadAirlinesContent = async (): Promise<Record<string, AirlineConte
         return { ...DEFAULT_AIRLINE_CONTENT, ...parsed }
       }
     }
-  } catch (error) {
+  } catch {
     // Failed to load airlines content from localStorage
   }
   return DEFAULT_AIRLINE_CONTENT
@@ -347,7 +347,7 @@ export const saveAirlinesContent = (content: Record<string, AirlineContent>) => 
     if (typeof window !== 'undefined') {
       localStorage.setItem(AIRLINE_CONTENT_KEY, JSON.stringify(content))
     }
-  } catch (error) {
+  } catch {
     // Failed to save airlines content to localStorage
   }
 }

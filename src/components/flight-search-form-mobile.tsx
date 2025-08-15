@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
-import { ChevronDown, ArrowLeftRight, Calendar as CalendarIcon, Search, Users, Plus, X } from 'lucide-react'
+import { ArrowLeftRight, Calendar as CalendarIcon, Search, Users, Plus, X } from 'lucide-react'
 import {
   searchAirportsGrouped,
   GroupedSearchResult,
@@ -550,7 +550,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       <div className="flex justify-center mb-4" style={{ zIndex: 10, pointerEvents: 'auto' }}>
         <div className="bg-white rounded-full p-1 ring-1 ring-gray-200 relative" style={{ zIndex: 15, pointerEvents: 'auto' }}>
           <div className="flex relative">
-            {['Round Trip', 'One-way', 'Multi-city'].map((type, index) => {
+            {['Round Trip', 'One-way', 'Multi-city'].map((type) => {
               const isSelected = type === tripType;
               
               return (

@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseServerClient } from '@/lib/supabaseServer'
 
+interface CityContent {
+  slug: string
+  title?: string
+  subtitle?: string
+  description?: string
+  heroImage?: string
+  introTitle?: string
+  introText?: string
+  ctaTitle?: string
+  ctaText?: string
+  updated_at?: string
+}
+
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
@@ -11,7 +24,7 @@ export async function GET() {
     const { data, error } = await supabase.from('cities_content').select('slug, title, subtitle, description, heroImage, introTitle, introText, ctaTitle, ctaText, updated_at')
     if (error) return NextResponse.json({ content: {} }, { status: 200 })
 
-    const content: Record<string, any> = {}
+    const content: Record<string, CityContent> = {}
     for (const row of data || []) content[row.slug] = row
 
     return NextResponse.json({ content }, { status: 200 })
@@ -34,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     const rows = Object.values(content)
-    const { error } = await supabase.from('cities_content').upsert(rows as any, { onConflict: 'slug' })
+    const { error } = await supabase.from('cities_content').upsert(rows as CityContent[], { onConflict: 'slug' })
     if (error) {
       return new NextResponse(JSON.stringify({ ok: false, error: error.message }), { status: 500 })
     }

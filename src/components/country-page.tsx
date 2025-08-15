@@ -46,7 +46,7 @@ export default function CountryPage({ slug }: CountryPageProps) {
         if (!cancelled) {
           setCountryContent(content[slug] || DEFAULT_COUNTRY_CONTENT[slug] || DEFAULT_COUNTRY_CONTENT['united-kingdom']);
         }
-      } catch (error) {
+      } catch {
         // Failed to load country content
       } finally {
         if (!cancelled) {
@@ -79,7 +79,7 @@ export default function CountryPage({ slug }: CountryPageProps) {
         } else {
           // Failed to get location from IP API
         }
-      } catch (error) {
+      } catch {
         // Error fetching IP geolocation
       }
     };

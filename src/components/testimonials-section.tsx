@@ -121,7 +121,7 @@ export default function TestimonialsSection() {
           }
         })
         setTestimonials(mapped);
-      } catch (e) {
+      } catch {
         // Failed to load reviews, showing empty list
         setTestimonials([]);
       }

@@ -51,8 +51,8 @@ export default function AdminLayout({
         password,
       })
       if (error) throw error
-    } catch (error: any) {
-      setError(error.message || 'An error occurred')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setIsLoading(false)
     }

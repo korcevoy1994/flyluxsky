@@ -174,7 +174,7 @@ export const savePricingConfig = (config: PricingConfiguration): void => {
       lastUpdated: new Date().toISOString()
     }
     localStorage.setItem(PRICING_CONFIG_KEY, JSON.stringify(configWithTimestamp))
-  } catch (error) {
+  } catch {
     // Failed to save pricing configuration
     throw new Error('Failed to save pricing configuration')
   }
@@ -188,7 +188,7 @@ export const loadPricingConfig = (): PricingConfiguration => {
       return JSON.parse(stored)
     }
     return defaultPricingConfig
-  } catch (error) {
+  } catch {
     // Failed to load pricing configuration
     return defaultPricingConfig
   }
@@ -215,7 +215,7 @@ export const ensurePricingConfigLoaded = async (): Promise<PricingConfiguration>
       } catch {}
       return cfg as PricingConfiguration
     }
-  } catch (err) {
+  } catch {
     // Failed to fetch pricing config from API, using defaults
   }
   return defaultPricingConfig
@@ -238,7 +238,7 @@ export const importPricingConfig = (jsonString: string): PricingConfiguration =>
       ...config,
       lastUpdated: new Date().toISOString()
     }
-  } catch (error) {
+  } catch {
     // Failed to import pricing configuration
     throw new Error('Invalid JSON format or configuration structure')
   }

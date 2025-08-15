@@ -33,7 +33,7 @@ export default function MarketingScripts() {
           const data = await response.json()
           setCodes(data)
         }
-      } catch (error) {
+      } catch {
         // Failed to load marketing codes
       }
     }

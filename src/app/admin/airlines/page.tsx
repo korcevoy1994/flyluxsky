@@ -169,7 +169,7 @@ export default function AirlinesAdmin() {
     })
   }
 
-  const updateTravelClass = (airline: string, index: number, field: string, value: any) => {
+  const updateTravelClass = (airline: string, index: number, field: string, value: string | number | string[]) => {
     setContent(prev => {
       const travelClasses = [...(prev[airline]?.travelClasses || [])]
       travelClasses[index] = {
