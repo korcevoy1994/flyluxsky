@@ -305,8 +305,7 @@ const BookTripSection = () => {
                       color: '#0D2B29'
                     }}
                   >
-                    Explore our vast network of destinations. Select your desired city, and let us handle the rest.
-                  </p>
+Browse a wide selection of business class flights and international business class routes. Select your preferred city, airline, and travel dates.                  </p>
                 </div>
               </div>
 
@@ -356,8 +355,7 @@ const BookTripSection = () => {
                       color: '#0D2B29'
                     }}
                   >
-                    Complete your booking with our secure and flexible<br />
-                    payment options for a seamless transaction.
+                    Secure your business class tickets with a quick and safe checkout process.
                   </p>
                 </div>
               </div>
@@ -408,8 +406,7 @@ const BookTripSection = () => {
                         color: '#0D2B29'
                       }}
                     >
-                      All set! Just arrive at the airport on your selected date. Your e-tickets will be in your inbox.
-                    </p>
+Arrive at the airport, relax in premium lounges, and get ready to fly business class with comfort and ease.                    </p>
                   </div>
                 </div>
               </div>

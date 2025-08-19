@@ -339,6 +339,48 @@ const AIRLINE_CONTENT: Record<string, AirlineContent> = {
         features: ['Extra legroom', 'Premium meals', 'Priority boarding', 'Enhanced service']
       }
     ]
+  },
+  'etihad-airlines': {
+    title: 'Etihad Airways',
+    subtitle: 'From Abu Dhabi to the World',
+    description: 'Experience Arabian hospitality with Etihad Airways. Luxury, comfort, and service excellence from the heart of the UAE.',
+    heroImage: '/images/etihad-airlines-hero.jpg',
+    introTitle: 'Arabian Hospitality Redefined',
+    introText: 'Etihad Airways brings you the warmth of Arabian hospitality combined with modern luxury. From our Abu Dhabi hub, we connect you to destinations worldwide with exceptional service and comfort.',
+    ctaTitle: 'Fly Etihad Airways',
+    ctaText: 'Experience the luxury and hospitality that defines Etihad Airways. Book your premium journey today.',
+    features: [
+      {
+        title: 'Arabian Hospitality',
+        description: 'Experience the warmth and generosity of Arabian culture with our attentive cabin service.'
+      },
+      {
+        title: 'Abu Dhabi Hub',
+        description: 'Connect through our modern Abu Dhabi International Airport hub to destinations worldwide.'
+      },
+      {
+        title: 'Luxury Fleet',
+        description: 'Fly on our modern fleet featuring the latest aircraft with premium amenities and comfort.'
+      }
+    ],
+    routes: [
+      { from: 'Abu Dhabi', to: 'London', duration: '7h 25m', aircraft: 'A350' },
+      { from: 'Abu Dhabi', to: 'New York', duration: '14h 20m', aircraft: 'B777' },
+      { from: 'Abu Dhabi', to: 'Tokyo', duration: '9h 15m', aircraft: 'A350' },
+      { from: 'Abu Dhabi', to: 'Sydney', duration: '13h 45m', aircraft: 'A380' }
+    ],
+    classes: [
+      {
+        name: 'First Class',
+        description: 'Private apartments with luxury amenities and personalized service',
+        features: ['Private apartment', 'Personal butler', 'Premium dining', 'Spa treatments']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with Arabian-inspired luxury',
+        features: ['Lie-flat seats', 'Premium dining', 'Priority boarding', 'Lounge access']
+      }
+    ]
   }
 };
 
@@ -349,7 +391,8 @@ const IMAGE_FALLBACKS: Record<string, string> = {
   'american-airlines': '/images/madrid.jpg',
   'nippon-airways': '/images/athens.jpg',
   'qantas-airways': '/images/lisbon.jpg',
-  'turkish-airlines': '/images/london.jpg'
+  'turkish-airlines': '/images/london.jpg',
+  'etihad-airlines': '/images/dubai.jpg'
 };
 
 const getHeroImage = (slug: string, airlineContent: AirlineContent): string => {
@@ -365,7 +408,8 @@ const getHeroImage = (slug: string, airlineContent: AirlineContent): string => {
     'american-airlines': '/images/airlines/american.jpg',
     'nippon-airways': '/images/airlines/nippon.jpg',
     'qantas-airways': '/images/airlines/qantas.jpg',
-    'turkish-airlines': '/images/airlines/turkish.jpg'
+    'turkish-airlines': '/images/airlines/turkish.jpg',
+    'etihad-airlines': '/images/airlines/etihad.jpg'
   };
   return airlineImages[slug] || '/images/london-big.jpg';
 };

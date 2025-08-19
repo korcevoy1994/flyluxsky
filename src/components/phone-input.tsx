@@ -215,7 +215,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
               flex items-center gap-3 px-0 py-3
               transition-all duration-200 ease-in-out
               hover:bg-[#0ABAB5]/5 rounded-l-md
-              focus:outline-none focus:ring-2 focus:ring-[#0ABAB5]/20
+              focus:outline-none focus:ring-2 focus:ring-[#0ABAB5]
               ${isDropdownOpen ? 'bg-[#0ABAB5]/5' : ''}
             `}
             onClick={handleDropdownToggle}
@@ -287,7 +287,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                 className={`
                   w-full pl-10 pr-4 py-3 text-sm
                   border border-[#0D2B29]/10 rounded-lg
-                  focus:outline-none focus:ring-2 focus:ring-[#0ABAB5]/20 focus:border-[#0ABAB5]
+                  focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:border-[#0ABAB5]
                   placeholder-[#0D2B29]/40 font-poppins
                   transition-all duration-200 ease-in-out
                   bg-[#F8FFFE]

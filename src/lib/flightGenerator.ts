@@ -810,7 +810,7 @@ function getAirlineLogo(airlineName: string): string {
 
     'Emirates': '/logos/airlines/Emirates.svg',
     'Qatar Airways': '/logos/airlines/Qatar Airways.svg',
-    'Etihad Airways': '/logos/airlines/Etihad Airways.svg',
+    'Etihad Airways': '/logos/airlines/EtihadAirways.svg',
     'Saudia': '/logos/airlines/Saudia.svg',
     'El Al': '/logos/airlines/El Al.svg',
     'Royal Jordanian': '/logos/airlines/Royal Jordanian.svg',
@@ -850,7 +850,7 @@ function getAirlineLogo(airlineName: string): string {
     'airfrance': '/logos/airlines/Air France.svg',
     'klm': '/logos/airlines/KLM.svg',
     'british': '/logos/airlines/British Airways.svg',
-    'iberia': '/logos/airlines/Iberia.svg',
+    'iberia': '/logos/airlines/Iberia (airline).svg',
     'swiss': '/logos/airlines/Swiss International Air Lines.svg',
     'austrian': '/logos/airlines/Austrian Airlines.svg',
     'finnair': '/logos/airlines/Finnair.svg',
@@ -894,7 +894,7 @@ function getAirlineLogo(airlineName: string): string {
 
     'emirates': '/logos/airlines/Emirates.svg',
     'qatar': '/logos/airlines/Qatar Airways.svg',
-    'etihad': '/logos/airlines/Etihad Airways.svg',
+    'etihad': '/logos/airlines/EtihadAirways.svg',
     'saudia': '/logos/airlines/Saudia.svg',
     'elal': '/logos/airlines/El Al.svg',
     'royaljordanian': '/logos/airlines/Royal Jordanian.svg',
@@ -926,7 +926,7 @@ function getAirlineLogo(airlineName: string): string {
   }
   
 
-  return '/logos/airlines/Emirates.svg';
+  return '/logos/airlines/default.svg';
 }
 
 

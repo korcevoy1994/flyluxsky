@@ -266,10 +266,16 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-t-2xl rounded-b-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-visible relative">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden relative"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b rounded-t-2xl">
           <h2 className="font-poppins text-xl sm:text-2xl font-bold text-[#0D2B29]">Book a Cruise</h2>
           <button
             onClick={onClose}
@@ -280,8 +286,8 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
         </div>
 
         {/* Main Content - Responsive Layout */}
-        <div className="max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row lg:items-stretch">
+        <div className="max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-y-auto rounded-b-2xl">
+          <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row lg:items-stretch rounded-b-2xl">
             {/* Booking Form */}
             <div className="w-full lg:w-1/2 bg-white lg:border-r border-gray-200">
               {/* Form Content */}
@@ -301,7 +307,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                     <button
                       type="button"
                       onClick={() => setShowRegionDropdown(!showRegionDropdown)}
-                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] bg-white shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] bg-white shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
                     >
                       <div className="flex items-center space-x-3">
                         <MapPin className="w-4 sm:w-5 h-4 sm:h-5 text-[#0ABAB5]" />
@@ -341,7 +347,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                     <button
                       type="button"
                       onClick={() => setShowCruiseLineDropdown(!showCruiseLineDropdown)}
-                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] bg-white shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] bg-white shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
                     >
                       <div className="flex items-center space-x-3">
                         <Ship className="w-4 sm:w-5 h-4 sm:h-5 text-[#0ABAB5]" />
@@ -387,7 +393,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                        data-calendar-trigger
                      >
                        <Calendar className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#0ABAB5] h-4 sm:h-5 w-4 sm:w-5 transition-colors group-focus-within:text-[#0D2B29]" />
-                       <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
+                       <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus-within:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
                          {formData.departure ? (
                            <div>
                              <div className="font-semibold">{formatDate(formData.departure)}</div>
@@ -425,7 +431,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                    <label className="block text-sm font-semibold text-[#0D2B29] font-poppins tracking-wide">
                      NUMBER OF NIGHTS
                    </label>
-                   <div className="flex items-center justify-center space-x-3 px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl bg-white">
+                   <div className="flex items-center justify-center space-x-3 px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl bg-white">
                      <button
                        type="button"
                        onClick={() => handleNightsChange(false)}
@@ -466,13 +472,13 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                   FULL NAME
                 </label>
                 <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
-                  placeholder="Enter your full name"
-                  required
-                />
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                    placeholder="Enter your full name"
+                    required
+                  />
               </div>
 
               {/* Phone */}
@@ -483,7 +489,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                 <CustomPhoneInput
                   value={formData.phone}
                   onChange={(value) => setFormData(prev => ({ ...prev, phone: value || '' }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                   autoFocus={false}
                   onValidationChange={(isValid) => console.log('Phone validation:', isValid)}
                 />
@@ -495,13 +501,13 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
                   EMAIL ADDRESS
                 </label>
                 <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
-                  placeholder="your.email@example.com"
-                  required
-                />
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                    placeholder="your.email@example.com"
+                    required
+                  />
               </div>
 
               {/* Submit Button */}

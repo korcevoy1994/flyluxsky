@@ -114,35 +114,39 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                     
                     <div className="group cursor-pointer" role="button" tabIndex={0} onClick={handleMenuClose}>
                         <div className="flex items-center justify-between">
-                        <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                            ABOUT US
-                        </span>
-                        <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                            <ArrowRightIcon className="sm:w-10 sm:h-10" />
-                        </div>
-                        </div>
-                    </div>
-                    
-                    <div className="group cursor-pointer" role="button" tabIndex={0} onClick={handleMenuClose}>
-                        <div className="flex items-center justify-between">
-                        <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                            REVIEWS
-                        </span>
-                        <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                            <ArrowRightIcon className="sm:w-10 sm:h-10" />
-                        </div>
+                            <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
+                                ABOUT US
+                            </span>
+                            <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                <ArrowRightIcon className="sm:w-10 sm:h-10" />
+                            </div>
                         </div>
                     </div>
                     
-                    <div className="group cursor-pointer" role="button" tabIndex={0} onClick={handleMenuClose}>
-                        <div className="flex items-center justify-between">
-                        <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                            CONTACTS
-                        </span>
-                        <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                            <ArrowRightIcon className="sm:w-10 sm:h-10" />
-                        </div>
-                        </div>
+                    <div className="group cursor-pointer" role="button" tabIndex={0}>
+                        <Link href="/reviews" className="block" onClick={handleMenuClose}>
+                            <div className="flex items-center justify-between">
+                                <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
+                                    REVIEWS
+                                </span>
+                                <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="sm:w-10 sm:h-10" />
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                    
+                    <div className="group cursor-pointer" role="button" tabIndex={0}>
+                        <Link href="/contact" className="block" onClick={handleMenuClose}>
+                            <div className="flex items-center justify-between">
+                                <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
+                                    CONTACTS
+                                </span>
+                                <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="sm:w-10 sm:h-10" />
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 </nav>
             </div>

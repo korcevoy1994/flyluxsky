@@ -91,6 +91,22 @@ const airlineOrigins: Record<string, { code: string; city: string }[]> = {
     { code: 'LAX', city: 'Los Angeles' },
     { code: 'JFK', city: 'New York' },
     { code: 'SFO', city: 'San Francisco' }
+  ],
+  'Iberia': [
+    { code: 'JFK', city: 'New York' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'MIA', city: 'Miami' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'DFW', city: 'Dallas' }
+  ],
+  'Swiss International Air Lines': [
+    { code: 'JFK', city: 'New York' },
+    { code: 'EWR', city: 'Newark' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'LAX', city: 'Los Angeles' }
   ]
 };
 
@@ -131,7 +147,7 @@ const airlineLogoMap: Record<string, string> = {
   'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
   'KLM': '/logos/airlines/KLM.svg',
   'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
-  'Etihad Airways': '/logos/airlines/Etihad Airways.svg',
+  'Etihad Airways': '/logos/airlines/EtihadAirways.svg',
   'Cathay Pacific': '/logos/airlines/Cathay Pacific.svg',
   'ANA All Nippon Airways': '/logos/airlines/All Nippon Airways.svg',
   'Japan Airlines': '/logos/airlines/Japan Airlines.svg',
@@ -148,7 +164,7 @@ const airlineLogoMap: Record<string, string> = {
   'Brussels Airlines': '/logos/airlines/Brussels Airlines.svg',
   'TAP Air Portugal': '/logos/airlines/TAP Air Portugal.svg',
   'Alitalia': '/logos/airlines/Alitalia.svg',
-  'Iberia': '/logos/airlines/Iberia.svg',
+  'Iberia': '/logos/airlines/Iberia (airline).svg',
   'LOT Polish Airlines': '/logos/airlines/LOT Polish Airlines.svg',
 };
 
@@ -161,8 +177,10 @@ const slugToAirlineName: Record<string, string> = {
   'nippon-airways': 'ANA All Nippon Airways',
   'qantas-airways': 'Qantas Airways',
   'turkish-airlines': 'Turkish Airlines',
-  'etihad-airways': 'Etihad Airways',
-  'qatar-airways': 'Qatar Airways'
+  'etihad-airlines': 'Etihad Airways',
+  'qatar-airways': 'Qatar Airways',
+  'iberia-airlines': 'Iberia',
+  'swiss-airlines': 'Swiss International Air Lines'
 };
 
 interface AirlineDealsProps {
@@ -262,7 +280,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
               
               out.push({
                 airline: f.airline || targetAirline,
-                logo: f.logo || airlineLogoMap[f.airline] || airlineLogoMap[targetAirline] || '/logos/airlines/Emirates.svg',
+                logo: f.logo || airlineLogoMap[f.airline] || airlineLogoMap[targetAirline] || '/logos/airlines/default.svg',
                 duration: f.duration || '—',
                 stops: f.stops === 0 ? 'Non stop' : `${f.stops} stop${f.stops > 1 ? 's' : ''}`,
                 from: combo.from.code,
@@ -270,6 +288,22 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
                 to: combo.to.code,
                 toCity: combo.to.city,
                 price: price,
+              });
+            } else {
+              // If no flights from target airline, create a mock flight with correct airline and logo
+              const mockPrice = Math.floor(Math.random() * 2000) + 500;
+              const mockDuration = `${Math.floor(Math.random() * 15) + 5}h ${Math.floor(Math.random() * 60)}m`;
+              
+              out.push({
+                airline: targetAirline,
+                logo: airlineLogoMap[targetAirline] || '/logos/airlines/default.svg',
+                duration: mockDuration,
+                stops: Math.random() > 0.5 ? 'Non stop' : '1 stop',
+                from: combo.from.code,
+                fromCity: combo.from.city,
+                to: combo.to.code,
+                toCity: combo.to.city,
+                price: mockPrice,
               });
             }
           }
@@ -287,7 +321,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
         
         out.push({
           airline: targetAirline,
-          logo: airlineLogoMap[targetAirline] || '/logos/airlines/Emirates.svg',
+          logo: airlineLogoMap[targetAirline] || '/logos/airlines/default.svg',
           duration: mockDuration,
           stops: Math.random() > 0.5 ? 'Non stop' : '1 stop',
           from: randomOrigin.code,

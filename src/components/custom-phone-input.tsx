@@ -409,17 +409,17 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
 
   const getInputStyles = () => {
     const baseStyles = "w-full font-poppins transition-all duration-300 outline-none"
-    const validationStyles = !isValid && phoneNumber ? "border-red-300 focus:border-red-500" : "border-gray-100 focus:border-[#0ABAB5]"
+    const validationStyles = !isValid && phoneNumber ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-[#0ABAB5]"
     
     switch (style) {
       case 'modal':
-        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
+        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
       case 'vertical':
-        return `${baseStyles} p-3 pl-20 font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 rounded-xl bg-white/90 backdrop-blur-sm focus:border-white focus:bg-white focus:shadow-lg`
+        return `${baseStyles} p-3 pl-24 font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-gray-300 rounded-xl bg-white focus:border-[#0ABAB5] transition-all duration-300`
       case 'contact':
         return `${baseStyles} py-2 pl-16 border-none border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] text-base text-[#0D2B29] placeholder-gray-500 bg-transparent`
       default:
-        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
+        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
     }
   }
 
@@ -430,7 +430,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
       case 'modal':
         return `${baseStyles} w-20 sm:w-24 bg-transparent hover:bg-gray-50 rounded-l-xl sm:rounded-l-2xl border-r border-gray-100`
       case 'vertical':
-        return `${baseStyles} w-20 bg-transparent hover:bg-white/20 rounded-l-xl border-r border-white/30`
+        return `${baseStyles} w-20 bg-transparent hover:bg-gray-50 rounded-l-xl border-r-2 border-gray-300`
       case 'contact':
         return `${baseStyles} w-14 bg-transparent hover:bg-gray-50`
       default:
@@ -613,7 +613,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
           <span className="text-xl mr-1 ml-2 w-8" role="img" aria-label={selectedCountry.name}>
             {selectedCountry.flag}
           </span>
-          <span className="text-xs font-medium text-gray-600">{selectedCountry.dialCode}</span>
+          <span className="text-sm sm:text-base font-poppins font-medium text-[#0D2B29]">{selectedCountry.dialCode}</span>
           <ChevronDown 
             className={`w-3 h-3 ml-1 text-gray-400 transition-transform duration-200 ${
               isDropdownOpen ? 'rotate-180' : ''
@@ -667,7 +667,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#0ABAB5] placeholder-gray-400"
+                className="w-full pl-10 pr-8 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-[#0ABAB5] placeholder-gray-400"
                 placeholder="Search countries..."
                 aria-label="Search countries"
               />

@@ -107,7 +107,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
               onFocus={() => setFocusedField('name')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your full name"
-              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border-2 border-gray-300 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               required
             />
           </div>
@@ -133,7 +133,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your email address"
-              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border-2 border-gray-300 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               required
             />
           </div>
@@ -157,8 +157,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
               onChange={(value) => handleInputChange('phone', value || '')}
               onFocus={() => setFocusedField('phone')}
               onBlur={() => setFocusedField(null)}
-              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
-              
+              className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border-2 border-gray-300 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-[#0ABAB5] focus:bg-white focus:shadow-lg transition-all duration-300'}`}
               style="vertical"
               required
               onValidationChange={(isValid) => console.log('Phone validation:', isValid)}
@@ -172,7 +171,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
             className={`w-full py-3 px-5 rounded-xl font-poppins font-bold transition-all duration-300 transform ${
               isSubmitting
                 ? 'bg-gray-400 text-white cursor-not-allowed scale-95'
-                : (isNeutral ? 'bg-[#0ABAB5] text-white hover:bg-[#099e99] hover:scale-105 active:scale-95' : 'bg-white text-[#ec5e39] hover:bg-white/90 hover:scale-105 active:scale-95')
+                : (isNeutral ? 'bg-[#EC5E39] text-white hover:bg-[#d54d2a] hover:scale-105 active:scale-95' : 'bg-white text-[#ec5e39] hover:bg-white/90 hover:scale-105 active:scale-95')
             }`}
           >
             <div className="flex items-center justify-center gap-2">

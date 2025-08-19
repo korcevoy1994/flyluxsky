@@ -81,7 +81,7 @@ const airlineLogoMap: Record<string, string> = {
   'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
   'KLM': '/logos/airlines/KLM.svg',
   'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
-  'Etihad Airways': '/logos/airlines/Etihad Airways.svg',
+  'Etihad Airways': '/logos/airlines/EtihadAirways.svg',
   'Cathay Pacific': '/logos/airlines/Cathay Pacific.svg',
   'ANA All Nippon Airways': '/logos/airlines/All Nippon Airways.svg',
   'Japan Airlines': '/logos/airlines/Japan Airlines.svg',
