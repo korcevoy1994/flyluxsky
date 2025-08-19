@@ -1,7 +1,32 @@
+'use client'
+
 import Image from 'next/image'
+import { useState } from 'react'
 import Navbar from '@/components/navbar'
+import PhoneInput from '@/components/phone-input'
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    destination: '',
+    message: ''
+  })
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Form submitted:', formData)
+    // Here you would typically send the data to your backend
+  }
+
   return (
     <main className="min-h-screen bg-[#F0FBFA]">
       <section className="relative w-full bg-[#0ABAB5]">
@@ -50,7 +75,7 @@ export default function ContactPage() {
           {/* Left: Contact information */}
           <div>
             <h3 className="text-[#0D2B29] font-poppins text-[28px] md:text-[32px] font-semibold">Our Location:</h3>
-            <div className="mt-4 text-[#0D2B29] font-inter leading-relaxed">
+            <div className="mt-4 text-[#0D2B29] font-poppins leading-relaxed">
               <p>7901 4TH ST N STE 102</p>
               <p>Saint Petersburg,</p>
               <p>Florida, 33702,</p>
@@ -58,7 +83,7 @@ export default function ContactPage() {
             </div>
 
             <h3 className="mt-8 text-[#0D2B29] font-poppins text-[28px] md:text-[32px] font-semibold">Phone:</h3>
-            <div className="mt-4 text-[#0D2B29] font-inter leading-relaxed">
+            <div className="mt-4 text-[#0D2B29] font-poppins leading-relaxed">
               <p>
                 General: <a className="underline" href="tel:+18888307444">+1 (888) 830-7444</a>
               </p>
@@ -68,54 +93,89 @@ export default function ContactPage() {
             </div>
 
             <h3 className="mt-8 text-[#0D2B29] font-poppins text-[28px] md:text-[32px] font-semibold">Email Address:</h3>
-            <div className="mt-4 text-[#0D2B29] font-inter leading-relaxed">
+            <div className="mt-4 text-[#0D2B29] font-poppins leading-relaxed">
               <p>Email: <a className="underline" href="mailto:support@luxeskies.com">support@luxeskies.com</a></p>
             </div>
 
             <div className="mt-6 flex items-center gap-3 text-[#0D2B29]">
               <Image src="/icons/footer/whatsapp.svg" alt="WhatsApp" width={22} height={22} />
-              <span className="font-inter">WhatsApp</span>
+              <span className="font-poppins">WhatsApp</span>
             </div>
             <div className="mt-2">
-              <a href="#" className="underline text-[#0D2B29] font-inter">Start a Conversation</a>
+              <a href="#" className="underline text-[#0D2B29] font-poppins">Start a Conversation</a>
             </div>
           </div>
 
           {/* Right: Contact form */}
           <div>
             <h3 className="text-[#0D2B29] font-poppins text-[34px] md:text-[40px] font-semibold">Have A Question?</h3>
-            <p className="mt-3 text-[#0D2B29] font-inter">
+            <p className="mt-3 text-[#0D2B29] font-poppins">
               Submit your inquiry below, and one of our expert advisors will respond within 1 hour.
             </p>
 
-            <form className="mt-8">
+            <form className="mt-8" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <label className="block">
-                  <span className="block text-[#0D2B29] font-inter">Full name</span>
-                  <input type="text" className="mt-2 w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2" />
+                  <span className="block text-[#0D2B29] font-poppins mb-2">Full name</span>
+                  <input 
+                    type="text" 
+                    value={formData.fullName}
+                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    className="w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2 font-poppins text-[#0D2B29] placeholder-[#0D2B29]/50 transition-colors"
+                    placeholder="Enter your full name"
+                    required
+                  />
                 </label>
                 <label className="block">
-                  <span className="block text-[#0D2B29] font-inter">Email address</span>
-                  <input type="email" className="mt-2 w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2" />
+                  <span className="block text-[#0D2B29] font-poppins mb-2">Email address</span>
+                  <input 
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2 font-poppins text-[#0D2B29] placeholder-[#0D2B29]/50 transition-colors"
+                    placeholder="Enter your email address"
+                    required
+                  />
                 </label>
+                <div className="block">
+                  <PhoneInput
+                    label="Phone number"
+                    value={formData.phone}
+                    onChange={(value) => handleInputChange('phone', value)}
+    
+                    required
+                  />
+                </div>
                 <label className="block">
-                  <span className="block text-[#0D2B29] font-inter">Phone number</span>
-                  <input type="tel" className="mt-2 w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2" />
-                </label>
-                <label className="block">
-                  <span className="block text-[#0D2B29] font-inter">Preferred destination</span>
-                  <input type="text" className="mt-2 w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2" />
+                  <span className="block text-[#0D2B29] font-poppins mb-2">Preferred destination</span>
+                  <input 
+                    type="text" 
+                    value={formData.destination}
+                    onChange={(e) => handleInputChange('destination', e.target.value)}
+                    className="w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2 font-poppins text-[#0D2B29] placeholder-[#0D2B29]/50 transition-colors"
+                    placeholder="Where would you like to go?"
+                  />
                 </label>
               </div>
 
               <label className="block mt-6">
-                <span className="block text-[#0D2B29] font-inter">Message</span>
-                <textarea rows={3} className="mt-2 w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2" />
+                <span className="block text-[#0D2B29] font-poppins mb-2">Message</span>
+                <textarea 
+                  rows={3} 
+                  value={formData.message}
+                  onChange={(e) => handleInputChange('message', e.target.value)}
+                  className="w-full bg-transparent border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] outline-none py-2 font-poppins text-[#0D2B29] placeholder-[#0D2B29]/50 transition-colors resize-none"
+                  placeholder="Tell us about your travel plans..."
+                  required
+                />
               </label>
 
               <div className="mt-8">
-                <button type="submit" className="w-full md:w-auto px-10 py-4 bg-[#EC5E39] text-white font-poppins font-semibold rounded-2xl shadow-[0_6px_18px_rgba(236,94,57,0.35)] cursor-pointer transition-all hover:brightness-95">
-                  SEND
+                <button 
+                  type="submit" 
+                  className="w-full md:w-auto px-10 py-4 bg-[#EC5E39] text-white font-poppins font-semibold rounded-2xl shadow-[0_6px_18px_rgba(236,94,57,0.35)] cursor-pointer transition-all hover:brightness-95 hover:shadow-[0_8px_20px_rgba(236,94,57,0.4)] transform hover:-translate-y-0.5"
+                >
+                  SEND MESSAGE
                 </button>
               </div>
             </form>

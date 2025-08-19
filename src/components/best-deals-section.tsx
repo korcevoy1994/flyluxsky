@@ -209,9 +209,7 @@ const BestDealsSection = () => {
 
   const handleCardClick = (deal: DealCardData) => {
     const today = new Date();
-    const dep = new Date(today);
-    dep.setDate(dep.getDate() + 21);
-    const departureDate = `${dep.getFullYear()}-${String(dep.getMonth() + 1).padStart(2, '0')}-${String(dep.getDate()).padStart(2, '0')}`;
+    const departureDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const q = new URLSearchParams({
       from: deal.from,
       to: deal.to,
@@ -259,7 +257,7 @@ const BestDealsSection = () => {
                 className="w-full h-full bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: 'url(/Subtract.svg)' }}
               >
-                <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Inter', sans-serif"}}>
+                <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Poppins', sans-serif"}}>
                   {/* Top-Left: Airline */}
                   <div className="flex items-center justify-center px-2">
                     <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" />
@@ -322,7 +320,7 @@ const BestDealsSection = () => {
         {(!showAll && deals.length > 6) && (
           <div className="text-center mt-12 hidden md:block">
             <button 
-              className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-inter cursor-pointer"
+              className="bg-[#0ABAB5] text-white font-semibold uppercase py-4 px-8 rounded-full hover:bg-teal-600 transition-colors text-lg font-poppins cursor-pointer"
               onClick={() => setShowAll(true)}
             >
               More Deals

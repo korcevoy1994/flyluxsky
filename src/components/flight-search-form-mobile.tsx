@@ -924,14 +924,24 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
             </button>
           </div>
           <div className="p-4">
-            <input
-              type="text"
-              value={multiSegments[activeMultiIndex]?.from || ''}
-              onChange={(e) => handleMultiFromInputChange(activeMultiIndex, e.target.value)}
-              placeholder="City or airport"
-              className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
-              autoFocus
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={multiSegments[activeMultiIndex]?.from || ''}
+                onChange={(e) => handleMultiFromInputChange(activeMultiIndex, e.target.value)}
+                placeholder="City or airport"
+                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base pr-8"
+                autoFocus
+              />
+              {multiSegments[activeMultiIndex]?.from && (
+                <button
+                  onClick={() => handleMultiFromInputChange(activeMultiIndex, '')}
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           </div>
           {multiFromSuggestions[activeMultiIndex]?.length > 0 && (
             <div className="flex-1 overflow-y-auto px-4">
@@ -973,14 +983,24 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
             </button>
           </div>
           <div className="p-4">
-            <input
-              type="text"
-              value={multiSegments[activeMultiIndex]?.to || ''}
-              onChange={(e) => handleMultiToInputChange(activeMultiIndex, e.target.value)}
-              placeholder="City or airport"
-              className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base"
-              autoFocus
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={multiSegments[activeMultiIndex]?.to || ''}
+                onChange={(e) => handleMultiToInputChange(activeMultiIndex, e.target.value)}
+                placeholder="City or airport"
+                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base pr-8"
+                autoFocus
+              />
+              {multiSegments[activeMultiIndex]?.to && (
+                <button
+                  onClick={() => handleMultiToInputChange(activeMultiIndex, '')}
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           </div>
           {multiToSuggestions[activeMultiIndex]?.length > 0 && (
             <div className="flex-1 overflow-y-auto px-4">
@@ -1145,6 +1165,16 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
               ))}
             </div>
           </div>
+          
+          {/* Done Button */}
+          <div className="mt-6 pt-4">
+            <button
+              onClick={() => setOpenSheet(null)}
+              className="w-full bg-[#ec5e39] text-white font-poppins font-semibold py-4 rounded-xl hover:bg-[#d54d2a] transition-colors"
+            >
+              Done
+            </button>
+          </div>
         </div>
       </BottomSheet>
 
@@ -1182,26 +1212,56 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
           </div>
           <div className="p-4">
             {cityTab === 'from' && (
-              <input
-                type="text"
-                value={fromInput}
-                onChange={e => handleFromInputChange(e.target.value)}
-                onKeyDown={e => handleKeyDown(e, 'from')}
-                placeholder="City or airport"
-                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base mb-4"
-                autoFocus
-              />
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={fromInput}
+                  onChange={e => handleFromInputChange(e.target.value)}
+                  onKeyDown={e => handleKeyDown(e, 'from')}
+                  placeholder="City or airport"
+                  className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base pr-8"
+                  autoFocus
+                />
+                {fromInput && (
+                  <button
+                    onClick={() => {
+                      setFromInput('');
+                      setFromSelection(null);
+                      setFromSuggestions([]);
+                    }}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear from input"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
             )}
             {cityTab === 'to' && (
-              <input
-                type="text"
-                value={toInput}
-                onChange={e => handleToInputChange(e.target.value)}
-                onKeyDown={e => handleKeyDown(e, 'to')}
-                placeholder="City or airport"
-                className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base mb-4"
-                autoFocus
-              />
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={toInput}
+                  onChange={e => handleToInputChange(e.target.value)}
+                  onKeyDown={e => handleKeyDown(e, 'to')}
+                  placeholder="City or airport"
+                  className="w-full font-poppins font-medium text-[#0D2B29] placeholder-gray-400 border-none outline-none bg-transparent text-base pr-8"
+                  autoFocus
+                />
+                {toInput && (
+                  <button
+                    onClick={() => {
+                      setToInput('');
+                      setToSelection(null);
+                      setToSuggestions([]);
+                    }}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear to input"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
             )}
             <div className="flex-1 overflow-y-auto px-0">
               {cityTab === 'from' && showNearby && fromSuggestions.length > 0 && (

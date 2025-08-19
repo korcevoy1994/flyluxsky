@@ -182,7 +182,7 @@ export default function TestimonialsSection() {
 
       <button 
         onClick={() => router.push('/reviews')}
-        className="bg-[#0ABAB5] text-white px-8 py-4 rounded-full font-inter font-medium text-lg uppercase hover:bg-[#0ABAB5]/90 transition-colors cursor-pointer"
+        className="bg-[#0ABAB5] text-white px-8 py-4 rounded-full font-poppins font-medium text-lg uppercase hover:bg-[#0ABAB5]/90 transition-colors cursor-pointer"
       >
         view all reviews
       </button>

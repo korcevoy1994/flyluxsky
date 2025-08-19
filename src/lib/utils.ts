@@ -196,9 +196,59 @@ export function debounce<T extends (...args: any[]) => any>(func: T, waitFor: nu
 }
 
 export function formatAirportName(name: string): string {
-  return name
-    .replace(/International/gi, 'INT')
-    .replace(/\b(Regional|National|Airport)\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim()
+  return name.replace(/\s+(Airport|International|Intl)\s*$/i, '').trim();
+}
+
+// Interface for city-only search results
+export interface CitySearchResult {
+  id: string;
+  name: string;
+  country: string;
+  countryCode?: string;
+  lat?: number;
+  lon?: number;
+}
+
+// Function for searching cities only (without airports)
+export function searchCitiesOnly(query: string, limit = 10): CitySearchResult[] {
+  if (!query || query.length < 2) return [];
+
+  const fuseResults = fuse.search(query, { limit: 30 });
+  const citySet = new Set<string>();
+  const results: CitySearchResult[] = [];
+
+  // Process metropolis cities first
+  fuseResults.forEach(result => {
+    const item = result.item as Airport & { isMetropolis?: boolean; airports?: string[] };
+    if (item.isMetropolis && !citySet.has(item.name)) {
+      citySet.add(item.name);
+      results.push({
+        id: `metropolis-${item.code}`,
+        name: item.name,
+        country: item.country,
+        countryCode: item.countryCode,
+      });
+    }
+  });
+
+  // Then process regular cities from airports
+  fuseResults.forEach(result => {
+    const item = result.item as Airport & { isMetropolis?: boolean };
+    if (!item.isMetropolis) {
+      const cityKey = `${item.city}, ${item.country}`;
+      if (!citySet.has(cityKey)) {
+        citySet.add(cityKey);
+        results.push({
+          id: `city-${item.city}-${item.countryCode}`,
+          name: item.city,
+          country: item.country,
+          countryCode: item.countryCode,
+          lat: item.lat,
+          lon: item.lon,
+        });
+      }
+    }
+  });
+
+  return results.slice(0, limit);
 }

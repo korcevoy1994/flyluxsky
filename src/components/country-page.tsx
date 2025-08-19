@@ -26,6 +26,9 @@ const IMAGE_FALLBACKS: Record<string, string> = {
   'germany': '/images/london-big.jpg',
   'australia': '/images/london-big.jpg',
   'portugal': '/images/london-big.jpg',
+  'turkey': '/images/london-big.jpg',
+  'japan': '/images/london-big.jpg',
+  'qatar': '/images/london-big.jpg',
 };
 
 export default function CountryPage({ slug }: CountryPageProps) {

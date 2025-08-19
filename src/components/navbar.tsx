@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRightIcon } from "./ui/arrow-right-icon"
-import useOfferId from "@/hooks/useOfferId"
+
 
 const NAVBAR_PHONE = "+1 888 830 7444"
 
@@ -16,7 +16,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const offerId = useOfferId()
+
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -39,21 +39,21 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
 
   return (
     <>
-      <header className="w-full px-4 py-2 flex items-center justify-between rounded-3xl max-w-[1280px] mx-auto mt-4 relative z-50">
+      <header className="w-full px-2 py-2 flex items-center justify-between rounded-3xl max-w-[1280px] mx-auto relative z-50 gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center select-none cursor-pointer" tabIndex={0} aria-label="fls logo">
-          <span className={`font-medium text-[24px] leading-[1.5em] font-poppins tracking-tight ${isMenuOpen ? "text-[#0ABAB5]" : isDarkBackground ? "text-white" : "text-[#0ABAB5]"}`}>fls</span>
+          <Image 
+            src={isMenuOpen || !isDarkBackground ? "/logos/fls-teal.svg" : "/logos/fls.svg"}
+            alt="FLS Logo" 
+            width={90} 
+            height={60} 
+            className="w-[70px] h-[47px] sm:w-[90px] sm:h-[60px]"
+            priority
+          />
         </Link>
         {/* Right side */}
         <div className="flex items-center gap-4">
-          {/* Offer ID badge */}
-          {offerId && (
-            <div className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-full border ${isDarkBackground ? 'border-white/30 text-white' : 'border-[#0ABAB5]/30 text-[#0D2B29]'} bg-white/10 backdrop-blur-sm`}
-                 title="Your Offer ID">
-              <span className={`text-xs ${isDarkBackground ? 'text-white/90' : 'text-[#0D2B29]/80'}`}>Offer ID</span>
-              <span className={`text-xs font-semibold ${isDarkBackground ? 'text-white' : 'text-[#0ABAB5]'} select-all`}>#{offerId}</span>
-            </div>
-          )}
+
           {/* Phone CTA */}
           <Button
             variant="default"
@@ -180,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                   <a href="#" className="cursor-pointer hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded" aria-label="Facebook">
                     <svg width="28" height="28" className="sm:w-8 sm:h-8" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect width="30" height="30" rx="8" fill="#F8F8F8"/>
-                      <path fillRule="evenodd" clipRule="evenodd" d="M17.6075 22V16.5785H19.4275L19.6998 14.4659H17.6068V13.117C17.6068 12.5052 17.7769 12.088 18.6547 12.088H19.7733V10.198C19.2316 10.1398 18.6871 10.1118 18.1423 10.114C16.5295 10.114 15.4256 11.0989 15.4256 12.907V14.4659H13.6V16.5785H15.4249V22H8.7728C8.3458 22 8 21.6542 8 21.2272V8.7728C8 8.3458 8.3458 8 8.7728 8H21.2272C21.6542 8 22 8.3458 22 8.7728V21.2272C22 21.6542 21.6542 22 21.2272 22H17.6075Z" fill="#0D2B29"/>
+                      <path fillRule="evenodd" clipRule="evenodd" d="M17.6075 22V16.5785H19.4275L19.6998 14.4659H17.6068V13.117C17.6068 12.5052 17.7769 12.088 18.6547 12.088H19.7733V10.198C19.2316 10.1398 18.6871 10.1118 18.1423 10.114C16.5295 10.114 15.4256 11.0989 15.4256 12.907V14.4659H13.6V16.5785H15.4249V22H8.7728C8.3458 22 8 = 8.6542 8 = 8.7728V21.2272C22 = 21.6542 21.6542 22 21.2272 22H17.6075Z" fill="#0D2B29"/>
                     </svg>
                   </a>
                   <a href="#" className="cursor-pointer hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded" aria-label="Twitter">

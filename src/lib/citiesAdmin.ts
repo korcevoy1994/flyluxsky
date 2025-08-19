@@ -79,6 +79,105 @@ export const DEFAULT_CITY_CONTENT: Record<string, CityContent> = {
     introText: 'Explore Lisbon\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
     ctaTitle: 'Book Your Lisbon Business Class Flight Today.',
     ctaText: 'Experience premium travel to Lisbon.'
+  },
+  amsterdam: {
+    slug: 'amsterdam',
+    title: 'Amsterdam',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to the Netherlands',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Amsterdam Trip With Fly Lux Sky',
+    introText: 'Explore Amsterdam\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Amsterdam Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Amsterdam.'
+  },
+  singapore: {
+    slug: 'singapore',
+    title: 'Singapore',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Singapore',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Singapore Trip With Fly Lux Sky',
+    introText: 'Explore Singapore\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Singapore Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Singapore.'
+  },
+  barcelona: {
+    slug: 'barcelona',
+    title: 'Barcelona',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Spain',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Barcelona Trip With Fly Lux Sky',
+    introText: 'Explore Barcelona\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Barcelona Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Barcelona.'
+  },
+  frankfurt: {
+    slug: 'frankfurt',
+    title: 'Frankfurt',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Germany',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Frankfurt Trip With Fly Lux Sky',
+    introText: 'Explore Frankfurt\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Frankfurt Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Frankfurt.'
+  },
+  istanbul: {
+    slug: 'istanbul',
+    title: 'Istanbul',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Turkey',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Istanbul Trip With Fly Lux Sky',
+    introText: 'Explore Istanbul\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Istanbul Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Istanbul.'
+  },
+  sydney: {
+    slug: 'sydney',
+    title: 'Sydney',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Australia',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Sydney Trip With Fly Lux Sky',
+    introText: 'Explore Sydney\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Sydney Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Sydney.'
+  },
+  dubai: {
+    slug: 'dubai',
+    title: 'Dubai',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to the UAE',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Dubai Trip With Fly Lux Sky',
+    introText: 'Explore Dubai\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Dubai Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Dubai.'
+  },
+  tokyo: {
+    slug: 'tokyo',
+    title: 'Tokyo',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Japan',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Tokyo Trip With Fly Lux Sky',
+    introText: 'Explore Tokyo\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Tokyo Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Tokyo.'
+  },
+  doha: {
+    slug: 'doha',
+    title: 'Doha',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Qatar',
+    heroImage: '/images/london-big.jpg',
+    introTitle: 'Enjoy Your Doha Trip With Fly Lux Sky',
+    introText: 'Explore Doha\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
+    ctaTitle: 'Book Your Doha Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Doha.'
   }
 }
 

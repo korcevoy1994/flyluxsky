@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { User, Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { User, Mail, Phone, Plane, CheckCircle, AlertCircle } from 'lucide-react'
+import CustomPhoneInput from './custom-phone-input'
 
 interface ContactFormProps {
   onSubmit?: (data: { name: string; email: string; phone: string }) => void
@@ -74,7 +75,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
         {/* Header */}
         <div className="text-center mb-5">
           <div className={`${isNeutral ? 'w-12 h-12 bg-[#E8F4F8] rounded-2xl flex items-center justify-center mx-auto mb-3' : 'w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border border-white/30'}`}>
-            <Send size={20} className={`${isNeutral ? 'text-[#0ABAB5]' : 'text-white'}`} />
+            <Plane size={20} className={`${isNeutral ? 'text-[#0ABAB5]' : 'text-white'}`} />
           </div>
           <h2 className={`font-poppins font-bold text-xl ${isNeutral ? 'text-[#0D2B29]' : 'text-white'} mb-1`}>
             Get a free quote
@@ -151,15 +152,16 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
                 Phone Number
               </label>
             </div>
-            <input
-              type="tel"
+            <CustomPhoneInput
               value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
+              onChange={(value) => handleInputChange('phone', value || '')}
               onFocus={() => setFocusedField('phone')}
               onBlur={() => setFocusedField(null)}
-              placeholder="Enter your phone number"
               className={`${isNeutral ? 'w-full bg-white rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 outline-none border border-gray-200 focus:border-[#0ABAB5] transition-all duration-300' : 'w-full bg-white/90 backdrop-blur-sm rounded-xl p-3 font-poppins font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 outline-none focus:border-white focus:bg-white focus:shadow-lg transition-all duration-300'}`}
+              
+              style="vertical"
               required
+              onValidationChange={(isValid) => console.log('Phone validation:', isValid)}
             />
           </div>
 
@@ -180,10 +182,7 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
                   <span>Submitting...</span>
                 </>
               ) : (
-                <>
-                  <Send size={16} />
-                  <span>Get a free quote</span>
-                </>
+                <>                  <Plane size={16} />                  <span>Get a free quote</span>                </>
               )}
             </div>
           </button>

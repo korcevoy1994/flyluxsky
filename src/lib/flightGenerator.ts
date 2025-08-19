@@ -1136,7 +1136,7 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
       })(),
       totalDuration,
       class: flightClass,
-      seatsLeft: Math.floor(rng.random() * 8) + 8
+      seatsLeft: Math.floor(rng.random() * 4) + 2
     });
   }
   
@@ -1289,7 +1289,7 @@ async function generateMultiCityFlights(fromCode: string, toCode: string, flight
       totalPrice: Math.round(totalPrice * tripMultiplier),
       totalDuration,
       class: flightClass,
-      seatsLeft: Math.floor(rng.random() * 8) + 8
+      seatsLeft: Math.floor(rng.random() * 4) + 2
     });
   }
   
@@ -1353,7 +1353,7 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
         const { departure, arrival } = generateFlightTimes(duration, rng);
         const stopoverAirports = selectStopoverAirports(fromAirport, toAirport, stops, airline.name, rng);
         const amenities = getAmenities(airline.name, distance);
-        const seatsLeft = Math.floor(rng.random() * 9) + 1;
+        const seatsLeft = Math.floor(rng.random() * 4) + 2;
         
         const flight: GeneratedFlight = {
           id: i + 1,
@@ -1569,7 +1569,7 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
       class: flightClass,
       amenities,
       rating: airline.rating,
-      seatsLeft: Math.floor(rng.random() * 8) + 8
+      seatsLeft: Math.floor(rng.random() * 4) + 2
     };
 
 
@@ -1730,7 +1730,7 @@ export async function generateFlightsClient(fromCode: string, toCode: string, fl
           class: flightClass,
           amenities,
           rating: targetAirline.rating,
-          seatsLeft: Math.floor(rng.random() * 8) + 8
+          seatsLeft: Math.floor(rng.random() * 4) + 2
         };
         
         // Place the selected flight first and keep the original top-3 intact after it

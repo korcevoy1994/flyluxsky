@@ -18,38 +18,94 @@ type DealCardData = {
   price: number;
 };
 
-const usOrigins = [
+// Airline-specific US departure cities based on actual routes
+const airlineOrigins: Record<string, { code: string; city: string }[]> = {
+  'Singapore Airlines': [
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'JFK', city: 'New York' },
+    { code: 'EWR', city: 'Newark' },
+    { code: 'SEA', city: 'Seattle' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'MCO', city: 'Orlando' }
+  ],
+  'Lufthansa': [
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'DEN', city: 'Denver' },
+    { code: 'IAD', city: 'Washington, D.C.' },
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'JFK', city: 'New York' },
+    { code: 'EWR', city: 'Newark' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'SEA', city: 'Seattle' },
+    { code: 'MIA', city: 'Miami' },
+    { code: 'ATL', city: 'Atlanta' },
+    { code: 'DFW', city: 'Dallas' },
+    { code: 'IAH', city: 'Houston' },
+    { code: 'PHX', city: 'Phoenix' },
+    { code: 'LAS', city: 'Las Vegas' },
+    { code: 'DTW', city: 'Detroit' },
+    { code: 'MSP', city: 'Minneapolis' },
+    { code: 'CLT', city: 'Charlotte' },
+    { code: 'BWI', city: 'Baltimore' },
+    { code: 'SLC', city: 'Salt Lake City' }
+  ],
+  'Emirates': [
+    { code: 'JFK', city: 'New York' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'IAH', city: 'Houston' },
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'IAD', city: 'Washington, D.C.' },
+    { code: 'DFW', city: 'Dallas' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'SEA', city: 'Seattle' },
+    { code: 'MIA', city: 'Miami' }
+  ],
+  'Etihad Airways': [
+    { code: 'ATL', city: 'Atlanta' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'JFK', city: 'New York' },
+    { code: 'IAD', city: 'Washington, D.C.' },
+    { code: 'CLT', city: 'Charlotte' }
+  ],
+  'Qatar Airways': [
+    { code: 'ATL', city: 'Atlanta' },
+    { code: 'BOS', city: 'Boston' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'DFW', city: 'Dallas' },
+    { code: 'IAH', city: 'Houston' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'MIA', city: 'Miami' },
+    { code: 'JFK', city: 'New York' },
+    { code: 'PHL', city: 'Philadelphia' },
+    { code: 'PIT', city: 'Pittsburgh' },
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'IAD', city: 'Washington, D.C.' }
+  ],
+  'Qantas Airways': [
+    { code: 'DFW', city: 'Dallas' },
+    { code: 'HNL', city: 'Honolulu' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'JFK', city: 'New York' },
+    { code: 'SFO', city: 'San Francisco' }
+  ]
+};
+
+// Fallback origins for airlines not specifically configured
+const defaultUsOrigins = [
   { code: 'JFK', city: 'New York' },
-  { code: 'LGA', city: 'New York' },
-  { code: 'EWR', city: 'Newark' },
   { code: 'LAX', city: 'Los Angeles' },
   { code: 'SFO', city: 'San Francisco' },
-  { code: 'SJC', city: 'San Jose' },
-  { code: 'SAN', city: 'San Diego' },
-  { code: 'SNA', city: 'Orange County' },
   { code: 'ORD', city: 'Chicago' },
-  { code: 'MDW', city: 'Chicago' },
   { code: 'DFW', city: 'Dallas' },
-  { code: 'IAH', city: 'Houston' },
-  { code: 'AUS', city: 'Austin' },
   { code: 'ATL', city: 'Atlanta' },
   { code: 'MIA', city: 'Miami' },
-  { code: 'FLL', city: 'Fort Lauderdale' },
-  { code: 'MCO', city: 'Orlando' },
-  { code: 'TPA', city: 'Tampa' },
-  { code: 'IAD', city: 'Washington, D.C.' },
-  { code: 'DCA', city: 'Washington, D.C.' },
   { code: 'BOS', city: 'Boston' },
   { code: 'SEA', city: 'Seattle' },
-  { code: 'PDX', city: 'Portland' },
-  { code: 'DEN', city: 'Denver' },
-  { code: 'PHX', city: 'Phoenix' },
-  { code: 'LAS', city: 'Las Vegas' },
-  { code: 'CLT', city: 'Charlotte' },
-  { code: 'DTW', city: 'Detroit' },
-  { code: 'MSP', city: 'Minneapolis' },
-  { code: 'BWI', city: 'Baltimore' },
-  { code: 'SLC', city: 'Salt Lake City' },
+  { code: 'IAD', city: 'Washington, D.C.' }
 ];
 
 const popularDestinations = [
@@ -84,6 +140,16 @@ const airlineLogoMap: Record<string, string> = {
   'American Airlines': '/logos/airlines/American Airlines.svg',
   'Qantas': '/logos/airlines/Qantas.svg',
   'Qantas Airways': '/logos/airlines/Qantas.svg',
+  'Virgin Atlantic': '/logos/airlines/Virgin Atlantic.svg',
+  'Air Canada': '/logos/airlines/Air Canada.svg',
+  'Finnair': '/logos/airlines/Finnair.svg',
+  'SAS Scandinavian Airlines': '/logos/airlines/SAS Scandinavian Airlines.svg',
+  'Austrian Airlines': '/logos/airlines/Austrian Airlines.svg',
+  'Brussels Airlines': '/logos/airlines/Brussels Airlines.svg',
+  'TAP Air Portugal': '/logos/airlines/TAP Air Portugal.svg',
+  'Alitalia': '/logos/airlines/Alitalia.svg',
+  'Iberia': '/logos/airlines/Iberia.svg',
+  'LOT Polish Airlines': '/logos/airlines/LOT Polish Airlines.svg',
 };
 
 // Mapping from slug to airline name
@@ -94,7 +160,9 @@ const slugToAirlineName: Record<string, string> = {
   'american-airlines': 'American Airlines',
   'nippon-airways': 'ANA All Nippon Airways',
   'qantas-airways': 'Qantas Airways',
-  'turkish-airlines': 'Turkish Airlines'
+  'turkish-airlines': 'Turkish Airlines',
+  'etihad-airways': 'Etihad Airways',
+  'qatar-airways': 'Qatar Airways'
 };
 
 interface AirlineDealsProps {
@@ -159,7 +227,9 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
         return res;
       };
 
-      const selectedOrigins = pickRandom(usOrigins, 8);
+      const targetAirline = slugToAirlineName[airlineSlug] || airlineName;
+      const airlineSpecificOrigins = airlineOrigins[targetAirline] || defaultUsOrigins;
+      const selectedOrigins = pickRandom(airlineSpecificOrigins, Math.min(8, airlineSpecificOrigins.length));
       const selectedDestinations = pickRandom(popularDestinations, 6);
       
       // Build combos in a round-robin fashion
@@ -172,8 +242,6 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
           combos.push({ from: o, to: d });
         }
       }
-
-      const targetAirline = slugToAirlineName[airlineSlug] || airlineName;
       const out: DealCardData[] = [];
       
       for (const combo of combos.slice(0, 12)) {
@@ -212,7 +280,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
       
       // Ensure we have at least 6 deals, if not enough, fill with mock data
       while (out.length < 6) {
-        const randomOrigin = usOrigins[Math.floor(Math.random() * usOrigins.length)];
+        const randomOrigin = airlineSpecificOrigins[Math.floor(Math.random() * airlineSpecificOrigins.length)];
         const randomDestination = popularDestinations[Math.floor(Math.random() * popularDestinations.length)];
         const mockPrice = Math.floor(Math.random() * 2000) + 500;
         const mockDuration = `${Math.floor(Math.random() * 15) + 5}h ${Math.floor(Math.random() * 60)}m`;
@@ -238,9 +306,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
 
   const handleCardClick = (deal: DealCardData) => {
     const today = new Date();
-    const dep = new Date(today);
-    dep.setDate(dep.getDate() + 21);
-    const departureDate = `${dep.getFullYear()}-${String(dep.getMonth() + 1).padStart(2, '0')}-${String(dep.getDate()).padStart(2, '0')}`;
+    const departureDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const q = new URLSearchParams({
       from: deal.from,
       to: deal.to,
@@ -288,7 +354,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
                 className="w-full h-full bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: 'url(/Subtract.svg)' }}
               >
-                <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Inter', sans-serif"}}>
+                <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Poppins', sans-serif"}}>
                   {/* Top-Left: Airline */}
                   <div className="flex items-center justify-center px-2">
                     <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" />

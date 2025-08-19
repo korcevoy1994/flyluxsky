@@ -123,7 +123,14 @@ const topAirlines = [
   { name: 'Emirates Airlines', href: '/airlines/emirates-airlines' },
   { name: 'Nippon Airways', href: '/airlines/nippon-airways' },
   { name: 'Qantas Airways', href: '/airlines/qantas-airways' },
-  { name: 'Turkish Airlines', href: '/airlines/turkish-airlines' }
+  { name: 'Turkish Airlines', href: '/airlines/turkish-airlines' },
+  { name: 'British Airways', href: '/airlines/british-airways' },
+  { name: 'United Airlines', href: '/airlines/united-airlines' },
+  { name: 'Etihad Airlines', href: '/airlines/etihad-airlines' },
+  { name: 'Qatar Airways', href: '/airlines/qatar-airways' },
+  { name: 'Iberia Airlines', href: '/airlines/iberia-airlines' },
+  { name: 'Swiss Airlines', href: '/airlines/swiss-airlines' },
+  { name: 'Air France', href: '/airlines/air-france' }
 ];
 
 // topCountries and topCities moved inside Footer component to avoid hydration mismatch
@@ -179,7 +186,7 @@ const DestinationAccordion = ({ dest, isOpen, onToggle }: { dest: typeof popular
         tripType: 'One-way',
         passengers: '1',
         class: 'Business',
-        departureDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
+        departureDate: new Date().toISOString().split('T')[0] // current date
       });
       
       router.push(`/searching?${searchParams.toString()}`);
@@ -240,7 +247,15 @@ const Footer = () => {
       { name: 'Greece Business Class Flights', href: '/countries/greece' },
       { name: 'France Business Class Flights', href: '/countries/france' },
       { name: 'Spain Business Class Flights', href: '/countries/spain' },
-      { name: 'Italy Business Class Flights', href: '/countries/italy' }
+      { name: 'Italy Business Class Flights', href: '/countries/italy' },
+      { name: 'United Arab Emirates Business Class Flights', href: '/countries/united-arab-emirates' },
+      { name: 'Netherlands Business Class Flights', href: '/countries/netherlands' },
+      { name: 'Singapore Business Class Flights', href: '/countries/singapore' },
+      { name: 'Germany Business Class Flights', href: '/countries/germany' },
+      { name: 'Australia Business Class Flights', href: '/countries/australia' },
+      { name: 'Turkey Business Class Flights', href: '/countries/turkey' },
+      { name: 'Japan Business Class Flights', href: '/countries/japan' },
+      { name: 'Qatar Business Class Flights', href: '/countries/qatar' }
     ]);
 
     setTopCities([
@@ -249,7 +264,16 @@ const Footer = () => {
       { name: 'Athens Business Class Flights', href: '/cities/athens' },
       { name: 'Rome Business Class Flights', href: '/cities/rome' },
       { name: 'Paris Business Class Flights', href: '/cities/paris' },
-      { name: 'Lisbon Business Class Flights', href: '/cities/lisbon' }
+      { name: 'Lisbon Business Class Flights', href: '/cities/lisbon' },
+      { name: 'Amsterdam Business Class Flights', href: '/cities/amsterdam' },
+      { name: 'Singapore Business Class Flights', href: '/cities/singapore' },
+      { name: 'Barcelona Business Class Flights', href: '/cities/barcelona' },
+      { name: 'Frankfurt Business Class Flights', href: '/cities/frankfurt' },
+      { name: 'Istanbul Business Class Flights', href: '/cities/istanbul' },
+      { name: 'Sydney Business Class Flights', href: '/cities/sydney' },
+      { name: 'Dubai Business Class Flights', href: '/cities/dubai' },
+      { name: 'Tokyo Business Class Flights', href: '/cities/tokyo' },
+      { name: 'Doha Business Class Flights', href: '/cities/doha' }
     ]);
   }, []);
 

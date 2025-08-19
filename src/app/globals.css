@@ -78,7 +78,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   --font-poppins: 'Poppins', sans-serif;
   --font-ubuntu: 'Ubuntu', sans-serif;
-  --font-inter: 'Inter', sans-serif;
+
 }
 
 html {
@@ -133,9 +133,7 @@ html {
   .font-ubuntu {
     font-family: var(--font-ubuntu);
   }
-  .font-inter {
-    font-family: var(--font-inter);
-  }
+
 }
 
 .embla {
@@ -323,6 +321,98 @@ button.flight-class-pointer:hover,
 button.flight-class-pointer:active,
 button.flight-class-pointer:focus {
   cursor: pointer !important;
+}
+
+/* Guest selector dropdown animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* GLOBAL CURSOR FIX - Universal rules to ensure proper cursor behavior */
+
+/* All buttons should always have pointer cursor when not disabled */
+button:not(:disabled):not([disabled]) {
+  cursor: pointer !important;
+}
+
+/* Disabled buttons should have not-allowed cursor */
+button:disabled,
+button[disabled] {
+  cursor: not-allowed !important;
+}
+
+/* All clickable elements with role button */
+[role="button"]:not(:disabled):not([disabled]) {
+  cursor: pointer !important;
+}
+
+/* Elements with onClick handlers should have pointer cursor */
+[onClick]:not(:disabled):not([disabled]) {
+  cursor: pointer !important;
+}
+
+/* Specific fixes for form controls */
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="reset"]:not(:disabled) {
+  cursor: pointer !important;
+}
+
+/* Links should always have pointer cursor */
+a:not([href=""]):not([href="#"]) {
+  cursor: pointer !important;
+}
+
+/* Override any conflicting cursor styles for interactive elements */
+.cursor-pointer,
+button.cursor-pointer,
+[role="button"].cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Ensure hover states don't interfere with cursor */
+button:hover:not(:disabled),
+[role="button"]:hover:not(:disabled) {
+  cursor: pointer !important;
+}
+
+/* Focus states should maintain pointer cursor */
+button:focus:not(:disabled),
+button:focus-visible:not(:disabled),
+[role="button"]:focus:not(:disabled) {
+  cursor: pointer !important;
+}
+
+/* Active states should maintain pointer cursor */
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) {
+  cursor: pointer !important;
+}
+
+/* Specific override for any conflicting Tailwind or custom classes */
+.enabled\:cursor-pointer:not(:disabled) {
+  cursor: pointer !important;
+}
+
+/* Ensure child elements don't interfere with parent cursor */
+button > *,
+[role="button"] > * {
+  pointer-events: none;
+}
+
+/* But allow pointer events on nested interactive elements if needed */
+button > button,
+button > input,
+button > select,
+button > textarea {
+  pointer-events: auto;
 }
 
 

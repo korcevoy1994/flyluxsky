@@ -42,7 +42,7 @@ const FaqItem = ({ item, index, isOpen, onClick }: { item: FaqItemType, index: n
     >
       <div className="flex items-center gap-4">
         <div className="flex-shrink-0 w-10 h-10 bg-[#0ABAB5] rounded-lg flex items-center justify-center">
-          <span className="text-white font-medium font-inter">
+          <span className="text-white font-medium font-poppins">
             {String(index + 1).padStart(2, '0')}
           </span>
         </div>
@@ -77,15 +77,7 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="w-full max-w-[1280px] mx-auto px-2 py-12 lg:py-24">
-      <div className="flex flex-col items-center text-center mb-12">
-        <h2 className="text-4xl lg:text-5xl font-bold text-[#0D2B29] font-poppins uppercase">
-          Frequently Asked Questions
-        </h2>
-        <p className="mt-4 text-lg lg:text-2xl text-[#0D2B29] font-poppins">
-          Everything You Need to Know Before You Fly
-        </p>
-      </div>
+    <section className="w-full max-w-[1280px] mx-auto px-2">
       <div className="max-w-4xl mx-auto">
         {faqData.map((item, index) => (
           <FaqItem
@@ -99,4 +91,4 @@ export default function FaqSection() {
       </div>
     </section>
   );
-} 
+}

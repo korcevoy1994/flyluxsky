@@ -15,10 +15,16 @@ const StickySearchInput: React.FC<StickySearchInputProps> = ({
   toSelection,
   onClick
 }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
   return (
     <div 
       className="bg-white rounded-full shadow-lg border border-gray-100 p-2 cursor-pointer hover:shadow-xl transition-all duration-300"
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="flex items-center justify-between">
         {/* From Input */}
@@ -54,4 +60,4 @@ const StickySearchInput: React.FC<StickySearchInputProps> = ({
   )
 }
 
-export default StickySearchInput 
+export default StickySearchInput

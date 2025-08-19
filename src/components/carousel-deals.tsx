@@ -272,7 +272,6 @@ export default function CarouselDeals() {
 
       const destinationCode = pickDestinationCode(deal.city, deal.country);
       const departure = new Date();
-      departure.setDate(departure.getDate() + 14);
       const query = new URLSearchParams({
         from: originCode,
         to: destinationCode,
@@ -365,4 +364,4 @@ export default function CarouselDeals() {
       </div>
     </div>
   );
-} 
+}

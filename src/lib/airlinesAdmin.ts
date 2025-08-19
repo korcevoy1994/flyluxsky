@@ -321,6 +321,300 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
         features: ['Extra legroom', 'Priority boarding', 'Enhanced meals']
       }
     ]
+  },
+  'british-airways': {
+    slug: 'british-airways',
+    title: 'British Airways',
+    subtitle: 'To Fly. To Serve.',
+    description: 'Experience British elegance and service excellence. British Airways connects you to the world with style and sophistication.',
+    heroImage: '/images/british-airways-hero.jpg',
+    introTitle: 'British Excellence in Aviation',
+    introText: 'British Airways embodies the finest traditions of British service and hospitality. With our global network and commitment to excellence, we make every journey memorable.',
+    ctaTitle: 'Fly British Airways',
+    ctaText: 'Experience the elegance and reliability that has made British Airways a world-renowned airline.',
+    features: [
+      {
+        title: 'British Heritage',
+        description: 'Over 100 years of aviation excellence and British hospitality.'
+      },
+      {
+        title: 'Global Network',
+        description: 'Connecting London to destinations worldwide.'
+      },
+      {
+        title: 'Premium Service',
+        description: 'Award-winning service and attention to detail.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'London', to: 'New York', price: 'From $2,399' },
+      { from: 'London', to: 'Dubai', price: 'From $2,199' },
+      { from: 'London', to: 'Sydney', price: 'From $2,899' }
+    ],
+    travelClasses: [
+      {
+        name: 'First Class',
+        description: 'Ultimate luxury with private suites and personalized service.',
+        features: ['Private suites', 'Fine dining', 'Concierge service', 'Spa treatments']
+      },
+      {
+        name: 'Club World',
+        description: 'Business class comfort with lie-flat seats.',
+        features: ['Lie-flat seats', 'Premium dining', 'Lounge access', 'Priority boarding']
+      }
+    ]
+  },
+  'united-airlines': {
+    slug: 'united-airlines',
+    title: 'United Airlines',
+    subtitle: 'Fly the Friendly Skies',
+    description: 'Connect to more destinations across the globe with United Airlines. Experience friendly service and modern amenities.',
+    heroImage: '/images/united-airlines-hero.jpg',
+    introTitle: 'Connecting the World',
+    introText: 'United Airlines connects people and unites the world. With our extensive network and commitment to service, we make travel accessible and enjoyable for everyone.',
+    ctaTitle: 'Fly United Airlines',
+    ctaText: 'Join millions of travelers who choose United for reliable service and global connectivity.',
+    features: [
+      {
+        title: 'Extensive Network',
+        description: 'More destinations than any other U.S. airline.'
+      },
+      {
+        title: 'MileagePlus Program',
+        description: 'Earn and redeem miles with our award-winning loyalty program.'
+      },
+      {
+        title: 'Modern Fleet',
+        description: 'Fly on our newest aircraft with advanced amenities.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Chicago', to: 'London', price: 'From $2,299' },
+      { from: 'San Francisco', to: 'Tokyo', price: 'From $2,599' },
+      { from: 'Newark', to: 'Frankfurt', price: 'From $2,199' }
+    ],
+    travelClasses: [
+      {
+        name: 'United Polaris',
+        description: 'Premium business class with lie-flat seats and enhanced service.',
+        features: ['Lie-flat seats', 'Premium dining', 'Polaris Lounge access', 'Amenity kits']
+      },
+      {
+        name: 'United Premium Plus',
+        description: 'Enhanced economy with extra space and amenities.',
+        features: ['Extra legroom', 'Premium meals', 'Priority boarding', 'Enhanced entertainment']
+      }
+    ]
+  },
+  'etihad-airlines': {
+    slug: 'etihad-airlines',
+    title: 'Etihad Airlines',
+    subtitle: 'From Abu Dhabi to the World',
+    description: 'Experience Arabian hospitality with Etihad Airlines. Luxury, comfort, and service excellence from the heart of the UAE.',
+    heroImage: '/images/etihad-airlines-hero.jpg',
+    introTitle: 'Arabian Hospitality Redefined',
+    introText: 'Etihad Airways brings you the warmth of Arabian hospitality combined with modern luxury. From our Abu Dhabi hub, we connect you to destinations worldwide.',
+    ctaTitle: 'Fly Etihad Airways',
+    ctaText: 'Experience the luxury and hospitality that defines Etihad Airways.',
+    features: [
+      {
+        title: 'Arabian Hospitality',
+        description: 'Experience the warmth and generosity of Arabian culture.'
+      },
+      {
+        title: 'Abu Dhabi Hub',
+        description: 'Connect through our modern Abu Dhabi International Airport hub.'
+      },
+      {
+        title: 'Luxury Experience',
+        description: 'Premium amenities and personalized service.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Abu Dhabi', to: 'London', price: 'From $2,299' },
+      { from: 'Abu Dhabi', to: 'New York', price: 'From $2,899' },
+      { from: 'Abu Dhabi', to: 'Sydney', price: 'From $2,699' }
+    ],
+    travelClasses: [
+      {
+        name: 'The Residence',
+        description: 'Ultra-luxury three-room suite with personal butler.',
+        features: ['Three-room suite', 'Personal butler', 'Fine dining', 'Chauffeur service']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with direct aisle access and premium amenities.',
+        features: ['Lie-flat seats', 'Premium dining', 'Lounge access', 'Priority services']
+      }
+    ]
+  },
+  'qatar-airways': {
+    slug: 'qatar-airways',
+    title: 'Qatar Airways',
+    subtitle: 'Going Places Together',
+    description: 'Experience award-winning service with Qatar Airways. Connect the world through our Doha hub with luxury and excellence.',
+    heroImage: '/images/qatar-airways-hero.jpg',
+    introTitle: 'World\'s Best Airline',
+    introText: 'Qatar Airways has been recognized as the World\'s Best Airline multiple times. Experience our commitment to excellence and innovation in every aspect of your journey.',
+    ctaTitle: 'Fly Qatar Airways',
+    ctaText: 'Discover why Qatar Airways is consistently rated as one of the world\'s best airlines.',
+    features: [
+      {
+        title: 'Award-Winning Service',
+        description: 'Multiple Skytrax awards for service excellence.'
+      },
+      {
+        title: 'Doha Hub',
+        description: 'Connect through our state-of-the-art Hamad International Airport.'
+      },
+      {
+        title: 'Modern Fleet',
+        description: 'One of the youngest and most modern fleets in the sky.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Doha', to: 'London', price: 'From $2,199' },
+      { from: 'Doha', to: 'New York', price: 'From $2,799' },
+      { from: 'Doha', to: 'Tokyo', price: 'From $2,499' }
+    ],
+    travelClasses: [
+      {
+        name: 'Qsuite',
+        description: 'Revolutionary business class with private suites.',
+        features: ['Private suites', 'Double beds', 'Sliding doors', 'Premium dining']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with exceptional service and amenities.',
+        features: ['Lie-flat seats', 'Premium meals', 'Al Mourjan Lounge access', 'Priority boarding']
+      }
+    ]
+  },
+  'iberia-airlines': {
+    slug: 'iberia-airlines',
+    title: 'Iberia Airlines',
+    subtitle: 'Spain in the Sky',
+    description: 'Discover the spirit of Spain with Iberia Airlines. Connect Europe and Latin America with Spanish warmth and hospitality.',
+    heroImage: '/images/iberia-airlines-hero.jpg',
+    introTitle: 'The Spirit of Spain',
+    introText: 'Iberia brings you the warmth and passion of Spain to every journey. As Spain\'s flag carrier, we connect Europe with Latin America and beyond.',
+    ctaTitle: 'Fly Iberia Airlines',
+    ctaText: 'Experience Spanish hospitality and connect to destinations across Europe and Latin America.',
+    features: [
+      {
+        title: 'Spanish Heritage',
+        description: 'Experience the warmth and culture of Spain in the sky.'
+      },
+      {
+        title: 'Latin America Gateway',
+        description: 'Leading airline connecting Europe and Latin America.'
+      },
+      {
+        title: 'Iberia Plus',
+        description: 'Earn Avios and enjoy benefits with our loyalty program.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Madrid', to: 'New York', price: 'From $2,199' },
+      { from: 'Madrid', to: 'Buenos Aires', price: 'From $1,899' },
+      { from: 'Barcelona', to: 'Mexico City', price: 'From $1,999' }
+    ],
+    travelClasses: [
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with Spanish cuisine and premium service.',
+        features: ['Lie-flat seats', 'Spanish cuisine', 'VIP Lounge access', 'Priority services']
+      },
+      {
+        name: 'Premium Economy',
+        description: 'Enhanced comfort with extra space and amenities.',
+        features: ['Extra legroom', 'Premium meals', 'Priority boarding', 'Enhanced entertainment']
+      }
+    ]
+  },
+  'swiss-airlines': {
+    slug: 'swiss-airlines',
+    title: 'Swiss Airlines',
+    subtitle: 'The Airline of Switzerland',
+    description: 'Experience Swiss precision and quality with SWISS. Connect to the world with reliability, comfort, and Swiss hospitality.',
+    heroImage: '/images/swiss-airlines-hero.jpg',
+    introTitle: 'Swiss Quality in the Sky',
+    introText: 'SWISS embodies the values that Switzerland is renowned for: quality, reliability, and attention to detail. Experience Swiss hospitality at 35,000 feet.',
+    ctaTitle: 'Fly SWISS',
+    ctaText: 'Discover the Swiss difference with our commitment to quality and service excellence.',
+    features: [
+      {
+        title: 'Swiss Quality',
+        description: 'Experience the precision and quality Switzerland is known for.'
+      },
+      {
+        title: 'Zurich Hub',
+        description: 'Connect through our efficient Zurich Airport hub.'
+      },
+      {
+        title: 'Miles & More',
+        description: 'Earn miles with the Lufthansa Group loyalty program.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Zurich', to: 'New York', price: 'From $2,399' },
+      { from: 'Geneva', to: 'Tokyo', price: 'From $2,699' },
+      { from: 'Zurich', to: 'Singapore', price: 'From $2,499' }
+    ],
+    travelClasses: [
+      {
+        name: 'SWISS First',
+        description: 'Ultimate luxury with private suites and personalized service.',
+        features: ['Private suites', 'Gourmet dining', 'Personal service', 'Chauffeur service']
+      },
+      {
+        name: 'SWISS Business',
+        description: 'Lie-flat seats with Swiss comfort and premium amenities.',
+        features: ['Lie-flat seats', 'Swiss cuisine', 'Lounge access', 'Priority boarding']
+      }
+    ]
+  },
+  'air-france': {
+    slug: 'air-france',
+    title: 'Air France',
+    subtitle: 'France is in the Air',
+    description: 'Experience French elegance and savoir-vivre with Air France. Connect to the world with style, sophistication, and French hospitality.',
+    heroImage: '/images/air-france-hero.jpg',
+    introTitle: 'French Elegance in the Sky',
+    introText: 'Air France brings you the art de vivre that France is famous for. Experience French elegance, cuisine, and hospitality on every flight.',
+    ctaTitle: 'Fly Air France',
+    ctaText: 'Discover the French way of flying with our commitment to elegance and service.',
+    features: [
+      {
+        title: 'French Savoir-Vivre',
+        description: 'Experience the French art of living and hospitality.'
+      },
+      {
+        title: 'Paris Hub',
+        description: 'Connect through the romantic city of Paris.'
+      },
+      {
+        title: 'Flying Blue',
+        description: 'Earn miles and enjoy benefits with our loyalty program.'
+      }
+    ],
+    popularRoutes: [
+      { from: 'Paris', to: 'New York', price: 'From $2,299' },
+      { from: 'Paris', to: 'Tokyo', price: 'From $2,599' },
+      { from: 'Paris', to: 'Dubai', price: 'From $2,199' }
+    ],
+    travelClasses: [
+      {
+        name: 'La Première',
+        description: 'Ultimate French luxury with private suites and gourmet cuisine.',
+        features: ['Private suites', 'French cuisine', 'Personal service', 'Chauffeur service']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with French elegance and premium amenities.',
+        features: ['Lie-flat seats', 'French cuisine', 'Lounge access', 'Priority services']
+      }
+    ]
   }
 }
 
@@ -357,4 +651,8 @@ export const exportAirlinesContent = (content: Record<string, AirlineContent>) =
 export const importAirlinesContent = (json: string): Record<string, AirlineContent> => {
   const parsed = JSON.parse(json)
   return { ...DEFAULT_AIRLINE_CONTENT, ...parsed }
+}
+
+export const getAirlineContent = (slug: string): AirlineContent | null => {
+  return DEFAULT_AIRLINE_CONTENT[slug] || null
 }

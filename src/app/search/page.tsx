@@ -81,10 +81,15 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, departureDates }: {
     return (
         <div 
             className={`bg-white rounded-2xl border-2 p-6 cursor-pointer transition-all duration-300 hover:shadow-lg relative ${
-                isSelected ? 'border-[#0abab5] shadow-lg ring-2 ring-[#0abab5]/20' : 'border-gray-100 hover:border-gray-200'
+                isSelected ? 'border-[#ec5e39] shadow-lg ring-2 ring-[#ec5e39]/20' : 'border-gray-100 hover:border-gray-200'
             }`}
             onClick={onSelect}
         >
+            {isSelected && (
+                <div className="absolute -top-2 -right-2 bg-[#ec5e39] text-white text-xs font-medium px-2 py-1 rounded-full shadow-lg">
+                    Selected Flight
+                </div>
+            )}
             {/* Multi-City Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -233,10 +238,15 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
     return (
         <div 
             className={`bg-white rounded-2xl border-2 p-6 cursor-pointer transition-all duration-300 hover:shadow-lg relative ${
-                isSelected ? 'border-[#0abab5] shadow-lg ring-2 ring-[#0abab5]/20' : 'border-gray-100 hover:border-gray-200'
+                isSelected ? 'border-[#ec5e39] shadow-lg ring-2 ring-[#ec5e39]/20' : 'border-gray-100 hover:border-gray-200'
             }`}
             onClick={onSelect}
         >
+            {isSelected && (
+                <div className="absolute -top-2 -right-2 bg-[#ec5e39] text-white text-xs font-medium px-2 py-1 rounded-full shadow-lg">
+                    Selected Flight
+                </div>
+            )}
 
             
             {/* Airline Header */}
@@ -329,8 +339,8 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                             e.stopPropagation();
                             setShowReturnFlight(!showReturnFlight);
                         }}
-                        className={`group inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium
-                            ${showReturnFlight ? 'bg-[#0abab5] text-white border-[#0abab5]' : 'text-[#0abab5] border-[#0abab5]/40 hover:border-[#0abab5] hover:bg-[#0abab5]/5'}
+                        className={`group inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium cursor-pointer
+                            ${showReturnFlight ? 'bg-[#1C5E59] text-white border-[#1C5E59]' : 'bg-[#1C5E59] text-white border-[#1C5E59] hover:bg-[#1C5E59]/90'}
                             transition-colors`}
                     >
                         {showReturnFlight ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -465,9 +475,10 @@ function SearchResultsContentMain() {
 
     const [selectedFlight, setSelectedFlight] = useState<number | null>(null);
     const [isSelectedSummaryOpen, setIsSelectedSummaryOpen] = useState(false);
-    const selectedSummaryVariant: 'card' | 'bar' | 'ticket' | 'lux' = 'lux';
+    const selectedSummaryVariant: 'card' | 'bar' | 'ticket' | 'lux' = 'bar';
 
     const [flights, setFlights] = useState<(GeneratedFlight | MultiCityFlight)[]>([]);
+    const [stickyFormOffset, setStickyFormOffset] = useState(16); // 1rem = 16px
 
     useEffect(() => {
         const trip = searchParams.get('tripType');
@@ -669,6 +680,249 @@ function SearchResultsContentMain() {
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-6 pb-20 lg:pb-8">
 
+            {/* Selected Flight Full-Width Sticky */}
+            {selectedFlight !== null && flights[selectedFlight] && (
+                <div className="hidden lg:block sticky top-4 z-40 mb-6 -mx-2 sm:-mx-4 lg:-mx-6">
+                     {(() => {
+                         const variant = selectedSummaryVariant as 'card' | 'bar' | 'ticket' | 'lux';
+                         if (variant === 'bar') {
+                             return (
+                                <div className="rounded-2xl shadow-xl ring-1 ring-[#0abab5]/20 border border-[#0abab5]/30 bg-[#0abab5] text-white">
+                                    <button type="button" className="w-full flex items-center justify-between px-8 py-6 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
+                                         <div className="flex-1 min-w-0">
+                                             {isMultiCityFlight(flights[selectedFlight]) ? (() => {
+                                                 const mc = flights[selectedFlight] as MultiCityFlight;
+                                                 const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
+                                                 const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
+                                                 const numbers = mc.segments.map(s => s.flightNumber);
+                                                 const shown = numbers.slice(0, 2).join(', ');
+                                                 const tail = numbers.length > 2 ? '…' : '';
+                                                 const fromApt = mc.segments[0]?.departure.airport;
+                                                 const toApt = mc.segments[mc.segments.length - 1]?.arrival.airport;
+                                                 return (
+                                                     <div className="flex items-center gap-4">
+                                                         <div className="text-lg font-bold text-white truncate">{airlineLabel}</div>
+                                                         <div className="text-sm text-white/90 truncate">{shown}{tail}</div>
+                                                         <div className="flex items-center gap-2 text-sm text-white/95">
+                                                            {fromApt && toApt && (
+                                                                <span className="px-3 py-1.5 rounded-full bg-white/20 border border-white/30 text-white font-semibold">{fromApt} → {toApt}</span>
+                                                            )}
+                                                             <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">{mc.segments.length} segment{mc.segments.length > 1 ? 's' : ''}</span>
+                                                             {mc.totalDuration && (
+                                                                 <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">{mc.totalDuration}</span>
+                                                             )}
+                                                         </div>
+                                                     </div>
+                                                 );
+                                             })() : (() => {
+                                                 const f = flights[selectedFlight] as GeneratedFlight;
+                                                 const airlineLabel = f.airline;
+                                                 const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` / ${f.returnFlight.flightNumber}` : ''}`;
+                                                 return (
+                                                     <div className="flex items-center gap-4">
+                                                         <div className="text-lg font-bold text-white truncate">{airlineLabel}</div>
+                                                         <div className="text-sm text-white/90 truncate">{numbers}</div>
+                                                         <div className="flex items-center gap-2 text-sm text-white/95">
+                                                            <span className="px-3 py-1.5 rounded-full bg-white/20 border border-white/30 text-white font-semibold">{f.departure.airport} → {f.arrival.airport}</span>
+                                                             <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">{f.departure.time} — {f.arrival.time}</span>
+                                                             {f.duration && (
+                                                                 <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">{f.duration}</span>
+                                                             )}
+                                                             {typeof f.stops === 'number' && (
+                                                                 <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">{f.stops === 0 ? 'Non-stop' : `${f.stops} stop${f.stops > 1 ? 's' : ''}`}</span>
+                                                             )}
+                                                             {tripType === 'Round Trip' && f.returnFlight && (
+                                                                 <span className="px-3 py-1.5 rounded-full bg-white/15 text-white">Return included</span>
+                                                             )}
+                                                             {typeof f.seatsLeft === 'number' && f.seatsLeft > 0 && (
+                                                                 <span className="px-3 py-1.5 rounded-full text-white border border-[#ec5e39]/40 font-semibold" style={{backgroundColor: '#ec5e39'}}>{f.seatsLeft} seat{f.seatsLeft > 1 ? 's' : ''} left</span>
+                                                             )}
+                                                         </div>
+                                                     </div>
+                                                 );
+                                             })()}
+                                         </div>
+                                         <div className="ml-6 text-right">
+                                             <div className="text-3xl font-bold text-white">
+                                                 {isMultiCityFlight(flights[selectedFlight])
+                                                     ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
+                                                     : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                             </div>
+                                             <div className="text-sm text-white/90">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
+                                         </div>
+                                     </button>
+                                     {isSelectedSummaryOpen && (
+                                         <div className="px-3 pb-3">
+                                             <div className="pt-2 border-t">
+                                                 <CountdownTimer />
+                                             </div>
+                                         </div>
+                                     )}
+                                 </div>
+                             );
+                         }
+                         if (variant === 'ticket') {
+                             return (
+                                 <div className="bg-white rounded-xl shadow-sm border p-4">
+                                     <div className="flex items-center justify-between gap-3">
+                                         <div className="min-w-0">
+                                             {isMultiCityFlight(flights[selectedFlight]) ? (() => {
+                                                 const mc = flights[selectedFlight] as MultiCityFlight;
+                                                 const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
+                                                 const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
+                                                 const numbers = mc.segments.map(s => s.flightNumber);
+                                                 const shown = numbers.slice(0, 3).join(' • ');
+                                                 const tail = numbers.length > 3 ? '…' : '';
+                                                 return (
+                                                     <div className="truncate">
+                                                         <div className="text-sm font-semibold text-gray-800 truncate">{airlineLabel}</div>
+                                                         <div className="text-xs text-gray-500 truncate">{shown}{tail}</div>
+                                                     </div>
+                                                 );
+                                             })() : (() => {
+                                                 const f = flights[selectedFlight] as GeneratedFlight;
+                                                 const airlineLabel = f.airline;
+                                                 const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` • ${f.returnFlight.flightNumber}` : ''}`;
+                                                 return (
+                                                     <div className="truncate">
+                                                         <div className="text-sm font-semibold text-gray-800 truncate">{airlineLabel}</div>
+                                                         <div className="text-xs text-gray-500 truncate">{numbers}</div>
+                                                     </div>
+                                                 );
+                                             })()}
+                                         </div>
+                                         <div className="text-right shrink-0">
+                                             <div className="text-xl font-bold text-[#0abab5]">
+                                                 {isMultiCityFlight(flights[selectedFlight])
+                                                     ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
+                                                     : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                             </div>
+                                             <div className="text-[11px] text-gray-500">for {passengers}</div>
+                                         </div>
+                                     </div>
+                                     <div className="mt-3">
+                                         <CountdownTimer />
+                                     </div>
+                                 </div>
+                             );
+                         }
+                         if (variant === 'lux') {
+                             return (
+                                 <div className="relative overflow-hidden rounded-2xl border shadow-sm bg-white">
+                                     <div className="p-5">
+                                         <div className="flex items-center justify-between gap-4">
+                                             <div className="flex items-center gap-3 min-w-0">
+                                                 <div className="w-10 h-10 rounded-lg bg-white/80 flex items-center justify-center shadow-sm">
+                                                     <AirportFromIcon className="w-5 h-5 text-[#0ABAB5]" />
+                                                 </div>
+                                                 <div className="min-w-0">
+                                                     {isMultiCityFlight(flights[selectedFlight]) ? (() => {
+                                                         const mc = flights[selectedFlight] as MultiCityFlight;
+                                                         const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
+                                                         const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
+                                                         const numbers = mc.segments.map(s => s.flightNumber).slice(0, 3).join(' • ');
+                                                         return (
+                                                             <>
+                                                                 <div className="text-sm font-semibold text-[#08312F] truncate">{airlineLabel}</div>
+                                                                 <div className="text-xs text-[#08312F]/70 truncate">{numbers}</div>
+                                                             </>
+                                                         );
+                                                     })() : (() => {
+                                                         const f = flights[selectedFlight] as GeneratedFlight;
+                                                         const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` • ${f.returnFlight.flightNumber}` : ''}`;
+                                                         return (
+                                                             <>
+                                                                 <div className="text-sm font-semibold text-[#08312F] truncate">{f.airline}</div>
+                                                                 <div className="text-xs text-[#08312F]/70 truncate">{numbers}</div>
+                                                             </>
+                                                         );
+                                                     })()}
+                                                 </div>
+                                             </div>
+                                             <div className="text-right">
+                                                 <div className="text-2xl font-extrabold text-[#08312F]">
+                                                     {isMultiCityFlight(flights[selectedFlight])
+                                                         ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
+                                                         : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                                 </div>
+                                                 <div className="text-xs text-[#08312F]/70">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
+                                             </div>
+                                         </div>
+                                         {!isMultiCityFlight(flights[selectedFlight]) && (() => {
+                                             const f = flights[selectedFlight] as GeneratedFlight;
+                                             return (
+                                                 <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+                                                     <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">{f.departure.airport} → {f.arrival.airport}</span>
+                                                     {tripType === 'Round Trip' && f.returnFlight && (
+                                                         <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">Return included</span>
+                                                     )}
+                                                     {f.stops === 0 ? (
+                                                         <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">Non-stop</span>
+                                                     ) : (
+                                                         <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">{f.stops} stop{f.stops > 1 ? 's' : ''}</span>
+                                                     )}
+                                                 </div>
+                                             );
+                                         })()}
+                                         <div className="mt-4">
+                                             <CountdownTimer />
+                                         </div>
+                                     </div>
+                                 </div>
+                             );
+                         }
+                         // default card
+                         return (
+                             <div className="bg-white rounded-xl shadow-sm border">
+                                 <button type="button" className="w-full flex items-center justify-between px-4 py-3 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
+                                     <div className="flex-1 min-w-0">
+                                         {isMultiCityFlight(flights[selectedFlight]) ? (() => {
+                                             const mc = flights[selectedFlight] as MultiCityFlight;
+                                             const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
+                                             const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
+                                             const numbers = mc.segments.map(s => s.flightNumber);
+                                             const shown = numbers.slice(0, 2).join(', ');
+                                             const tail = numbers.length > 2 ? '…' : '';
+                                             return (
+                                                 <div className="text-left">
+                                                     <div className="text-sm font-medium text-gray-800 truncate">Selected Flight — {airlineLabel}</div>
+                                                     <div className="text-xs text-gray-500 truncate">{shown}{tail}</div>
+                                                 </div>
+                                             );
+                                         })() : (() => {
+                                             const f = flights[selectedFlight] as GeneratedFlight;
+                                             const airlineLabel = f.airline;
+                                             const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` / ${f.returnFlight.flightNumber}` : ''}`;
+                                             return (
+                                                 <div className="text-left">
+                                                     <div className="text-sm font-medium text-gray-800 truncate">Selected Flight — {airlineLabel}</div>
+                                                     <div className="text-xs text-gray-500 truncate">{numbers}</div>
+                                                 </div>
+                                             );
+                                         })()}
+                                     </div>
+                                     <div className="ml-3 text-right">
+                                         <div className="text-lg font-bold text-[#0abab5]">
+                                             {isMultiCityFlight(flights[selectedFlight])
+                                                 ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
+                                                 : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                         </div>
+                                         <div className="text-[11px] text-gray-500">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
+                                     </div>
+                                 </button>
+                                 {isSelectedSummaryOpen && (
+                                     <div className="px-4 pb-4">
+                                         <div className="pt-3 border-t">
+                                             <CountdownTimer />
+                                         </div>
+                                     </div>
+                                 )}
+                             </div>
+                         );
+                     })()}
+                </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
                 <div className="lg:col-span-2">
@@ -706,225 +960,9 @@ function SearchResultsContentMain() {
 
                 {/* Sidebar */}
                 <div className="lg:col-span-1">
-                    <div>
-                        {/* Collapsible Selected Flight Summary (now on top) */}
-                        {selectedFlight !== null && flights[selectedFlight] && (
-                            (() => {
-                                const variant = selectedSummaryVariant as 'card' | 'bar' | 'ticket' | 'lux';
-                                if (variant === 'bar') {
-                                    return (
-                                        <div className="bg-white rounded-xl shadow-sm border mb-4">
-                        <button type="button" className="w-full flex items-center justify-between px-3 py-2 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
-                                                <div className="flex-1 min-w-0">
-                                                    {isMultiCityFlight(flights[selectedFlight]) ? (() => {
-                                                        const mc = flights[selectedFlight] as MultiCityFlight;
-                                                        const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
-                                                        const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
-                                                        const numbers = mc.segments.map(s => s.flightNumber);
-                                                        const shown = numbers.slice(0, 2).join(', ');
-                                                        const tail = numbers.length > 2 ? '…' : '';
-                                                        return (
-                                                            <div className="text-left">
-                                                                <div className="text-sm font-medium text-gray-800 truncate">{airlineLabel}</div>
-                                                                <div className="text-xs text-gray-500 truncate">{shown}{tail}</div>
-                                                            </div>
-                                                        );
-                                                    })() : (() => {
-                                                        const f = flights[selectedFlight] as GeneratedFlight;
-                                                        const airlineLabel = f.airline;
-                                                        const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` / ${f.returnFlight.flightNumber}` : ''}`;
-                                                        return (
-                                                            <div className="text-left">
-                                                                <div className="text-sm font-medium text-gray-800 truncate">{airlineLabel}</div>
-                                                                <div className="text-xs text-gray-500 truncate">{numbers}</div>
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                                <div className="ml-3 text-right">
-                                                    <div className="text-lg font-bold text-[#0abab5]">
-                                                        {isMultiCityFlight(flights[selectedFlight])
-                                                            ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                            : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
-                                                    </div>
-                                                    <div className="text-[11px] text-gray-500">total for {passengers}</div>
-                                                </div>
-                                            </button>
-                                            {isSelectedSummaryOpen && (
-                                                <div className="px-3 pb-3">
-                                                    <div className="pt-2 border-t">
-                                                        <CountdownTimer />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                }
-                                if (variant === 'ticket') {
-                                    return (
-                                        <div className="bg-white rounded-xl shadow-sm border mb-4 p-4">
-                                            <div className="flex items-center justify-between gap-3">
-                                                <div className="min-w-0">
-                                                    {isMultiCityFlight(flights[selectedFlight]) ? (() => {
-                                                        const mc = flights[selectedFlight] as MultiCityFlight;
-                                                        const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
-                                                        const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
-                                                        const numbers = mc.segments.map(s => s.flightNumber);
-                                                        const shown = numbers.slice(0, 3).join(' • ');
-                                                        const tail = numbers.length > 3 ? '…' : '';
-                                                        return (
-                                                            <div className="truncate">
-                                                                <div className="text-sm font-semibold text-gray-800 truncate">{airlineLabel}</div>
-                                                                <div className="text-xs text-gray-500 truncate">{shown}{tail}</div>
-                                                            </div>
-                                                        );
-                                                    })() : (() => {
-                                                        const f = flights[selectedFlight] as GeneratedFlight;
-                                                        const airlineLabel = f.airline;
-                                                        const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` • ${f.returnFlight.flightNumber}` : ''}`;
-                                                        return (
-                                                            <div className="truncate">
-                                                                <div className="text-sm font-semibold text-gray-800 truncate">{airlineLabel}</div>
-                                                                <div className="text-xs text-gray-500 truncate">{numbers}</div>
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                                <div className="text-right shrink-0">
-                                                    <div className="text-xl font-bold text-[#0abab5]">
-                                                        {isMultiCityFlight(flights[selectedFlight])
-                                                            ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                            : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
-                                                    </div>
-                                                    <div className="text-[11px] text-gray-500">for {passengers}</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-3">
-                                                <CountdownTimer />
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                                if (variant === 'lux') {
-                                    return (
-                                        <div className="relative overflow-hidden mb-4 rounded-2xl border shadow-sm bg-white">
-                                            <div className="p-5">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div className="flex items-center gap-3 min-w-0">
-                                                        <div className="w-10 h-10 rounded-lg bg-white/80 flex items-center justify-center shadow-sm">
-                                                            <AirportFromIcon className="w-5 h-5 text-[#0ABAB5]" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            {isMultiCityFlight(flights[selectedFlight]) ? (() => {
-                                                                const mc = flights[selectedFlight] as MultiCityFlight;
-                                                                const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
-                                                                const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
-                                                                const numbers = mc.segments.map(s => s.flightNumber).slice(0, 3).join(' • ');
-                                                                return (
-                                                                    <>
-                                                                        <div className="text-sm font-semibold text-[#08312F] truncate">{airlineLabel}</div>
-                                                                        <div className="text-xs text-[#08312F]/70 truncate">{numbers}</div>
-                                                                    </>
-                                                                );
-                                                            })() : (() => {
-                                                                const f = flights[selectedFlight] as GeneratedFlight;
-                                                                const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` • ${f.returnFlight.flightNumber}` : ''}`;
-                                                                return (
-                                                                    <>
-                                                                        <div className="text-sm font-semibold text-[#08312F] truncate">{f.airline}</div>
-                                                                        <div className="text-xs text-[#08312F]/70 truncate">{numbers}</div>
-                                                                    </>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <div className="text-2xl font-extrabold text-[#08312F]">
-                                                            {isMultiCityFlight(flights[selectedFlight])
-                                                                ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                                : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
-                                                        </div>
-                                                        <div className="text-xs text-[#08312F]/70">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
-                                                    </div>
-                                                </div>
-                                                {!isMultiCityFlight(flights[selectedFlight]) && (() => {
-                                                    const f = flights[selectedFlight] as GeneratedFlight;
-                                                    return (
-                                                        <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                                                            <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">{f.departure.airport} → {f.arrival.airport}</span>
-                                                            {tripType === 'Round Trip' && f.returnFlight && (
-                                                                <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">Return included</span>
-                                                            )}
-                                                            {f.stops === 0 ? (
-                                                                <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">Non-stop</span>
-                                                            ) : (
-                                                                <span className="px-2 py-1 rounded-full bg-white/80 text-[#08312F] border border-white/60">{f.stops} stop{f.stops > 1 ? 's' : ''}</span>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })()}
-                                                <div className="mt-4">
-                                                    <CountdownTimer />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                                // default card
-                                return (
-                                    <div className="bg-white rounded-xl shadow-sm border mb-4">
-                        <button type="button" className="w-full flex items-center justify-between px-4 py-3 cursor-pointer" onClick={() => setIsSelectedSummaryOpen(o => !o)}>
-                                            <div className="flex-1 min-w-0">
-                                                {isMultiCityFlight(flights[selectedFlight]) ? (() => {
-                                                    const mc = flights[selectedFlight] as MultiCityFlight;
-                                                    const airlines = Array.from(new Set(mc.segments.map(s => s.airline)));
-                                                    const airlineLabel = airlines.length === 1 ? airlines[0] : 'Various airlines';
-                                                    const numbers = mc.segments.map(s => s.flightNumber);
-                                                    const shown = numbers.slice(0, 2).join(', ');
-                                                    const tail = numbers.length > 2 ? '…' : '';
-                                                    return (
-                                                        <div className="text-left">
-                                                            <div className="text-sm font-medium text-gray-800 truncate">Selected Flight — {airlineLabel}</div>
-                                                            <div className="text-xs text-gray-500 truncate">{shown}{tail}</div>
-                                                        </div>
-                                                    );
-                                                })() : (() => {
-                                                    const f = flights[selectedFlight] as GeneratedFlight;
-                                                    const airlineLabel = f.airline;
-                                                    const numbers = `${f.flightNumber}${f.returnFlight?.flightNumber ? ` / ${f.returnFlight.flightNumber}` : ''}`;
-                                                    return (
-                                                        <div className="text-left">
-                                                            <div className="text-sm font-medium text-gray-800 truncate">Selected Flight — {airlineLabel}</div>
-                                                            <div className="text-xs text-gray-500 truncate">{numbers}</div>
-                                                        </div>
-                                                    );
-                                                })()}
-                                            </div>
-                                            <div className="ml-3 text-right">
-                                                <div className="text-lg font-bold text-[#0abab5]">
-                                                    {isMultiCityFlight(flights[selectedFlight])
-                                                        ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                        : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
-                                                </div>
-                                                <div className="text-[11px] text-gray-500">total for {passengers}</div>
-                                            </div>
-                                        </button>
-                                        {isSelectedSummaryOpen && (
-                                            <div className="px-4 pb-4">
-                                                <div className="pt-3 border-t">
-                                                    <CountdownTimer />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })()
-                        )}
-
+                    <div className="sticky top-32">
                         {/* Search Form */}
-                        <div className="bg-white rounded-2xl shadow-sm border p-4">
-                            <FlightSearchFormVertical />
-                        </div>
+                        <FlightSearchFormVertical />
                     </div>
                 </div>
             </div>
@@ -981,9 +1019,9 @@ function HeroRouteText() {
     if (!fromCity && !toCity) return null;
 
     return (
-        <div className="mx-auto max-w-7xl px-4 pt-10 pb-10">
+        <div className="mx-auto max-w-7xl px-4 pt-10 pb-0">
             <div className="text-center text-white">
-                <div className="text-[32px] md:text-[40px] font-semibold">
+                <div className="text-[24px] md:text-[72px] font-semibold">
                     {fromCity || '—'} 
                     <span className="opacity-80 mx-2">→</span> 
                     {toCity || '—'}
@@ -1003,12 +1041,10 @@ export default function SearchPage() {
                 <Suspense fallback={null}>
                     <HeroRouteText />
                 </Suspense>
+                <Suspense fallback={null}>
+                    <FlightSummaryChips variant="compact" />
+                </Suspense>
             </div>
-            
-            {/* Flight summary under BG */}
-            <Suspense fallback={null}>
-                <FlightSummaryChips variant="default" />
-            </Suspense>
 
             {/* Main content with light background */}
             <main className="flex min-h-screen flex-col items-center justify-between">

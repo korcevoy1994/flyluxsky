@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, Ubuntu, Inter } from "next/font/google";
+import { Poppins, Ubuntu } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/footer";
 import MarketingScripts from "@/components/marketing-scripts";
@@ -17,12 +17,10 @@ const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://flyluxsky.vercel.app"),
   icons: {
     icon: "/favicon.png",
   },
@@ -65,7 +63,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </head>
-      <body className={`${poppins.variable} ${ubuntu.variable} ${inter.variable} font-sans`}>
+      <body className={`${poppins.variable} ${ubuntu.variable} font-sans`}>
         <MarketingScripts />
         {children}
         <Footer />

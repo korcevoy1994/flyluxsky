@@ -577,9 +577,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         )}
         {/* Main Form - Horizontal Layout */}
         <div className="flex flex-row w-full">
-          <div className={`bg-white rounded-full shadow-lg flex items-center gap-1 w-full ${isSticky ? 'p-1' : 'p-2'}`}>
+          <div className={`bg-white rounded-full shadow-lg flex items-center gap-0.5 w-full ${isSticky ? 'p-1' : 'p-2'}`}>
             {/* From */}
-            <div className={`relative autocomplete-container grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'from' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}>
+            <div className={`relative autocomplete-container grow-[4] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'from' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}>
               <div
                 className={`flex items-center px-4 cursor-pointer w-full ${isSticky ? 'py-2' : 'py-4'}`}
                 tabIndex={0}
@@ -728,7 +728,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             </div>
             
             {/* To */}
-            <div className={`relative autocomplete-container grow-[3] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'to' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}>
+            <div className={`relative autocomplete-container grow-[4] shrink basis-0 rounded-full transition-colors duration-200 ${activeInput === 'to' ? 'bg-[#F0FBFA]' : 'bg-transparent'}`}>
               <div
                 className={`flex items-center px-4 cursor-pointer w-full ${isSticky ? 'py-2' : 'py-4'}`}
                 tabIndex={0}
@@ -868,7 +868,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             <div className={`w-px bg-gray-200 ${isSticky ? 'h-12' : 'h-16'}`}></div>
             
             {/* Departure Date */}
-            <div className="relative calendar-container grow-[2] shrink basis-0">
+            <div className="relative calendar-container grow-[1] shrink basis-0">
               <div 
                 className={`flex items-center px-4 cursor-pointer h-full ${isSticky ? 'py-2' : 'py-4'}`}
                 onClick={() => handleTogglePopover('departure')}
@@ -946,7 +946,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
             <div className={`w-px bg-gray-200 ${isSticky ? 'h-12' : 'h-16'}`}></div>
             
             {/* Passengers */}
-            <div className="relative dropdown-container w-[200px] flex-shrink-0">
+            <div className="relative dropdown-container w-[160px] flex-shrink-0">
               <div 
                 className={`flex items-center px-4 cursor-pointer h-full ${isSticky ? 'py-2' : 'py-4'}`}
                 onClick={() => handleTogglePopover('passengers')}

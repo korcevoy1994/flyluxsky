@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface SearchModalProps {
@@ -10,20 +10,40 @@ interface SearchModalProps {
 }
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, children }) => {
+  const scrollPosition = useRef(0);
+  const wasOpen = useRef(false);
+
   useEffect(() => {
     if (isOpen) {
+      // Сохраняем текущую позицию прокрутки
+      scrollPosition.current = window.scrollY;
+      wasOpen.current = true;
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPosition.current}px`;
       document.body.style.width = '100%';
-    } else {
+    } else if (wasOpen.current) {
+      // Восстанавливаем позицию прокрутки только если модальное окно было открыто
       document.body.style.overflow = '';
       document.body.style.position = '';
+      document.body.style.top = '';
       document.body.style.width = '';
+      // Используем requestAnimationFrame для мгновенного восстановления позиции
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: scrollPosition.current,
+          behavior: 'instant'
+        });
+      });
+      wasOpen.current = false;
     }
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      if (wasOpen.current) {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+      }
     };
   }, [isOpen]);
 
