@@ -229,9 +229,12 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
   const [phoneNumber, setPhoneNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [isValid, setIsValid] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const countriesListRef = useRef<HTMLDivElement>(null)
+  const selectedCountryRef = useRef<HTMLButtonElement>(null)
 
   // Мемоизированный отфильтрованный список стран
   const filteredCountries = useMemo(() => {
@@ -255,6 +258,18 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
          return (a.priority || 5) - (b.priority || 5)
        })
   }, [searchQuery])
+
+  // Определение мобильной версии
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Определение страны по геолокации (опционально)
   useEffect(() => {
@@ -304,6 +319,9 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
   // Закрытие dropdown при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Не закрываем модалку на мобильных устройствах при клике вне элемента
+      if (isMobile) return
+      
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false)
         setSearchQuery('')
@@ -312,7 +330,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [isMobile])
 
   // Обработка клавиш для навигации по dropdown
   useEffect(() => {
@@ -322,13 +340,16 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
       if (event.key === 'Escape') {
         setIsDropdownOpen(false)
         setSearchQuery('')
-        inputRef.current?.focus()
+        // На мобильных устройствах не фокусируемся на input после закрытия модалки
+        if (!isMobile) {
+          inputRef.current?.focus()
+        }
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isDropdownOpen])
+  }, [isDropdownOpen, isMobile])
 
   const handleCountrySelect = useCallback((country: Country) => {
     setSelectedCountry(country)
@@ -345,11 +366,13 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     setIsValid(valid)
     onValidationChange?.(valid)
     
-    // Фокусируемся на input после выбора страны
-    setTimeout(() => {
-      inputRef.current?.focus()
-    }, 100)
-  }, [phoneNumber, onChange, onValidationChange])
+    // Фокусируемся на input после выбора страны (только на десктопе)
+    if (!isMobile) {
+      setTimeout(() => {
+        inputRef.current?.focus()
+      }, 100)
+    }
+  }, [phoneNumber, onChange, onValidationChange, isMobile])
 
   const handlePhoneNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value
@@ -390,13 +413,13 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     
     switch (style) {
       case 'modal':
-        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-20 sm:pl-24 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
+        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
       case 'vertical':
         return `${baseStyles} p-3 pl-20 font-medium text-[#0D2B29] placeholder-gray-500 border-2 border-white/30 rounded-xl bg-white/90 backdrop-blur-sm focus:border-white focus:bg-white focus:shadow-lg`
       case 'contact':
         return `${baseStyles} py-2 pl-16 border-none border-b border-[#0D2B29]/30 focus:border-[#0ABAB5] text-base text-[#0D2B29] placeholder-gray-500 bg-transparent`
       default:
-        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-20 sm:pl-24 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
+        return `${baseStyles} px-3 sm:px-4 py-3 sm:py-4 pl-24 sm:pl-28 border-2 ${validationStyles} rounded-xl sm:rounded-2xl text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 bg-white shadow-sm hover:shadow-md focus:shadow-lg`
     }
   }
 
@@ -405,13 +428,13 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     
     switch (style) {
       case 'modal':
-        return `${baseStyles} w-16 sm:w-20 bg-transparent hover:bg-gray-50 rounded-l-xl sm:rounded-l-2xl border-r border-gray-100`
+        return `${baseStyles} w-20 sm:w-24 bg-transparent hover:bg-gray-50 rounded-l-xl sm:rounded-l-2xl border-r border-gray-100`
       case 'vertical':
         return `${baseStyles} w-20 bg-transparent hover:bg-white/20 rounded-l-xl border-r border-white/30`
       case 'contact':
         return `${baseStyles} w-14 bg-transparent hover:bg-gray-50`
       default:
-        return `${baseStyles} w-16 sm:w-20 bg-transparent hover:bg-gray-50 rounded-l-xl sm:rounded-l-2xl border-r border-gray-100`
+        return `${baseStyles} w-20 sm:w-24 bg-transparent hover:bg-gray-50 rounded-l-xl sm:rounded-l-2xl border-r border-gray-100`
     }
   }
 
@@ -587,7 +610,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
           aria-expanded={isDropdownOpen}
           aria-haspopup="listbox"
         >
-          <span className="text-lg mr-1" role="img" aria-label={selectedCountry.name}>
+          <span className="text-xl mr-1 ml-2 w-8" role="img" aria-label={selectedCountry.name}>
             {selectedCountry.flag}
           </span>
           <span className="text-xs font-medium text-gray-600">{selectedCountry.dialCode}</span>
@@ -632,8 +655,8 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
         </div>
       )}
 
-      {/* Country dropdown */}
-      {isDropdownOpen && (
+      {/* Country dropdown - Desktop */}
+      {isDropdownOpen && !isMobile && (
         <div className={getDropdownStyles()} role="listbox" aria-label="Select country">
           {/* Search input */}
           <div className="sticky top-0 bg-white border-b border-gray-100 p-3">
@@ -662,18 +685,19 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
           </div>
           
           {/* Countries list */}
-          <div className="max-h-60 overflow-y-auto">
+          <div ref={countriesListRef} className="max-h-60 overflow-y-auto">
             {filteredCountries.length > 0 ? (
               filteredCountries.map((country) => (
                 <button
                   key={country.code}
+                  ref={selectedCountry.code === country.code ? selectedCountryRef : null}
                   type="button"
                   className="w-full px-3 py-2.5 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center space-x-3 font-poppins text-sm transition-colors duration-150"
                   onClick={() => handleCountrySelect(country)}
                   role="option"
                   aria-selected={selectedCountry.code === country.code}
                 >
-                  <span className="text-lg flex-shrink-0" role="img" aria-label={country.name}>
+                  <span className="text-lg flex-shrink-0 ml-2" role="img" aria-label={country.name}>
                     {country.flag}
                   </span>
                   <span className="font-medium text-gray-600 flex-shrink-0 min-w-[3rem]">
@@ -687,6 +711,88 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
               ))
             ) : (
               <div className="px-3 py-4 text-center text-gray-500 text-sm">
+                No countries found
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Country modal - Mobile */}
+      {isDropdownOpen && isMobile && (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+            <h2 className="text-lg font-semibold text-gray-900">Select Country</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setIsDropdownOpen(false)
+                setSearchQuery('')
+              }}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+
+          {/* Search input */}
+          <div className="p-4 border-b border-gray-100 flex-shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-8 py-3 text-base border border-gray-200 rounded-lg focus:outline-none focus:border-[#0ABAB5] placeholder-gray-400"
+                placeholder="Search countries..."
+                aria-label="Search countries"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {/* Countries list */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {filteredCountries.length > 0 ? (
+              filteredCountries.map((country) => (
+                <button
+                  key={country.code}
+                  type="button"
+                  className="w-full px-4 py-4 text-left hover:bg-gray-50 active:bg-gray-100 focus:bg-gray-50 focus:outline-none flex items-center space-x-4 font-poppins text-base transition-colors duration-150 border-b border-gray-50 last:border-b-0"
+                  onClick={() => handleCountrySelect(country)}
+                  role="option"
+                  aria-selected={selectedCountry.code === country.code}
+                >
+                  <span className="text-2xl flex-shrink-0 ml-2" role="img" aria-label={country.name}>
+                    {country.flag}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-900 font-medium truncate">{country.name}</span>
+                      {selectedCountry.code === country.code && (
+                        <span className="text-[#0ABAB5] text-lg ml-2">✓</span>
+                      )}
+                    </div>
+                    <span className="text-gray-500 text-sm">
+                      {country.dialCode}
+                    </span>
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-8 text-center text-gray-500">
                 No countries found
               </div>
             )}
