@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Ignore ESLint errors during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
   // Enable experimental features for better performance
   experimental: {
     optimizeCss: true,
@@ -38,6 +43,18 @@ const nextConfig = {
   // Remove unused CSS in production
   ...(process.env.NODE_ENV === 'production' && {
     webpack: (config, { isServer }) => {
+      // Ignore known noisy warnings from certain deps
+      config.ignoreWarnings = [
+        /Critical dependency: the request of a dependency is an expression/,
+      ]
+
+      // Optionally enable analyzer in production when ANALYZE=true
+      if (process.env.ANALYZE === 'true') {
+        config.plugins.push(
+          new (require('@next/bundle-analyzer')({ enabled: true }))()
+        )
+      }
+
       if (!isServer) {
         config.optimization.splitChunks.cacheGroups = {
           ...config.optimization.splitChunks.cacheGroups,

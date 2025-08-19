@@ -234,7 +234,7 @@ export default function CruiseBookingModal({ isOpen, onClose }: CruiseBookingMod
 
   // Calculate calendar position
   useEffect(() => {
-    const computeFrom = (element: HTMLElement, setStyle: (style: any) => void) => {
+    const computeFrom = (element: HTMLElement, setStyle: (style: { top: number; left: number; maxHeight: number }) => void) => {
       const rect = element.getBoundingClientRect();
       const viewportH = window.innerHeight;
       const buffer = 20;
