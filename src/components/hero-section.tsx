@@ -47,6 +47,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({coords, initialFromAirport}) =
   return (
     <section className="relative w-full flex flex-col items-center justify-start bg-gradient-to-b from-[#0ABAB5] via-[#84DDDA] to-[#F0FBFA] min-h-[682px] px-2 md:px-4">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0ABAB5] via-[#84DDDA] to-white w-full h-full" />
+
       <Navbar isDarkBackground={true} />
       <div className="w-full max-w-[1280px] mx-auto flex flex-col items-center relative">
         {/* Title */}

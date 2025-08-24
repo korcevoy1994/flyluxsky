@@ -391,7 +391,7 @@ const AirlineDealsSection = ({ airlineSlug, airlineName }: AirlineDealsProps) =>
                 <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Poppins', sans-serif"}}>
                   {/* Top-Left: Airline */}
                   <div className="flex items-center justify-center px-2">
-                    <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" />
+                    <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" style={{height: 'auto'}} loading="lazy" />
                   </div>
 
                   {/* Top-Right: Duration */}

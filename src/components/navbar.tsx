@@ -29,11 +29,33 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
     };
   }, [isMenuOpen]);
 
+  // Close menu on Escape key press
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isMenuOpen]);
+
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen)
   }
 
   const handleMenuClose = () => {
+    setIsMenuOpen(false)
+  }
+
+  // Smooth close with slight delay for better UX
+  const handleSmoothMenuClose = () => {
     setIsMenuOpen(false)
   }
 
@@ -48,6 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
             width={90} 
             height={60} 
             className="w-[70px] h-[47px] sm:w-[90px] sm:h-[60px]"
+            style={{height: 'auto'}}
             priority
           />
         </Link>
@@ -86,8 +109,32 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
       </header>
 
       {/* Mobile Menu Overlay */}
-      <div className={`fixed inset-0 bg-white z-40 transition-all duration-500 ease-in-out ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-        <div className={`flex flex-col h-full transition-all duration-500 ease-in-out ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div 
+        className={`fixed inset-0 bg-white z-40 transition-all duration-500 ease-in-out ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        onClick={(e) => {
+          // Close menu if clicking on the overlay background
+          if (e.target === e.currentTarget) {
+            setIsMenuOpen(false);
+          }
+        }}
+      >
+        <div 
+          className={`flex flex-col h-full transition-all duration-500 ease-in-out ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            e.currentTarget.dataset.startY = touch.clientY.toString();
+          }}
+          onTouchEnd={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.startY || '0');
+            const endY = e.changedTouches[0].clientY;
+            const deltaY = endY - startY;
+            
+            // Close menu if swiped down more than 100px
+            if (deltaY > 100) {
+              setIsMenuOpen(false);
+            }
+          }}
+        >
           {/* Top spacing for navbar */}
           <div className="h-24"></div>
           
@@ -100,50 +147,74 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
           <div className="flex-1 flex flex-col lg:flex-row max-w-[1280px] mx-auto w-full">
             {/* Left Side - Navigation */}
             <div className="flex-1 flex flex-col justify-start px-4 sm:px-8 py-6 sm:py-8 lg:border-r border-[#E5E5E5]">
-                <nav className="space-y-6 sm:space-y-8">
-                    <div className="group cursor-pointer" role="button" tabIndex={0} onClick={handleMenuClose}>
-                        <div className="flex items-center justify-between">
-                            <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                                DEALS
-                            </span>
-                            <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                <ArrowRightIcon className="sm:w-10 sm:h-10" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="group cursor-pointer" role="button" tabIndex={0} onClick={handleMenuClose}>
-                        <div className="flex items-center justify-between">
-                            <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                                ABOUT US
-                            </span>
-                            <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                <ArrowRightIcon className="sm:w-10 sm:h-10" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="group cursor-pointer" role="button" tabIndex={0}>
-                        <Link href="/reviews" className="block" onClick={handleMenuClose}>
-                            <div className="flex items-center justify-between">
-                                <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                                    REVIEWS
+                <nav className="space-y-4 sm:space-y-6">
+                    {/* Main Navigation Items */}
+                    <div className="space-y-4 sm:space-y-6">
+                        <Link href="/#best-deal-of-the-day" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
+                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                    BEST DEALS
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="sm:w-10 sm:h-10" />
+                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        <Link href="/all-airlines" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
+                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                    TOP AIRLINES
+                                </span>
+                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        <Link href="/top-cities" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
+                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                    TOP CITIES
+                                </span>
+                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        <Link href="/top-countries" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
+                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                    TOP COUNTRIES
+                                </span>
+                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
                                 </div>
                             </div>
                         </Link>
                     </div>
                     
-                    <div className="group cursor-pointer" role="button" tabIndex={0}>
-                        <Link href="/contact" className="block" onClick={handleMenuClose}>
-                            <div className="flex items-center justify-between">
-                                <span className="font-bold text-[32px] sm:text-[48px] lg:text-[64px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-colors duration-300">
-                                    CONTACTS
+                    {/* Secondary Navigation */}
+                    <div className="pt-6 space-y-3 border-t border-[#E5E5E5]/50">
+                        <Link href="/reviews" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-1">
+                                <span className="font-semibold text-[18px] sm:text-[24px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
+                                    REVIEWS
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-transform duration-300 group-hover:translate-x-2 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="sm:w-10 sm:h-10" />
+                                <div className="ml-4 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                            </div>
+                        </Link>
+                        
+                        <Link href="/contact" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-1">
+                                <span className="font-semibold text-[18px] sm:text-[24px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
+                                    CONTACT
+                                </span>
+                                <div className="ml-4 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
                             </div>
                         </Link>
@@ -184,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                   <a href="#" className="cursor-pointer hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded" aria-label="Facebook">
                     <svg width="28" height="28" className="sm:w-8 sm:h-8" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect width="30" height="30" rx="8" fill="#F8F8F8"/>
-                      <path fillRule="evenodd" clipRule="evenodd" d="M17.6075 22V16.5785H19.4275L19.6998 14.4659H17.6068V13.117C17.6068 12.5052 17.7769 12.088 18.6547 12.088H19.7733V10.198C19.2316 10.1398 18.6871 10.1118 18.1423 10.114C16.5295 10.114 15.4256 11.0989 15.4256 12.907V14.4659H13.6V16.5785H15.4249V22H8.7728C8.3458 22 8 = 8.6542 8 = 8.7728V21.2272C22 = 21.6542 21.6542 22 21.2272 22H17.6075Z" fill="#0D2B29"/>
+                      <path fillRule="evenodd" clipRule="evenodd" d="M17.6075 22V16.5785H19.4275L19.6998 14.4659H17.6068V13.117C17.6068 12.5052 17.7769 12.088 18.6547 12.088H19.7733V10.198C19.2316 10.1398 18.6871 10.1118 18.1423 10.114C16.5295 10.114 15.4256 11.0989 15.4256 12.907V14.4659H13.6V16.5785H15.4249V22H8.7728C8.3458 22 8 21.6542 8 8.7728V21.2272C8 21.6542 8.3458 22 8.7728 22H21.2272C21.6542 22 22 21.6542 22 21.2272V8.7728C22 8.3458 21.6542 8 21.2272 8H8.7728C8.3458 8 8 8.3458 8 8.7728V21.2272C8 21.6542 8.3458 22 8.7728 22H17.6075Z" fill="#0D2B29"/>
                     </svg>
                   </a>
                   <a href="#" className="cursor-pointer hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded" aria-label="Twitter">
@@ -209,11 +280,11 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
               <div>
                 <div className="pt-6">
                   <div className="flex flex-wrap items-center justify-start gap-4">
-                    <Image src="/icons/logo-white 1.svg" alt="Trustpilot" width={90} height={23} />
-                    <Image src="/icons/cdnlogo.com_discover 1.svg" alt="Discover" width={80} height={14} />
-                    <Image src="/icons/mas.svg" alt="Mastercard" width={40} height={24} />
-                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={70} height={24} className="h-auto w-auto" />
-                    <Image src="/icons/Visa_2021.svg" alt="Visa" width={45} height={15} />
+                    <Image src="/icons/logo-white 1.svg" alt="Trustpilot" width={90} height={23} style={{height: 'auto'}} />
+                    <Image src="/icons/cdnlogo.com_discover 1.svg" alt="Discover" width={80} height={14} style={{height: 'auto'}} />
+                    <Image src="/icons/mas.svg" alt="Mastercard" width={40} height={24} style={{height: 'auto'}} />
+                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={70} height={24} className="h-auto w-auto" style={{height: 'auto'}} />
+                    <Image src="/icons/Visa_2021.svg" alt="Visa" width={45} height={15} style={{height: 'auto'}} />
                   </div>
                 </div>
                 <div className="mt-4">

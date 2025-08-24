@@ -62,7 +62,7 @@ const TestimonialModal: React.FC<TestimonialModalProps> = ({ testimonial, onClos
             <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden relative">
                     {testimonial.avatar ? (
-                        <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} />
+                        <Image src={testimonial.avatar} alt={testimonial.name} fill style={{ objectFit: 'cover' }} loading="lazy" />
                     ) : (
                         <div className="w-full h-full bg-[#0ABAB5] flex items-center justify-center">
                         <span className="text-white font-bold text-2xl">

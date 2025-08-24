@@ -4,6 +4,17 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
 
+  // Add X-Robots-Tag for utility pages
+  const url = request.nextUrl.pathname
+  if (
+    url.startsWith('/admin') ||
+    url.startsWith('/thank-you') ||
+    url.startsWith('/searching') ||
+    url.startsWith('/search')
+  ) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  }
+
   // Content Security Policy
   const csp = [
     "default-src 'self'",

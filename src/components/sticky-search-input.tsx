@@ -30,7 +30,7 @@ const StickySearchInput: React.FC<StickySearchInputProps> = ({
         {/* From Input */}
         <div className="flex items-center space-x-2 flex-1 min-w-0 pl-2">
           <div className="w-8 h-8 flex-shrink-0 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-            <Image src="/icons/airport-from.svg" alt="From" width={16} height={16} />
+            <Image src="/icons/airport-from.svg" alt="From" width={14} height={14} style={{width: '16px'}} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-bold text-gray-800 tracking-wider uppercase">FROM</div>
@@ -46,7 +46,7 @@ const StickySearchInput: React.FC<StickySearchInputProps> = ({
         {/* To Input */}
         <div className="flex items-center space-x-2 flex-1 min-w-0 pr-2">
           <div className="w-8 h-8 flex-shrink-0 bg-[#E8F4F8] rounded-full flex items-center justify-center">
-            <Image src="/icons/airport-to.svg" alt="To" width={16} height={16} />
+            <Image src="/icons/airport-to.svg" alt="To" width={14} height={14} style={{width: '16px'}} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-bold text-gray-800 tracking-wider uppercase">GOING TO</div>

@@ -125,6 +125,7 @@ export default function CityPage({ slug }: CityPageProps) {
             alt={`${cityContent.title} skyline`}
             fill
             priority
+            sizes="100vw"
             className="object-cover object-center"
           />
           {/* Brand color gradient overlay for better text readability */}

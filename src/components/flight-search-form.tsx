@@ -618,7 +618,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               >
                 <div className="flex items-center gap-1 w-full">
                   <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Image src="/icons/airport-from.svg" width={16} height={11} alt="from" />
+                    <Image src="/icons/airport-from.svg" width={14} height={14} alt="from" style={{width: '16px'}} />
                   </div>
                   <div className="flex-1">
                     <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -767,7 +767,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               >
                 <div className="flex items-center gap-1 w-full">
                   <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" />
+                    <Image src="/icons/airport-to.svg" width={14} height={14} alt="to" style={{width: '16px'}} />
                   </div>
                   <div className="flex-1">
                     <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
@@ -1115,6 +1115,8 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                 </div>
               )}
             </div>
+
+
             {/* Search Button */}
             {tripType !== 'Multi-city' && (
               <button
@@ -1202,6 +1204,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                 Clear All
               </button>
             </div>
+            
+
+            
             <button
               onClick={handleSearch}
               disabled={isSubmitting || !isMultiCityComplete}
@@ -1265,7 +1270,7 @@ const MultiCitySegment: React.FC<{
         >
               <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-              <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" />
+              <Image src="/icons/airport-from.svg" width={14} height={14} alt="from" style={{width: 'auto'}} />
             </div>
                 <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">FROM</div>
@@ -1307,7 +1312,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <Image src="/icons/airport-from.svg" width={16} height={16} alt="from" className="mr-3 h-auto w-auto" />
+                  <Image src="/icons/airport-from.svg" width={14} height={14} alt="from" className="mr-3 h-auto w-auto" style={{width: 'auto'}} />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>
@@ -1348,7 +1353,7 @@ const MultiCitySegment: React.FC<{
         >
               <div className="flex items-center gap-3 w-full">
             <div className="w-8 h-8 bg-[#E8F4F8] rounded-full flex items-center justify-center flex-shrink-0">
-              <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" />
+              <Image src="/icons/airport-to.svg" width={14} height={14} alt="to" style={{width: 'auto'}} />
             </div>
                 <div className="flex-1">
               <div className="font-poppins text-xs font-semibold text-[#0D2B29] uppercase mb-1">GOING TO</div>
@@ -1390,7 +1395,7 @@ const MultiCitySegment: React.FC<{
                 tabIndex={0}
               >
                 <div className="flex items-center">
-                  <Image src="/icons/airport-to.svg" width={16} height={16} alt="to" className="mr-3 h-auto w-auto" />
+                  <Image src="/icons/airport-to.svg" width={14} height={14} alt="to" className="mr-3 h-auto w-auto" style={{width: 'auto'}} />
                   <div>
                     <div className="font-poppins font-medium text-[#0D2B29]">{city.name} <span className="text-gray-500">{city.code}</span></div>
                     <div className="font-poppins text-sm text-gray-500">{city.country}</div>

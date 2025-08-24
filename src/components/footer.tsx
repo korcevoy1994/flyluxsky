@@ -129,8 +129,7 @@ const topAirlines = [
   { name: 'Etihad Airlines', href: '/airlines/etihad-airlines' },
   { name: 'Qatar Airways', href: '/airlines/qatar-airways' },
   { name: 'Iberia Airlines', href: '/airlines/iberia-airlines' },
-  { name: 'Swiss Airlines', href: '/airlines/swiss-airlines' },
-  { name: 'Air France', href: '/airlines/air-france' }
+  { name: 'Swiss Airlines', href: '/airlines/swiss-airlines' }
 ];
 
 // topCountries and topCities moved inside Footer component to avoid hydration mismatch
@@ -254,8 +253,7 @@ const Footer = () => {
       { name: 'Germany Business Class Flights', href: '/countries/germany' },
       { name: 'Australia Business Class Flights', href: '/countries/australia' },
       { name: 'Turkey Business Class Flights', href: '/countries/turkey' },
-      { name: 'Japan Business Class Flights', href: '/countries/japan' },
-      { name: 'Qatar Business Class Flights', href: '/countries/qatar' }
+      { name: 'Japan Business Class Flights', href: '/countries/japan' }
     ]);
 
     setTopCities([
@@ -272,8 +270,7 @@ const Footer = () => {
       { name: 'Istanbul Business Class Flights', href: '/cities/istanbul' },
       { name: 'Sydney Business Class Flights', href: '/cities/sydney' },
       { name: 'Dubai Business Class Flights', href: '/cities/dubai' },
-      { name: 'Tokyo Business Class Flights', href: '/cities/tokyo' },
-      { name: 'Doha Business Class Flights', href: '/cities/doha' }
+      { name: 'Tokyo Business Class Flights', href: '/cities/tokyo' }
     ]);
   }, []);
 

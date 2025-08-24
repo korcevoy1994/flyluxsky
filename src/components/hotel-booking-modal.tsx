@@ -874,7 +874,11 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                   </div>
                 </button>
                 <p className="text-center text-xs text-gray-500 font-poppins mt-3">
-                  By booking, you agree to our terms and conditions
+                  By submitting my details, I agree to be contacted regarding my travel plans. See our{' '}
+                  <a href="/privacy" className="text-[#0ABAB5] hover:underline">
+                    Privacy Policy
+                  </a>
+                  .
                 </p>
             </div>
             </div>

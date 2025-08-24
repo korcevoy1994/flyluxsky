@@ -55,7 +55,7 @@ export default function FlightSummaryChips({ variant = 'hero' }: { variant?: Fli
             <div className="w-full flex justify-center">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm border border-gray-200 text-[#0D2B29] text-xs max-w-[95%]">
                 <span className="inline-flex items-center gap-1">
-                  <Image src="/icons/calendar.svg" alt="" width={12} height={12} />
+                  <Image src="/icons/calendar.svg" alt="" width={12} height={12} style={{height: 'auto'}} />
                   <span className="whitespace-nowrap">{departure}{returnDate ? ` - ${returnDate}` : ''}</span>
                 </span>
                 <span className="text-[#0D2B29]/30">•</span>
@@ -76,7 +76,7 @@ export default function FlightSummaryChips({ variant = 'hero' }: { variant?: Fli
           <div className="hidden md:flex justify-center">
             <div className="inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 shadow-sm border border-gray-200 text-[#0D2B29] text-sm">
               <span className="inline-flex items-center gap-1.5">
-                <Image src="/icons/calendar.svg" alt="" width={14} height={14} />
+                <Image src="/icons/calendar.svg" alt="" width={14} height={14} style={{height: 'auto'}} />
                 <span>{departure}{returnDate ? ` - ${returnDate}` : ''}</span>
               </span>
               <span className="text-[#0D2B29]/20">•</span>
@@ -113,7 +113,7 @@ export default function FlightSummaryChips({ variant = 'hero' }: { variant?: Fli
                 </span>
 
                 <span className="inline-flex items-center gap-2 text-[#0D2B29]">
-                  <Image src="/icons/calendar.svg" alt="" width={16} height={16} />
+                  <Image src="/icons/calendar.svg" alt="" width={16} height={16} style={{height: 'auto'}} />
                   <span>{departure}{returnDate ? ` - ${returnDate}` : ''}</span>
                 </span>
 

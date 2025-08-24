@@ -622,6 +622,19 @@ const FlightSearchFormVertical: React.FC<ContactFormProps> = ({ onSubmit, varian
             </div>
           </div>
 
+          {/* Privacy Policy Agreement */}
+          <p className={`text-xs leading-relaxed text-center ${
+            isNeutral ? 'text-gray-600' : 'text-white/80'
+          }`}>
+            By submitting my details, I agree to be contacted regarding my travel plans. See our{' '}
+            <a href="/privacy" className={`hover:underline ${
+              isNeutral ? 'text-[#0ABAB5]' : 'text-white font-semibold'
+            }`}>
+              Privacy Policy
+            </a>
+            .
+          </p>
+
           {/* Submit Button */}
           <button
             type="submit"

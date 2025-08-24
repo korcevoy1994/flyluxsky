@@ -225,7 +225,7 @@ const BestDealsSection = () => {
   };
 
   return (
-    <section className="w-full overflow-x-hidden bg-[#F0FBFA] md:py-12">
+    <section id="best-deal-of-the-day" className="w-full overflow-x-hidden bg-[#F0FBFA] md:py-12">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 md:mb-12 px-4">
           <div className="flex justify-center items-center gap-4 flex-wrap">
@@ -260,7 +260,14 @@ const BestDealsSection = () => {
                 <div className="grid grid-cols-2 grid-rows-2 h-full p-1 transition-opacity duration-300 group-hover:opacity-40" style={{fontFamily: "'Poppins', sans-serif"}}>
                   {/* Top-Left: Airline */}
                   <div className="flex items-center justify-center px-2">
-                    <Image src={deal.logo} alt={`${deal.airline} logo`} width={500} height={300} className="h-auto max-h-[150px] w-full object-contain" />
+                    <Image 
+                  src={deal.logo} 
+                  alt={`${deal.airline} logo`} 
+                  width={500} 
+                  height={300} 
+                  className="h-auto max-h-[150px] w-full object-contain"
+                  loading="lazy"
+                />
                   </div>
 
                   {/* Top-Right: Duration */}

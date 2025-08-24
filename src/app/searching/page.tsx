@@ -30,7 +30,7 @@ const SearchingContent = () => {
     const x1 = 150, y1 = 50;
     const x2 = 250, y2 = 50;
     const x3 = 350, y3 = 150;
-    
+
     return Math.pow(1-t, 3) * y0 + 
            3 * Math.pow(1-t, 2) * t * y1 + 
            3 * (1-t) * Math.pow(t, 2) * y2 + 

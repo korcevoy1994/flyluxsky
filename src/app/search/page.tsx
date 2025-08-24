@@ -14,7 +14,7 @@ const AirportFromIcon = ({ size = 20, className = '' }: { size?: number; classNa
     const aspectRatio = 24/17; // Original SVG dimensions
     const height = Math.round(size / aspectRatio);
     return (
-        <Image src="/icons/airport-from.svg" alt="" width={size} height={height} className={className} />
+        <Image src="/icons/airport-from.svg" alt="" width={size} height={height} className={className} style={{width: 'auto'}} />
     );
 };
 import { generateFlightsClient, generateMultiCityFlightsFromSegments, calculateTotalPriceWithPassengers } from '@/lib/flightGenerator';
@@ -116,7 +116,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, departureDates }: {
                             <div className="flex items-center gap-2">
                                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center p-1">
                                     {segment.logo && segment.logo.trim() !== '' ? (
-                                        <Image src={segment.logo} alt={segment.airline} width={28} height={28} className="object-contain w-full h-full" />
+                                        <Image src={segment.logo} alt={segment.airline} width={28} height={28} className="object-contain w-full h-full" style={{height: 'auto'}} />
                                     ) : (
                                         <AirportFromIcon className="w-5 h-5 text-gray-400" />
                                     )}
@@ -255,7 +255,7 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                 <div className="flex items-center gap-3">
                     <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-2">
                         {flight.logo && flight.logo.trim() !== '' ? (
-                            <Image src={flight.logo} alt={flight.airline} width={48} height={48} className="object-contain w-full h-full" />
+                            <Image src={flight.logo} alt={flight.airline} width={48} height={48} className="object-contain w-full h-full" style={{height: 'auto'}} />
                         ) : (
                             <AirportFromIcon className="w-8 h-8 text-gray-400" />
                         )}
@@ -362,7 +362,7 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
                             {flight.returnFlight.logo && flight.returnFlight.logo.trim() !== '' ? (
-                                <Image src={flight.returnFlight.logo} alt={flight.returnFlight.airline} width={20} height={20} className="object-contain" />
+                                <Image src={flight.returnFlight.logo} alt={flight.returnFlight.airline} width={20} height={20} className="object-contain" style={{height: 'auto'}} />
                             ) : (
                                 <AirportFromIcon className="w-4 h-4 text-gray-400" />
                             )}
@@ -738,7 +738,7 @@ function SearchResultsContentMain() {
 
             {/* Selected Flight Full-Width Sticky */}
             {selectedFlight !== null && flights[selectedFlight] && (
-                <div className="hidden lg:block sticky top-4 z-40 mb-6 -mx-2 sm:-mx-4 lg:-mx-6">
+                <div className="hidden lg:block sticky top-4 z-30 mb-6 -mx-2 sm:-mx-4 lg:-mx-6">
                      {(() => {
                          const variant = selectedSummaryVariant as 'card' | 'bar' | 'ticket' | 'lux';
                          if (variant === 'bar') {

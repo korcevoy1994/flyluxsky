@@ -170,6 +170,15 @@ export default function ContactPage() {
                 />
               </label>
 
+              {/* Privacy Policy Agreement */}
+              <p className="text-xs text-[#0D2B29]/70 leading-relaxed mt-6">
+                By submitting my details, I agree to be contacted regarding my travel plans. See our{' '}
+                <a href="/privacy" className="text-[#0ABAB5] hover:underline">
+                  Privacy Policy
+                </a>
+                .
+              </p>
+
               <div className="mt-8">
                 <button 
                   type="submit" 

@@ -41,9 +41,18 @@ const NewsletterSection = () => {
             Subscribe
           </button>
         </div>
+        
+        {/* Privacy Policy Agreement */}
+        <p className="text-xs text-[#0D2B29]/70 leading-relaxed max-w-[600px] mx-auto pt-4">
+          By submitting my details, I agree to be contacted regarding my travel plans. See our{' '}
+          <a href="/privacy" className="text-[#0ABAB5] hover:underline">
+            Privacy Policy
+          </a>
+          .
+        </p>
       </div>
     </section>
   );
 };
 
-export default NewsletterSection; 
+export default NewsletterSection;

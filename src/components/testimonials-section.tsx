@@ -70,7 +70,7 @@ const StarRating = ({ rating }: { rating: number }) => {
   const getStarImage = () => `/icons/testimonials/${rating} star.svg`;
   return (
     <div className="flex-shrink-0">
-      <Image src={getStarImage()} alt={`${rating} star rating`} width={105} height={20} />
+      <Image src={getStarImage()} alt={`${rating} star rating`} width={100} height={20} />
     </div>
   );
 };
@@ -82,7 +82,7 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial, o
   >
     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden relative">
       {testimonial.avatar ? (
-        <Image src={testimonial.avatar} alt={testimonial.name} width={56} height={56} className="w-full h-full object-cover" />
+        <Image src={testimonial.avatar} alt={testimonial.name} width={56} height={56} className="w-full h-full object-cover" style={{width: 'auto'}} />
       ) : (
         <div className="w-full h-full bg-[#0ABAB5] flex items-center justify-center">
           <span className="text-white font-bold text-lg">
@@ -155,7 +155,7 @@ export default function TestimonialsSection() {
       {/* Carousel Container */}
       <div className="w-full bg-[#F0FBFA] rounded-3xl py-6 relative">
          <button onClick={scrollPrev} disabled={prevBtnDisabled} className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-50">
-            <Image src="/icons/testimonials/arrow-left-black.svg" alt="Previous" width={10} height={16} />
+            <Image src="/icons/testimonials/arrow-left-black.svg" alt="Previous" width={10} height={16} style={{height: 'auto'}} />
         </button>
 
         <div className="overflow-hidden py-4" ref={emblaRef}>
@@ -167,7 +167,7 @@ export default function TestimonialsSection() {
         </div>
         
         <button onClick={scrollNext} disabled={nextBtnDisabled} className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-50">
-            <Image src="/icons/testimonials/arrow-right-orange.svg" alt="Next" width={10} height={16} />
+            <Image src="/icons/testimonials/arrow-right-orange.svg" alt="Next" width={10} height={16} style={{height: 'auto'}} />
         </button>
 
         <div className="w-full flex justify-center mt-6 px-4">
