@@ -768,7 +768,7 @@ function getAirlineLogo(airlineName: string): string {
     'Virgin Atlantic': '/logos/airlines/Virgin Group.svg',
     'Iberia': '/logos/airlines/Iberia (airline).svg',
     'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
-    'Austrian Airlines': '/logos/airlines/Austrian Airlines.svg',
+    'Austrian Airlines': '/logos/airlines/austrian-logo.svg',
     'Finnair': '/logos/airlines/Finnair.svg',
     'SAS': '/logos/airlines/SAS.svg',
     'TAP Air Portugal': '/logos/airlines/TAP Air Portugal.svg',
@@ -852,7 +852,7 @@ function getAirlineLogo(airlineName: string): string {
     'british': '/logos/airlines/British Airways.svg',
     'iberia': '/logos/airlines/Iberia (airline).svg',
     'swiss': '/logos/airlines/Swiss International Air Lines.svg',
-    'austrian': '/logos/airlines/Austrian Airlines.svg',
+    'austrian': '/logos/airlines/austrian-logo.svg',
     'finnair': '/logos/airlines/Finnair.svg',
     'sas': '/logos/airlines/SAS Braathens.svg.svg',
     'tap': '/logos/airlines/TAP Air Portugal.svg',
@@ -1007,7 +1007,11 @@ function generateFlightTimes(durationString: string, rng?: SeededRandom): { depa
 }
 
 
-function generateMultiCityFlightsFromSegments(segments: {from: string, to: string, date: string}[], flightClass: string): MultiCityFlight[] {
+function generateMultiCityFlightsFromSegments(
+  segments: {from: string, to: string, date: string}[], 
+  flightClass: string, 
+  selectedFlights?: {airline?: string, duration?: string}[]
+): MultiCityFlight[] {
   const airportsMap = new Map(airports.map(a => [a.code, a]));
   
   if (segments.length === 0) {
@@ -1068,12 +1072,26 @@ function generateMultiCityFlightsFromSegments(segments: {from: string, to: strin
       });
       
 
-      const airlineIndex = (optionIndex + i) % availableAirlines.length;
-      const airline = availableAirlines[airlineIndex];
+      // Use selected airline if provided, otherwise use default logic
+      let airline;
+      if (selectedFlights && selectedFlights[i] && selectedFlights[i].airline) {
+        const selectedAirlineName = selectedFlights[i].airline;
+        airline = availableAirlines.find(a => a.name === selectedAirlineName) || availableAirlines[(optionIndex + i) % availableAirlines.length];
+      } else {
+        const airlineIndex = (optionIndex + i) % availableAirlines.length;
+        airline = availableAirlines[airlineIndex];
+      }
       
       const segmentStopsCount = calculateStops(distance, rng);
       const segmentStopoverAirports = selectStopoverAirports(segmentFrom, segmentTo, segmentStopsCount, airline.name, rng);
-      const duration = calculateDuration(distance, segmentStopsCount, rng);
+      
+      // Use selected duration if provided, otherwise calculate it
+      let duration;
+      if (selectedFlights && selectedFlights[i] && selectedFlights[i].duration) {
+        duration = selectedFlights[i].duration!;
+      } else {
+        duration = calculateDuration(distance, segmentStopsCount, rng);
+      }
       const durationMinutes = parseInt(duration.split('h')[0]) * 60 + parseInt(duration.split('h')[1]?.split('m')[0] || '0');
       totalDurationMinutes += durationMinutes;
       
@@ -1297,6 +1315,30 @@ async function generateMultiCityFlights(fromCode: string, toCode: string, flight
 }
 
 export { generateMultiCityFlightsFromSegments };
+
+// Calculate total price with passenger age multipliers
+export function calculateTotalPriceWithPassengers(
+  adultPrice: number,
+  adults: number = 1,
+  children: number = 0,
+  infants: number = 0
+): { totalPrice: number; breakdown: { adults: number; children: number; infants: number } } {
+  const childPrice = Math.round(adultPrice * 0.75); // 75% for children (2-11 years)
+  const infantPrice = Math.round(adultPrice * 0.10); // 10% for infants (under 2 years)
+  
+  const adultsTotal = adultPrice * adults;
+  const childrenTotal = childPrice * children;
+  const infantsTotal = infantPrice * infants;
+  
+  return {
+    totalPrice: adultsTotal + childrenTotal + infantsTotal,
+    breakdown: {
+      adults: adultsTotal,
+      children: childrenTotal,
+      infants: infantsTotal
+    }
+  };
+}
 
 export async function generateFlightsClient(fromCode: string, toCode: string, flightClass: string = 'Business class', tripType: string = 'One-way', departureDate?: string, returnDate?: string, selectedFlight?: { airline: string; price: number; duration: string }): Promise<(GeneratedFlight | MultiCityFlight)[]> {
   // generateFlightsClient called

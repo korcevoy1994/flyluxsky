@@ -322,6 +322,9 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
       query = new URLSearchParams(segments);
       query.set('tripType', tripType);
       query.set('passengers', (passengers.adults + passengers.children + passengers.infants).toString());
+      query.set('adults', passengers.adults.toString());
+      query.set('children', passengers.children.toString());
+      query.set('infants', passengers.infants.toString());
       query.set('class', selectedClass);
     } else {
       const totalPassengers = passengers.adults + passengers.children + passengers.infants;
@@ -331,6 +334,9 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
         departureDate: departureDate ? `${departureDate.getFullYear()}-${String(departureDate.getMonth() + 1).padStart(2, '0')}-${String(departureDate.getDate()).padStart(2, '0')}` : '',
         tripType: tripType,
         passengers: totalPassengers.toString(),
+        adults: passengers.adults.toString(),
+        children: passengers.children.toString(),
+        infants: passengers.infants.toString(),
         class: selectedClass,
       });
 

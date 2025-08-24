@@ -359,6 +359,15 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     // Обновляем полное значение
     const formattedNumber = formatPhoneNumber(phoneNumber, country.format)
     const fullNumber = formattedNumber ? `${country.dialCode} ${formattedNumber}` : country.dialCode
+    
+    // Логирование для отладки
+    console.log('CustomPhoneInput country select:', {
+      country: country.code,
+      phoneNumber,
+      formattedNumber,
+      fullNumber
+    })
+    
     onChange(fullNumber)
     
     // Валидация
@@ -386,6 +395,16 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     
     // Обновляем полное значение
     const fullNumber = formattedNumber ? `${selectedCountry.dialCode} ${formattedNumber}` : selectedCountry.dialCode
+    
+    // Логирование для отладки
+    console.log('CustomPhoneInput onChange:', {
+      rawValue,
+      digitsOnly,
+      formattedNumber,
+      fullNumber,
+      selectedCountry: selectedCountry.code
+    })
+    
     onChange(fullNumber)
     
     // Валидация

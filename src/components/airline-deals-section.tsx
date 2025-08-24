@@ -160,7 +160,7 @@ const airlineLogoMap: Record<string, string> = {
   'Air Canada': '/logos/airlines/Air Canada.svg',
   'Finnair': '/logos/airlines/Finnair.svg',
   'SAS Scandinavian Airlines': '/logos/airlines/SAS Scandinavian Airlines.svg',
-  'Austrian Airlines': '/logos/airlines/Austrian Airlines.svg',
+  'Austrian Airlines': '/logos/airlines/austrian-logo.svg',
   'Brussels Airlines': '/logos/airlines/Brussels Airlines.svg',
   'TAP Air Portugal': '/logos/airlines/TAP Air Portugal.svg',
   'Alitalia': '/logos/airlines/Alitalia.svg',

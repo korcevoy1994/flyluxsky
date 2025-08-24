@@ -324,6 +324,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       query = new URLSearchParams(segments);
       query.set('tripType', tripType);
       query.set('passengers', (passengers.adults + passengers.children + passengers.infants).toString());
+      query.set('adults', passengers.adults.toString());
+      query.set('children', passengers.children.toString());
+      query.set('infants', passengers.infants.toString());
       query.set('class', selectedClass);
     } else {
       const totalPassengers = passengers.adults + passengers.children + passengers.infants;
@@ -333,6 +336,9 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         departureDate: departureDate ? `${departureDate.getFullYear()}-${String(departureDate.getMonth() + 1).padStart(2, '0')}-${String(departureDate.getDate()).padStart(2, '0')}` : '',
         tripType: tripType,
         passengers: totalPassengers.toString(),
+        adults: passengers.adults.toString(),
+        children: passengers.children.toString(),
+        infants: passengers.infants.toString(),
         class: selectedClass,
       });
 
@@ -420,7 +426,30 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
     setMultiActiveInputs([...multiActiveInputs, null])
   }
   const handleSegmentChange = (idx: number, field: 'from' | 'to' | 'date' | 'fromSelection' | 'toSelection', value: string | Date | null | Airport) => {
-    setMultiSegments(segs => segs.map((s, i) => i === idx ? { ...s, [field]: value } : s))
+    setMultiSegments(segs => {
+      const newSegs = segs.map((s, i) => i === idx ? { ...s, [field]: value } : s);
+      
+      // If changing date, validate and update subsequent segments if needed
+      if (field === 'date' && value instanceof Date) {
+        const selectedDate = value;
+        
+        // Check if any subsequent segments have dates that are now invalid
+        for (let i = idx + 1; i < newSegs.length; i++) {
+          const nextSegment = newSegs[i];
+          if (nextSegment.date) {
+            const nextDay = new Date(selectedDate);
+            nextDay.setDate(nextDay.getDate() + (i - idx));
+            
+            // If the next segment's date is before the minimum allowed date, clear it
+            if (nextSegment.date < nextDay) {
+              newSegs[i] = { ...nextSegment, date: null };
+            }
+          }
+        }
+      }
+      
+      return newSegs;
+    });
   }
   const handleSegmentPopover = (idx: number, open: boolean) => {
     setMultiPopovers(pops => pops.map((v, i) => i === idx ? open : v))
@@ -902,6 +931,21 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                       if (returnDate && date > returnDate) {
                         setReturnDate(null)
                       }
+                      
+                      // Update multi-city segments dates if they become invalid
+                      if (tripType === 'Multi City') {
+                        const updatedSegments = multiSegments.map((segment, index) => {
+                          const minDateForSegment = new Date(date)
+                          minDateForSegment.setDate(minDateForSegment.getDate() + index + 1)
+                          
+                          if (segment.date && segment.date < minDateForSegment) {
+                            return { ...segment, date: null }
+                          }
+                          return segment
+                        })
+                        setMultiSegments(updatedSegments)
+                      }
+                      
                       setOpenPopover(null)
                     }}
                     minDate={new Date()}
@@ -1084,7 +1128,30 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
           </div>
         </div>
         {/* Multi-city segments (дополнительные) */}
-        {tripType === 'Multi-city' && multiSegments.map((segment, idx) => (
+        {tripType === 'Multi-city' && multiSegments.map((segment, idx) => {
+          // Calculate minimum date for this segment
+          let minDate = new Date();
+          
+          if (idx === 0) {
+            // First multi-city segment: minimum date is the day after main departure date
+            if (departureDate) {
+              minDate = new Date(departureDate);
+              minDate.setDate(minDate.getDate() + 1);
+            }
+          } else {
+            // Subsequent segments: minimum date is the day after previous segment's date
+            const prevSegment = multiSegments[idx - 1];
+            if (prevSegment.date) {
+              minDate = new Date(prevSegment.date);
+              minDate.setDate(minDate.getDate() + 1);
+            } else if (departureDate) {
+              // If previous segment has no date, use main departure date + days
+              minDate = new Date(departureDate);
+              minDate.setDate(minDate.getDate() + idx + 1);
+            }
+          }
+          
+          return (
           <div className="relative" key={idx}>
             <MultiCitySegment
               segment={segment}
@@ -1102,6 +1169,7 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               activeInput={multiActiveInputs[idx] || null}
               onInputFocus={(field) => handleMultiInputFocus(idx, field)}
               onInputBlur={() => handleMultiInputBlur(idx)}
+              minDate={minDate}
             />
             <button
               onClick={() => handleRemoveSegment(idx)}
@@ -1111,7 +1179,8 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
               <X size={14} />
             </button>
           </div>
-        ))}
+          );
+        })}
         {tripType === 'Multi-city' && (
           <div className="flex justify-between items-center mt-6">
             <div className="flex gap-4">
@@ -1170,13 +1239,15 @@ const MultiCitySegment: React.FC<{
   activeInput: 'from' | 'to' | null
   onInputFocus: (field: 'from' | 'to') => void
   onInputBlur: () => void
+  minDate?: Date
 }> = ({
   segment, onChange,
   fromSuggestions, toSuggestions,
   showFromSuggestions, showToSuggestions,
   onFromInput, onToInput, onCitySelect,
   onDateClick, openPopover, setOpenPopover,
-  activeInput, onInputFocus, onInputBlur
+  activeInput, onInputFocus, onInputBlur,
+  minDate
 }) => {
   const fromInputRef = useRef<HTMLInputElement>(null)
   const toInputRef = useRef<HTMLInputElement>(null)
@@ -1355,7 +1426,7 @@ const MultiCitySegment: React.FC<{
             <CustomCalendar
               selectedDate={segment.date}
               onDateSelect={date => { onChange('date', date); setOpenPopover(false) }}
-              minDate={new Date()}
+              minDate={minDate || new Date()}
             />
           </div>
         )}

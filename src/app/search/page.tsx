@@ -17,7 +17,7 @@ const AirportFromIcon = ({ size = 20, className = '' }: { size?: number; classNa
         <Image src="/icons/airport-from.svg" alt="" width={size} height={height} className={className} />
     );
 };
-import { generateFlightsClient, generateMultiCityFlightsFromSegments } from '@/lib/flightGenerator';
+import { generateFlightsClient, generateMultiCityFlightsFromSegments, calculateTotalPriceWithPassengers } from '@/lib/flightGenerator';
 import type { GeneratedFlight, MultiCityFlight, FlightSegment } from '@/lib/flightGenerator';
 
 // Mock data for airports to get full names
@@ -194,6 +194,7 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, departureDates }: {
                     </p>
                 </div>
                 <div className="text-right">
+                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
                     <p className="text-2xl font-bold text-[#0abab5]">
                         ${flight.totalPrice}
                     </p>
@@ -438,6 +439,7 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     </p>
                 </div>
                 <div className="text-right">
+                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
                     <p className="text-3xl font-bold text-[#0abab5]">
                         ${flight.price}
                     </p>
@@ -521,7 +523,10 @@ function SearchResultsContentMain() {
             setReturnDate(new Date(returnValue + 'T00:00:00'));
         }
         if (pass) {
-            setPassengers({ adults: parseInt(pass, 10), children: 0, infants: 0 });
+            const adults = parseInt(searchParams.get('adults') || pass, 10);
+            const children = parseInt(searchParams.get('children') || '0', 10);
+            const infants = parseInt(searchParams.get('infants') || '0', 10);
+            setPassengers({ adults, children, infants });
         }
         if (trip) {
             setTripType(trip as 'One-way' | 'Round Trip' | 'Multi-city');
@@ -547,8 +552,21 @@ function SearchResultsContentMain() {
                         date: dateParams[index] || '2024-12-15'
                     }));
                     
+                    // Get selected airlines and durations for each segment
+                    const selectedFlights: {airline?: string, duration?: string}[] = [];
+                    for (let i = 0; i < segments.length; i++) {
+                        const segmentIndex = i + 1; // 1-based indexing for URL params
+                        const selectedAirline = searchParams.get(`selectedAirline${segmentIndex === 1 ? '' : segmentIndex}`);
+                        const selectedDuration = searchParams.get(`selectedDuration${segmentIndex === 1 ? '' : segmentIndex}`);
+                        
+                        selectedFlights.push({
+                            airline: selectedAirline || undefined,
+                            duration: selectedDuration || undefined
+                        });
+                    }
+                    
                     // Generating multi-city flights
-                    const generatedFlights = await generateMultiCityFlightsFromSegments(segments, flightClass);
+                    const generatedFlights = await generateMultiCityFlightsFromSegments(segments, flightClass, selectedFlights);
                     // Generated multi-city flights
                     setFlights(generatedFlights);
                 }
@@ -595,43 +613,78 @@ function SearchResultsContentMain() {
 
     // Auto-select flight based on URL parameters
     useEffect(() => {
-        const selectedAirline = searchParams.get('selectedAirline');
-        const selectedPrice = searchParams.get('selectedPrice');
-        const selectedDuration = searchParams.get('selectedDuration');
+        const tripType = searchParams.get('tripType');
         
-        if (selectedAirline && selectedPrice && selectedDuration && flights.length > 0) {
-            // Find the flight that matches the selected parameters
-            const targetPrice = parseInt(selectedPrice);
-            const flightIndex = flights.findIndex((flight) => {
-                if (isMultiCityFlight(flight)) {
-                    return false; // Skip multi-city flights for now
-                }
-                const regularFlight = flight as GeneratedFlight;
-                // More lenient matching: allow greater price variance and up to 2h duration difference
-                const extractHours = (d: string) => {
-                    const m = d.match(/(\d+)h/);
-                    return m ? parseInt(m[1]) : 0;
-                };
-                return regularFlight.airline === selectedAirline && 
-                       Math.abs((regularFlight.totalPrice || regularFlight.price) - targetPrice) <= 100 &&
-                       Math.abs(extractHours(regularFlight.duration) - extractHours(selectedDuration)) <= 2;
-            });
+        if (tripType === 'Multi-city') {
+            // Handle multi-city flight auto-selection
+            const selectedAirline1 = searchParams.get('selectedAirline');
+            const selectedAirline2 = searchParams.get('selectedAirline2');
+            const selectedDuration1 = searchParams.get('selectedDuration');
+            const selectedDuration2 = searchParams.get('selectedDuration2');
             
-            if (flightIndex !== -1) {
-                setSelectedFlight(flightIndex);
-                // Auto-selected flight at index
-            } else {
-                // If exact match not found, select the first flight from the same airline
-                const airlineIndex = flights.findIndex((flight) => {
+            if ((selectedAirline1 || selectedAirline2 || selectedDuration1 || selectedDuration2) && flights.length > 0) {
+                // Find multi-city flight that matches the selected parameters
+                const flightIndex = flights.findIndex((flight) => {
+                    if (!isMultiCityFlight(flight)) {
+                        return false;
+                    }
+                    const multiCityFlight = flight as MultiCityFlight;
+                    
+                    // Check if any segment matches the selected criteria
+                    let matches = 0;
+                    const totalSegments = multiCityFlight.segments.length;
+                    
+                    if (selectedAirline1 && multiCityFlight.segments[0]?.airline === selectedAirline1) matches++;
+                    if (selectedAirline2 && multiCityFlight.segments[1]?.airline === selectedAirline2) matches++;
+                    if (selectedDuration1 && multiCityFlight.segments[0]?.duration === selectedDuration1) matches++;
+                    if (selectedDuration2 && multiCityFlight.segments[1]?.duration === selectedDuration2) matches++;
+                    
+                    // Select if at least one parameter matches
+                    return matches > 0;
+                });
+                
+                if (flightIndex !== -1) {
+                    setSelectedFlight(flightIndex);
+                }
+            }
+        } else {
+            // Handle regular flight auto-selection
+            const selectedAirline = searchParams.get('selectedAirline');
+            const selectedPrice = searchParams.get('selectedPrice');
+            const selectedDuration = searchParams.get('selectedDuration');
+            
+            if (selectedAirline && selectedPrice && selectedDuration && flights.length > 0) {
+                // Find the flight that matches the selected parameters
+                const targetPrice = parseInt(selectedPrice);
+                const flightIndex = flights.findIndex((flight) => {
                     if (isMultiCityFlight(flight)) {
                         return false;
                     }
-                    return (flight as GeneratedFlight).airline === selectedAirline;
+                    const regularFlight = flight as GeneratedFlight;
+                    // More lenient matching: allow greater price variance and up to 2h duration difference
+                    const extractHours = (d: string) => {
+                        const m = d.match(/(\d+)h/);
+                        return m ? parseInt(m[1]) : 0;
+                    };
+                    return regularFlight.airline === selectedAirline && 
+                           Math.abs((regularFlight.totalPrice || regularFlight.price) - targetPrice) <= 100 &&
+                           Math.abs(extractHours(regularFlight.duration) - extractHours(selectedDuration)) <= 2;
                 });
                 
-                if (airlineIndex !== -1) {
-                    setSelectedFlight(airlineIndex);
-                    // Auto-selected flight by airline at index
+                if (flightIndex !== -1) {
+                    setSelectedFlight(flightIndex);
+                } else {
+                    // If exact match not found, select the first flight from the same airline
+                    const airlineIndex = flights.findIndex((flight) => {
+                        if (isMultiCityFlight(flight)) {
+                            return false;
+                        }
+                        return (flight as GeneratedFlight).airline === selectedAirline;
+                    });
+                    
+                    if (airlineIndex !== -1) {
+                        setSelectedFlight(airlineIndex);
+                    }
                 }
             }
         }
@@ -658,6 +711,9 @@ function SearchResultsContentMain() {
         toCode = searchParams.get('to') || 'MUC';
     }
     const passengers = searchParams.get('passengers') || '1';
+    const adults = parseInt(searchParams.get('adults') || passengers, 10);
+    const children = parseInt(searchParams.get('children') || '0', 10);
+    const infants = parseInt(searchParams.get('infants') || '0', 10);
     const departureDate = searchParams.get('departureDate') || undefined;
     const returnDate = searchParams.get('returnDate') || searchParams.get('return') || undefined;
 
@@ -745,8 +801,8 @@ function SearchResultsContentMain() {
                                          <div className="ml-6 text-right">
                                              <div className="text-3xl font-bold text-white">
                                                  {isMultiCityFlight(flights[selectedFlight])
-                                                     ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                     : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                                     ? `$${calculateTotalPriceWithPassengers((flights[selectedFlight] as MultiCityFlight).totalPrice, adults, children, infants).totalPrice.toLocaleString()}`
+                                                     : `$${calculateTotalPriceWithPassengers(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price), adults, children, infants).totalPrice.toLocaleString()}`}
                                              </div>
                                              <div className="text-sm text-white/90">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
                                          </div>
@@ -794,8 +850,8 @@ function SearchResultsContentMain() {
                                          <div className="text-right shrink-0">
                                              <div className="text-xl font-bold text-[#0abab5]">
                                                  {isMultiCityFlight(flights[selectedFlight])
-                                                     ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                     : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                                     ? `$${calculateTotalPriceWithPassengers((flights[selectedFlight] as MultiCityFlight).totalPrice, adults, children, infants).totalPrice.toLocaleString()}`
+                                                     : `$${calculateTotalPriceWithPassengers(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price), adults, children, infants).totalPrice.toLocaleString()}`}
                                              </div>
                                              <div className="text-[11px] text-gray-500">for {passengers}</div>
                                          </div>
@@ -842,8 +898,8 @@ function SearchResultsContentMain() {
                                              <div className="text-right">
                                                  <div className="text-2xl font-extrabold text-[#08312F]">
                                                      {isMultiCityFlight(flights[selectedFlight])
-                                                         ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                         : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                                         ? `$${calculateTotalPriceWithPassengers((flights[selectedFlight] as MultiCityFlight).totalPrice, adults, children, infants).totalPrice.toLocaleString()}`
+                                                         : `$${calculateTotalPriceWithPassengers(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price), adults, children, infants).totalPrice.toLocaleString()}`}
                                                  </div>
                                                  <div className="text-xs text-[#08312F]/70">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
                                              </div>
@@ -904,8 +960,8 @@ function SearchResultsContentMain() {
                                      <div className="ml-3 text-right">
                                          <div className="text-lg font-bold text-[#0abab5]">
                                              {isMultiCityFlight(flights[selectedFlight])
-                                                 ? `$${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
-                                                 : `$${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`}
+                                                 ? `$${calculateTotalPriceWithPassengers((flights[selectedFlight] as MultiCityFlight).totalPrice, adults, children, infants).totalPrice.toLocaleString()}`
+                                                 : `$${calculateTotalPriceWithPassengers(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price), adults, children, infants).totalPrice.toLocaleString()}`}
                                          </div>
                                          <div className="text-[11px] text-gray-500">total for {passengers} passenger{parseInt(passengers) > 1 ? 's' : ''}</div>
                                      </div>
@@ -962,7 +1018,14 @@ function SearchResultsContentMain() {
                 <div className="lg:col-span-1">
                     <div className="sticky top-32">
                         {/* Search Form */}
-                        <FlightSearchFormVertical />
+                        <FlightSearchFormVertical 
+                            selectedFlight={selectedFlight !== null && flights[selectedFlight] ? (
+                                isMultiCityFlight(flights[selectedFlight]) ? null : flights[selectedFlight] as GeneratedFlight
+                            ) : undefined}
+                            selectedMultiCityFlight={selectedFlight !== null && flights[selectedFlight] && isMultiCityFlight(flights[selectedFlight]) ? 
+                                flights[selectedFlight] as MultiCityFlight : undefined}
+                            passengers={passengers}
+                        />
                     </div>
                 </div>
             </div>
@@ -975,9 +1038,9 @@ function SearchResultsContentMain() {
                             <div className="text-sm text-gray-600">Selected Flight</div>
                             <div className="font-semibold">
                                 {isMultiCityFlight(flights[selectedFlight]) ? (
-                                    `Multi-city - $${((flights[selectedFlight] as MultiCityFlight).totalPrice * parseInt(passengers)).toLocaleString()}`
+                                    `Multi-city - $${calculateTotalPriceWithPassengers((flights[selectedFlight] as MultiCityFlight).totalPrice, adults, children, infants).totalPrice.toLocaleString()}`
                                 ) : (
-                                    `${(flights[selectedFlight] as GeneratedFlight).departure.airport} → ${(flights[selectedFlight] as GeneratedFlight).arrival.airport} - $${(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price) * parseInt(passengers)).toLocaleString()}`
+                                    `${(flights[selectedFlight] as GeneratedFlight).departure.airport} → ${(flights[selectedFlight] as GeneratedFlight).arrival.airport} - $${calculateTotalPriceWithPassengers(((flights[selectedFlight] as GeneratedFlight).totalPrice || (flights[selectedFlight] as GeneratedFlight).price), adults, children, infants).totalPrice.toLocaleString()}`
                                 )}
                             </div>
                             <div className="text-xs text-gray-500">
@@ -999,7 +1062,14 @@ function SearchResultsContentMain() {
                         </button>
                         <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
                         <div className="flex-1 overflow-y-auto">
-                            <FlightSearchFormVertical variant="neutral" />
+                            <FlightSearchFormVertical 
+                                variant="neutral" 
+                                selectedFlight={selectedFlight !== null && flights[selectedFlight] && !isMultiCityFlight(flights[selectedFlight]) ? 
+                                    flights[selectedFlight] as GeneratedFlight : undefined}
+                                selectedMultiCityFlight={selectedFlight !== null && flights[selectedFlight] && isMultiCityFlight(flights[selectedFlight]) ? 
+                                    flights[selectedFlight] as MultiCityFlight : undefined}
+                                passengers={passengers}
+                            />
                         </div>
                     </div>
                 </div>

@@ -156,7 +156,9 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
     children: 0,
     name: "",
     phone: "",
-    email: ""
+    email: "",
+    needsFlight: false,
+    needsCruise: false
   });
 
   // States for city search
@@ -178,11 +180,59 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
   const [checkInStyle, setCheckInStyle] = useState<{ top?: number; left?: number; maxHeight?: number }>({});
   const [checkOutStyle, setCheckOutStyle] = useState<{ top?: number; left?: number; maxHeight?: number }>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Hotel booking data:", formData);
-    // Handle form submission here
-    onClose();
+    
+    if (!formData.name || !formData.email || !formData.phone || !formData.city || !formData.checkIn || !formData.checkOut) {
+      setSubmissionStatus('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmissionStatus(null);
+
+    try {
+      const response = await fetch('/api/hotel-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          destination: formData.city,
+          checkIn: formData.checkIn?.toISOString(),
+          checkOut: formData.checkOut?.toISOString(),
+          guests: formData.adults + formData.children,
+          adults: formData.adults,
+          children: formData.children,
+          rooms: 1, // Default to 1 room
+          needsFlight: formData.needsFlight,
+          needsCruise: formData.needsCruise,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Hotel booking submitted successfully');
+        setSubmissionStatus('success');
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        const errorData = await response.text();
+        console.error('Hotel booking submission failed:', response.status, errorData);
+        setSubmissionStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting hotel booking:', error);
+      setSubmissionStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -418,7 +468,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                       setShowCitySuggestions(true);
                     }
                   }}
-                  className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                   placeholder="Where would you like to stay?"
                   required
                 />
@@ -467,7 +517,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                 <span className="text-xs font-medium text-gray-500 font-poppins uppercase tracking-wider">Check-in</span>
                 <div className="relative calendar-container group">
                   <div 
-                    className="relative cursor-pointer"
+                    className="relative cursor-pointer outline-none"
                     onClick={() => {
                       setShowCheckInCalendar(!showCheckInCalendar)
                       setShowCheckOutCalendar(false)
@@ -475,7 +525,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                     ref={checkInRef}
                   >
                     <Calendar className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#0ABAB5] h-4 sm:h-5 w-4 sm:w-5 transition-colors group-focus-within:text-[#0D2B29]" />
-                    <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus-within:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
+                    <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
                       {formData.checkIn ? (
                         <div>
                           <div className="font-semibold">{formatDate(formData.checkIn)}</div>
@@ -516,7 +566,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                 <span className="text-xs font-medium text-gray-500 font-poppins uppercase tracking-wider">Check-out</span>
                 <div className="relative calendar-container group">
                   <div 
-                    className="relative cursor-pointer"
+                    className="relative cursor-pointer outline-none"
                     onClick={() => {
                       setShowCheckOutCalendar(!showCheckOutCalendar)
                       setShowCheckInCalendar(false)
@@ -524,7 +574,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                     ref={checkOutRef}
                   >
                     <Calendar className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#0ABAB5] h-4 sm:h-5 w-4 sm:w-5 transition-colors group-focus-within:text-[#0D2B29]" />
-                    <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus-within:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
+                    <div className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
                       {formData.checkOut ? (
                         <div>
                           <div className="font-semibold">{formatDate(formData.checkOut)}</div>
@@ -570,19 +620,19 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                 type="button"
                 ref={guestButtonRef}
                 onClick={handleGuestSelectorToggle}
-                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus-within:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-semibold">
+                  <div className="text-left">
+                    <div className="font-semibold text-left">
                       {getGuestText()}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                       {formData.adults} {formData.adults === 1 ? 'Adult' : 'Adults'}
-                       {formData.children > 0 && `, ${formData.children} ${formData.children === 1 ? 'Child' : 'Children'}`}
-                     </div>
-                   </div>
-                   <ChevronDown className="h-4 w-4 text-gray-400" />
-                 </div>
+                    <div className="text-xs text-gray-500 mt-1 text-left">
+                      {formData.adults} {formData.adults === 1 ? 'Adult' : 'Adults'}
+                      {formData.children > 0 && `, ${formData.children} ${formData.children === 1 ? 'Child' : 'Children'}`}
+                    </div>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                </div>
               </button>
             </div>
 
@@ -668,6 +718,70 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
             )}
           </div>
 
+          {/* Additional Services */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-[#0D2B29] font-poppins tracking-wide">
+              ADDITIONAL SERVICES
+            </label>
+            <div className="space-y-3">
+              {/* Flight Checkbox */}
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formData.needsFlight}
+                      onChange={(e) => setFormData(prev => ({ ...prev, needsFlight: e.target.checked }))}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded border-2 transition-all duration-300 flex items-center justify-center ${
+                      formData.needsFlight
+                        ? 'bg-[#0ABAB5] border-[#0ABAB5]'
+                        : 'border-gray-300 bg-white'
+                    }`}>
+                      {formData.needsFlight && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="font-poppins text-sm font-medium text-[#0D2B29]">
+                    I need flight arrangements
+                  </span>
+                </label>
+              </div>
+              
+              {/* Cruise Checkbox */}
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formData.needsCruise}
+                      onChange={(e) => setFormData(prev => ({ ...prev, needsCruise: e.target.checked }))}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded border-2 transition-all duration-300 flex items-center justify-center ${
+                      formData.needsCruise
+                        ? 'bg-[#0ABAB5] border-[#0ABAB5]'
+                        : 'border-gray-300 bg-white'
+                    }`}>
+                      {formData.needsCruise && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="font-poppins text-sm font-medium text-[#0D2B29]">
+                    I'm interested in cruise packages
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
           </div>
 
           </div>
@@ -690,7 +804,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                   placeholder="Enter your full name"
                   required
                 />
@@ -704,7 +818,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                 <CustomPhoneInput
                   value={formData.phone}
                   onChange={(value) => setFormData(prev => ({ ...prev, phone: value || '' }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                   autoFocus={false}
                   onValidationChange={(isValid) => console.log('Phone validation:', isValid)}
                 />
@@ -719,7 +833,7 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl focus:ring-0 focus:border-[#0ABAB5] outline-none font-poppins text-sm sm:text-base text-[#0D2B29] placeholder-gray-400 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                   placeholder="your.email@example.com"
                   required
                 />
@@ -729,13 +843,34 @@ export default function HotelBookingModal({ isOpen, onClose }: HotelBookingModal
               <div className="pt-4 sm:pt-6">
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#0ABAB5] to-[#0ABAB5]/90 text-white py-4 sm:py-5 rounded-xl sm:rounded-2xl font-poppins font-bold text-base sm:text-lg hover:from-[#0ABAB5]/90 hover:to-[#0ABAB5] transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 active:translate-y-0 active:shadow-lg cursor-pointer"
+                  disabled={isSubmitting}
+                  className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-poppins font-bold text-base sm:text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 ${
+                    submissionStatus === 'success'
+                      ? 'bg-green-500 text-white'
+                      : submissionStatus === 'error'
+                      ? 'bg-red-500 text-white'
+                      : isSubmitting
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#0ABAB5] to-[#0ABAB5]/90 text-white hover:from-[#0ABAB5]/90 hover:to-[#0ABAB5] cursor-pointer'
+                  }`}
                 >
                   <div className="flex items-center justify-center space-x-2">
-                    <span>Complete Booking</span>
-                    <div className="w-5 sm:w-6 h-5 sm:h-6 bg-white/20 rounded-full flex items-center justify-center">
-                      <span className="text-xs sm:text-sm">→</span>
-                    </div>
+                    <span>
+                      {submissionStatus === 'success'
+                        ? 'Booking Submitted!'
+                        : submissionStatus === 'error'
+                        ? 'Error - Try Again'
+                        : isSubmitting
+                        ? 'Submitting...'
+                        : 'Complete Booking'}
+                    </span>
+                    {!isSubmitting && (
+                      <div className="w-5 sm:w-6 h-5 sm:h-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <span className="text-xs sm:text-sm">
+                          {submissionStatus === 'success' ? '✓' : submissionStatus === 'error' ? '✗' : '→'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </button>
                 <p className="text-center text-xs text-gray-500 font-poppins mt-3">
