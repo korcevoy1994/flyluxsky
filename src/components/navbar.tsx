@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
             variant="default"
             className="flex items-center gap-2 px-5 py-3 bg-[#D44A26] text-white font-bold text-[14px] font-poppins uppercase leading-none rounded-full focus:outline-none focus:ring-2 focus:ring-[#D44A26] cursor-pointer transition-all duration-200 hover:brightness-95"
             tabIndex={0}
-            aria-label="Contact phone"
+            aria-label={`Call us at ${NAVBAR_PHONE}`}
           >
             <Phone size={16} />
             <span>{NAVBAR_PHONE}</span>

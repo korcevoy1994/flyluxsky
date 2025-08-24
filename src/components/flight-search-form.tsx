@@ -642,10 +642,10 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                   {(fromInput || fromSelection) && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setFromInput(''); setFromSelection(null); setFromSuggestions([]); setShowFromSuggestions(false); }}
-                      className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="ml-2 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer min-w-[24px] min-h-[24px] flex items-center justify-center"
                       aria-label="Clear from"
                     >
-                      <X size={14} />
+                      <X size={16} />
                     </button>
                   )}
                 </div>
@@ -791,10 +791,10 @@ const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
                   {(toInput || toSelection) && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setToInput(''); setToSelection(null); setToSuggestions([]); setShowToSuggestions(false); }}
-                      className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="ml-2 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
                       aria-label="Clear to"
                     >
-                      <X size={14} />
+                      <X size={16} />
                     </button>
                   )}
                 </div>
@@ -1294,10 +1294,10 @@ const MultiCitySegment: React.FC<{
                 {(segment.from || segment.fromSelection) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onChange('from', ''); onChange('fromSelection', null); }}
-                    className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    className="ml-2 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer min-w-[24px] min-h-[24px] flex items-center justify-center"
                     aria-label="Clear from"
                   >
-                    <X size={14} />
+                    <X size={16} />
                   </button>
                 )}
           </div>
@@ -1377,10 +1377,10 @@ const MultiCitySegment: React.FC<{
                 {(segment.to || segment.toSelection) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onChange('to', ''); onChange('toSelection', null); }}
-                    className="ml-2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    className="ml-2 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
                     aria-label="Clear to"
                   >
-                    <X size={14} />
+                    <X size={16} />
                   </button>
                 )}
           </div>

@@ -694,10 +694,10 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 hover:bg-gray-100 rounded min-w-[24px] min-h-[24px] flex items-center justify-center"
                   aria-label="Clear search"
                 >
-                  <X className="w-3 h-3 text-gray-400" />
+                  <X className="w-4 h-4 text-gray-400" />
                 </button>
               )}
             </div>
@@ -773,7 +773,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 hover:bg-gray-100 rounded min-w-[24px] min-h-[24px] flex items-center justify-center"
                   aria-label="Clear search"
                 >
                   <X className="w-4 h-4 text-gray-400" />

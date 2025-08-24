@@ -623,7 +623,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
             {(fromInput || fromSelection) && (
               <button
                 onClick={(e) => { e.stopPropagation(); setFromInput(''); setFromSelection(null); setFromSuggestions([]); }}
-                className="ml-1 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                className="ml-1 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
                 aria-label="Clear from"
               >
                 <X size={16} />
@@ -663,7 +663,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
             {(toInput || toSelection) && (
               <button
                 onClick={(e) => { e.stopPropagation(); setToInput(''); setToSelection(null); setToSuggestions([]); }}
-                className="ml-1 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
+                className="ml-1 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer"
                 aria-label="Clear to"
               >
                 <X size={16} />
@@ -1306,7 +1306,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                       setFromSelection(null);
                       setFromSuggestions([]);
                     }}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
                     aria-label="Clear from input"
                   >
                     <X size={16} />
@@ -1332,7 +1332,7 @@ const FlightSearchFormMobile: React.FC<FlightSearchFormMobileProps> = ({
                       setToSelection(null);
                       setToSuggestions([]);
                     }}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2 min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600"
                     aria-label="Clear to input"
                   >
                     <X size={16} />
