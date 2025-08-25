@@ -136,73 +136,74 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
           }}
         >
           {/* Top spacing for navbar */}
-          <div className="h-24"></div>
+          <div className="h-20 sm:h-24 flex-shrink-0"></div>
           
           {/* Divider */}
-          <div className="max-w-[1280px] mx-auto w-full px-4 sm:px-8">
+          <div className="max-w-[1280px] mx-auto w-full px-4 sm:px-8 flex-shrink-0">
             <div className="border-t border-[#E5E5E5]"></div>
           </div>
           
-          {/* Menu Content */}
-          <div className="flex-1 flex flex-col lg:flex-row max-w-[1280px] mx-auto w-full">
+          {/* Scrollable Menu Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="flex flex-col lg:flex-row max-w-[1280px] mx-auto w-full min-h-full">
             {/* Left Side - Navigation */}
             <div className="flex-1 flex flex-col justify-start px-4 sm:px-8 py-6 sm:py-8 lg:border-r border-[#E5E5E5]">
                 <nav className="space-y-4 sm:space-y-6">
                     {/* Main Navigation Items */}
-                    <div className="space-y-4 sm:space-y-6">
+                    <div className="space-y-2 sm:space-y-4">
                         <Link href="/#best-deal-of-the-day" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
-                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                <span className="font-bold text-[24px] sm:text-[32px] lg:text-[40px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
                                     BEST DEALS
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                <div className="ml-2 sm:ml-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                             </div>
                         </Link>
                         
                         <Link href="/all-airlines" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
-                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                <span className="font-bold text-[24px] sm:text-[32px] lg:text-[40px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
                                     TOP AIRLINES
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                <div className="ml-2 sm:ml-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                             </div>
                         </Link>
                         
                         <Link href="/top-cities" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
-                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                <span className="font-bold text-[24px] sm:text-[32px] lg:text-[40px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
                                     TOP CITIES
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                <div className="ml-2 sm:ml-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                             </div>
                         </Link>
                         
                         <Link href="/top-countries" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-2 border-b border-transparent group-hover:border-[#0ABAB5]/20 transition-all duration-300">
-                                <span className="font-bold text-[28px] sm:text-[40px] lg:text-[52px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
+                                <span className="font-bold text-[24px] sm:text-[32px] lg:text-[40px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300 transform group-hover:translate-x-2">
                                     TOP COUNTRIES
                                 </span>
-                                <div className="ml-4 sm:ml-8 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
-                                    <ArrowRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                <div className="ml-2 sm:ml-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                             </div>
                         </Link>
                     </div>
                     
                     {/* Secondary Navigation */}
-                    <div className="pt-6 space-y-3 border-t border-[#E5E5E5]/50">
+                    <div className="pt-4 space-y-2 border-t border-[#E5E5E5]/50">
                         <Link href="/reviews" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-1">
-                                <span className="font-semibold text-[18px] sm:text-[24px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
+                                <span className="font-semibold text-[16px] sm:text-[20px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
                                     REVIEWS
                                 </span>
-                                <div className="ml-4 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                <div className="ml-2 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
                                     <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
                             </div>
@@ -210,10 +211,10 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                         
                         <Link href="/contact" onClick={handleMenuClose} className="group block cursor-pointer">
                             <div className="flex items-center justify-between py-1">
-                                <span className="font-semibold text-[18px] sm:text-[24px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
+                                <span className="font-semibold text-[16px] sm:text-[20px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
                                     CONTACT
                                 </span>
-                                <div className="ml-4 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                <div className="ml-2 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
                                     <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
                             </div>
@@ -223,35 +224,35 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
             </div>
 
             {/* Right Side - Contact Info */}
-            <div className="flex-1 flex flex-col justify-between items-start text-left px-4 sm:px-8 py-6 sm:py-8 border-t lg:border-t-0 lg:border-l border-[#E5E5E5]">
-              <div className="space-y-6">
+            <div className="flex-1 flex flex-col justify-between items-start text-left px-4 sm:px-8 py-4 sm:py-6 border-t lg:border-t-0 lg:border-l border-[#E5E5E5]">
+              <div className="space-y-4">
                 {/* Phone */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex items-center justify-start gap-2">
-                    <Phone size={18} className="sm:w-5 sm:h-5 text-[#EC5E39]" />
-                    <span className="font-bold text-[14px] sm:text-[16px] font-poppins text-[#2C3E50]">Call us 27/7</span>
+                    <Phone size={16} className="sm:w-5 sm:h-5 text-[#EC5E39]" />
+                    <span className="font-bold text-[12px] sm:text-[14px] font-poppins text-[#2C3E50]">Call us 24/7</span>
                   </div>
-                  <a href="tel:+18888307444" className="block text-[24px] sm:text-[32px] font-normal font-poppins text-[#2C3E50] transition-all duration-300 cursor-pointer hover:[text-shadow:0_0_0.5px_#2C3E50] focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded">
+                  <a href="tel:+18888307444" className="block text-[20px] sm:text-[24px] font-normal font-poppins text-[#2C3E50] transition-all duration-300 cursor-pointer hover:[text-shadow:0_0_0.5px_#2C3E50] focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded">
                     +1 (888) 830-7444
                   </a>
                 </div>
 
                 {/* Email */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex items-center justify-start gap-2">
-                    <svg width="18" height="18" className="sm:w-5 sm:h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M3.33333 3.33334H16.6667C17.5833 3.33334 18.3333 4.08334 18.3333 5.00001V15C18.3333 15.9167 17.5833 16.6667 16.6667 16.6667H3.33333C2.41667 16.6667 1.66667 15.9167 1.66667 15V5.00001C1.66667 4.08334 2.41667 3.33334 3.33333 3.33334Z" stroke="#EC5E39" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M18.3333 5L10 10.8333L1.66667 5" stroke="#EC5E39" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    <span className="font-bold text-[14px] sm:text-[16px] font-poppins text-[#2C3E50]">E-mail</span>
+                    <span className="font-bold text-[12px] sm:text-[14px] font-poppins text-[#2C3E50]">E-mail</span>
                   </div>
-                  <a href="mailto:support@luxeskies.com" className="block text-[18px] sm:text-[20px] font-normal font-poppins text-[#2C3E50] transition-all duration-300 cursor-pointer hover:[text-shadow:0_0_0.5px_#2C3E50] focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded">
+                  <a href="mailto:support@luxeskies.com" className="block text-[16px] sm:text-[18px] font-normal font-poppins text-[#2C3E50] transition-all duration-300 cursor-pointer hover:[text-shadow:0_0_0.5px_#2C3E50] focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded">
                     support@luxeskies.com
                   </a>
                 </div>
 
                 {/* Social Icons */}
-                <div className="flex items-center justify-start gap-3 sm:gap-4 pt-4">
+                <div className="flex items-center justify-start gap-2 sm:gap-3 pt-2">
                   <a href="#" className="cursor-pointer hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[#0ABAB5] focus:ring-offset-2 rounded" aria-label="Facebook">
                     <svg width="28" height="28" className="sm:w-8 sm:h-8" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect width="30" height="30" rx="8" fill="#F8F8F8"/>
@@ -278,23 +279,24 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                 </div>
               </div>
               <div>
-                <div className="pt-6">
-                  <div className="flex flex-wrap items-center justify-start gap-4">
-                    <Image src="/icons/logo-white 1.svg" alt="Trustpilot" width={90} height={23} style={{height: 'auto'}} />
-                    <Image src="/icons/cdnlogo.com_discover 1.svg" alt="Discover" width={80} height={14} style={{height: 'auto'}} />
-                    <Image src="/icons/mas.svg" alt="Mastercard" width={40} height={24} style={{height: 'auto'}} />
-                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={70} height={24} className="h-auto w-auto" style={{height: 'auto'}} />
-                    <Image src="/icons/Visa_2021.svg" alt="Visa" width={45} height={15} style={{height: 'auto'}} />
+                <div className="pt-4 sm:pt-6">
+                  <div className="flex flex-wrap items-center justify-start gap-2 sm:gap-4">
+                    <Image src="/icons/logo-white 1.svg" alt="Trustpilot" width={70} height={18} className="sm:w-[90px] sm:h-[23px]" style={{height: 'auto'}} />
+                    <Image src="/icons/cdnlogo.com_discover 1.svg" alt="Discover" width={60} height={11} className="sm:w-[80px] sm:h-[14px]" style={{height: 'auto'}} />
+                    <Image src="/icons/mas.svg" alt="Mastercard" width={30} height={18} className="sm:w-[40px] sm:h-[24px]" style={{height: 'auto'}} />
+                    <Image src="/icons/American-Express-logo.svg" alt="American Express" width={55} height={19} className="sm:w-[70px] sm:h-[24px]" style={{height: 'auto'}} />
+                    <Image src="/icons/Visa_2021.svg" alt="Visa" width={35} height={12} className="sm:w-[45px] sm:h-[15px]" style={{height: 'auto'}} />
                   </div>
                 </div>
-                <div className="mt-4">
-                  <p className="text-[12px] sm:text-[14px] text-[#7A7A7A] font-poppins">
+                <div className="mt-3 sm:mt-4">
+                  <p className="text-[10px] sm:text-[12px] lg:text-[14px] text-[#7A7A7A] font-poppins">
                       © 2025 FlyLuxSky. All rights reserved.
                   </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
         </div>
       </div>

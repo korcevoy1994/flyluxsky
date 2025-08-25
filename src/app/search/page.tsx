@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import FlightSummaryChips from '@/components/flight-summary-chips'
+import EditableFlightSummary from '@/components/editable-flight-summary'
 import { Suspense, useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 
@@ -1112,7 +1113,7 @@ export default function SearchPage() {
                     <HeroRouteText />
                 </Suspense>
                 <Suspense fallback={null}>
-                    <FlightSummaryChips variant="compact" />
+                    <EditableFlightSummary />
                 </Suspense>
             </div>
 
