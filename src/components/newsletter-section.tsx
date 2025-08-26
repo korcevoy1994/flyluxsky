@@ -7,7 +7,7 @@ const NewsletterSection = () => {
   return (
     <section className="w-full max-w-[1280px] mx-auto bg-white rounded-3xl py-12 px-6 my-10 md:my-20">
       <div className="max-w-[700px] mx-auto text-center space-y-6">
-        <h2 className="text-4xl md:text-5xl font-bold text-[#0D2B29] leading-[1.1em] uppercase">
+        <h2 className="text-3xl md:text-5xl font-bold text-[#0D2B29] font-poppins leading-[1.1em] uppercase">
           Unlock Exclusive Offers
         </h2>
         <h3 className="text-2xl font-medium text-[#0D2B29] leading-[1.5em]">

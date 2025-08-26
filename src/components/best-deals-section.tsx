@@ -229,7 +229,7 @@ const BestDealsSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 md:mb-12 px-4">
           <div className="flex justify-center items-center gap-4 flex-wrap">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#0D2B29] font-poppins capitalize">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#0D2B29] font-poppins uppercase">
               Best deal of the day
             </h2>
             <div className="bg-[#0D2B29] text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm md:text-base">

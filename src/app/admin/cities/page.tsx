@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -290,9 +291,9 @@ Save Changes
                     <CardContent className="p-6">
                       <div className="rounded-lg border border-gray-200 p-4 bg-gray-50">
                         <div className="flex items-center gap-4">
-                          <div className="w-24 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center text-xs text-gray-500 border">
+                          <div className="w-24 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center text-xs text-gray-500 border relative">
                             {c.heroImage ? (
-                               <img src={c.heroImage} alt={c.title} className="w-full h-full object-cover" />
+                               <Image src={c.heroImage} alt={c.title} fill className="object-cover" sizes="96px" />
                              ) : (
                                "No Image"
                              )}

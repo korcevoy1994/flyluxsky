@@ -24,7 +24,7 @@ const BookTripSection = () => {
 
             {/* Main Heading */}
             <h2 
-              className="text-left text-3xl font-bold leading-tight capitalize"
+              className="text-left text-3xl md:text-5xl font-bold leading-tight uppercase"
               style={{
                 fontFamily: 'Poppins, sans-serif',
                 color: '#0D2B29'
@@ -248,11 +248,11 @@ const BookTripSection = () => {
 
             {/* Main Heading */}
             <h2 
-              className="text-left text-5xl font-bold leading-tight"
+              className="text-left text-3xl md:text-5xl font-bold leading-tight"
               style={{
                 fontFamily: 'Poppins, sans-serif',
                 color: '#0D2B29',
-                textTransform: 'capitalize'
+                textTransform: 'uppercase'
               }}
             >
               Book your next trip<br />in 3 easy steps
@@ -527,4 +527,4 @@ Arrive at the airport, relax in premium lounges, and get ready to fly business c
   )
 }
 
-export default BookTripSection 
+export default BookTripSection

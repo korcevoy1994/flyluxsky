@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const response = await fetch('https://ipapi.co/json/', {
+    const response = await fetch('https://api.ipstack.com/check?access_key=' + process.env.IPSTACK_API_KEY, {
       headers: {
         'User-Agent': 'FlyLuxSky/1.0'
       }
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch geolocation data from ipapi.co: ${response.status}`);
+      throw new Error(`Failed to fetch geolocation data from ipstack.com: ${response.status}`);
     }
     
     const data = await response.json();
