@@ -331,11 +331,11 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
   'turkish-airlines': {
     slug: 'turkish-airlines',
     title: 'Turkish Airlines',
-    subtitle: 'Соединяя миры',
-    description: 'Откройте для себя мост между континентами с Turkish Airlines. Испытайте турецкое гостеприимство, соединяясь с большим количеством стран, чем любая другая авиакомпания в мире.',
+    subtitle: 'Widen Your World',
+    description: 'Discover the bridge between continents with Turkish Airlines. Experience Turkish hospitality while connecting to more countries than any other airline in the world.',
     heroImage: '/images/airlines/Turkish-Airlines-min.jpg',
-    introTitle: 'Ворота в мир',
-    introText: 'Turkish Airlines соединяет вас с большим количеством стран и направлений, чем любая другая авиакомпания, а Стамбул служит идеальным мостом между Европой, Азией и Африкой. Испытайте подлинное турецкое гостеприимство и кухню на высоте 30 000 футов.',
+    introTitle: 'Gateway to the World',
+    introText: 'Turkish Airlines connects you to more countries and destinations than any other airline, with Istanbul serving as the perfect bridge between Europe, Asia, and Africa. Experience authentic Turkish hospitality and cuisine at 30,000 feet.',
     ctaTitle: 'Widen Your World with Turkish Airlines',
     ctaText: 'Discover new horizons with Turkish Airlines\' extensive global network and renowned Turkish hospitality.',
     features: [
@@ -372,12 +372,12 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
   },
   'british-airlines': {
     slug: 'british-airlines',
-    title: 'British Airlines',
-    subtitle: 'Лететь. Служить.',
-    description: 'Испытайте британскую элегантность и превосходство в обслуживании. British Airways соединяет вас с миром со стилем и изысканностью.',
+    title: 'British Airways',
+    subtitle: 'To Fly. To Serve.',
+    description: 'Experience British elegance and service excellence. British Airways connects you to the world with style and sophistication.',
     heroImage: '/images/airlines/British-Airways-min.jpg',
-    introTitle: 'Британское совершенство в авиации',
-    introText: 'British Airways воплощает лучшие традиции британского сервиса и гостеприимства. С нашей глобальной сетью и приверженностью к совершенству мы делаем каждое путешествие незабываемым.',
+    introTitle: 'British Aviation Excellence',
+    introText: 'British Airways embodies the finest traditions of British service and hospitality. With our global network and commitment to excellence, we make every journey memorable.',
     ctaTitle: 'Fly British Airways',
     ctaText: 'Experience the elegance and reliability that has made British Airways a world-renowned airline.',
     features: [

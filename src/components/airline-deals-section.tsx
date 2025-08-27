@@ -151,7 +151,7 @@ const airlineLogoMap: Record<string, string> = {
   'Qatar Airlines': '/logos/airlines/Qatar Airways.svg',
   'Singapore Airlines': '/logos/airlines/Singapore Airlines.svg',
   'Lufthansa': '/logos/airlines/Lufthansa.svg',
-  'British Airlines': '/logos/airlines/British Airways.svg',
+  'British Airways': '/logos/airlines/British Airways.svg',
   'Air France': '/logos/airlines/Air France.svg',
   'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
   'KLM': '/logos/airlines/KLM.svg',
@@ -189,7 +189,8 @@ const slugToAirlineName: Record<string, string> = {
   'etihad-airlines': 'Etihad Airways',
   'qatar-airlines': 'Qatar Airlines',
   'iberia-airlines': 'Iberia',
-  'swiss-airlines': 'Swiss International Air Lines'
+  'swiss-airlines': 'Swiss International Air Lines',
+  'british-airlines': 'British Airways'
 };
 
 interface AirlineDealsProps {
