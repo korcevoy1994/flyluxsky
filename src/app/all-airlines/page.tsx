@@ -37,7 +37,7 @@ const airlines = [
   },
   {
     name: 'Qatar Airways',
-    slug: 'qatar-airways',
+    slug: 'qatar-airlines',
     logo: '/logos/airlines/Qatar Airways.svg',
     description: 'Experience award-winning service with Qatar Airways business class.',
     destinations: ['Doha', 'London', 'New York', 'Singapore'],
@@ -53,7 +53,7 @@ const airlines = [
   },
   {
     name: 'British Airways',
-    slug: 'british-airways',
+    slug: 'british-airlines',
     logo: '/logos/airlines/British Airways.svg',
     description: 'Fly with Britain\'s flag carrier in premium business class comfort.',
     destinations: ['London', 'New York', 'Dubai', 'Singapore'],
@@ -101,7 +101,7 @@ const airlines = [
   },
   {
     name: 'Qantas Airways',
-    slug: 'qantas-airways',
+    slug: 'qantas-airlines',
     logo: '/logos/airlines/Qantas.svg',
     description: 'Experience the spirit of Australia with Qantas business class.',
     destinations: ['Sydney', 'Melbourne', 'London', 'Los Angeles'],
@@ -109,7 +109,7 @@ const airlines = [
   },
   {
     name: 'Nippon Airways',
-    slug: 'nippon-airways',
+    slug: 'nippon-airlines',
     logo: '/logos/airlines/All Nippon Airways.svg',
     description: 'Discover Japanese hospitality with ANA business class flights.',
     destinations: ['Tokyo', 'Osaka', 'London', 'New York'],

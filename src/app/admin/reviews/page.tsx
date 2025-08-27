@@ -22,6 +22,7 @@ import {
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<ReviewData[]>(defaultReviews)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -45,28 +46,41 @@ export default function AdminReviewsPage() {
     return () => { cancelled = true }
   }, [])
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true)
     try {
       saveReviewsConfig(reviews)
       // Optionally publish to API if backend is available
-      fetch('/api/reviews/manage', {
+      const response = await fetch('/api/reviews/manage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reviews }),
       })
-        .then(async (res) => {
-          const backend = res.headers.get('x-reviews-write') || 'unknown'
-          if (!res.ok) throw new Error(`Failed to publish reviews (backend=${backend})`)
-          await res.json()
-          alert(`Reviews saved (backend: ${backend})`)
-        })
-        .catch((err) => {
-          // Error occurred
-          alert('Saved locally, but failed to publish to server API')
-        })
+      
+      if (!response.ok) {
+        const backend = response.headers.get('x-reviews-write') || 'unknown'
+        throw new Error(`Failed to publish reviews (backend=${backend})`)
+      }
+      
+      const result = await response.json()
+      const backend = response.headers.get('x-reviews-write') || 'unknown'
+      
+      // Reload reviews from server to ensure UI is in sync
+      try {
+        const updatedReviews = await ensureReviewsConfigLoaded()
+        setReviews(updatedReviews)
+      } catch (e) {
+        // If reload fails, keep current state
+        console.warn('Failed to reload reviews after save:', e)
+      }
+      
+      alert(`Reviews saved successfully (backend: ${backend})`)
     } catch (error) {
-      // Failed to save reviews
-      alert('Failed to save reviews')
+      // Error occurred
+      console.error('Save error:', error)
+      alert('Saved locally, but failed to publish to server API')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -111,7 +125,10 @@ export default function AdminReviewsPage() {
             <Button variant="outline" onClick={handleImport}><Upload className="h-4 w-4 mr-2"/>Import</Button>
             <Button variant="outline" onClick={handleExport}><Download className="h-4 w-4 mr-2"/>Export</Button>
 
-            <Button onClick={handleSave}><Save className="h-4 w-4 mr-2"/>Save</Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              <Save className="h-4 w-4 mr-2"/>
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
           </div>
         </div>
 

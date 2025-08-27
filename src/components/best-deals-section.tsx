@@ -68,7 +68,7 @@ const popularDestinations = [
 const popularAirlines = [
   'Emirates', 'Qatar Airways', 'Singapore Airlines', 'Lufthansa', 'British Airways',
   'Air France', 'Turkish Airlines', 'KLM', 'Swiss International Air Lines', 'Etihad Airways',
-  'Cathay Pacific', 'ANA All Nippon Airways', 'Japan Airlines', 'United Airlines', 'Delta Air Lines', 'American Airlines'
+  'Cathay Pacific', 'ANA All Nippon Airlines', 'Japan Airlines', 'United Airlines', 'Delta Air Lines', 'American Airlines'
 ];
 
 const airlineLogoMap: Record<string, string> = {
@@ -83,7 +83,7 @@ const airlineLogoMap: Record<string, string> = {
   'Swiss International Air Lines': '/logos/airlines/Swiss International Air Lines.svg',
   'Etihad Airways': '/logos/airlines/EtihadAirways.svg',
   'Cathay Pacific': '/logos/airlines/Cathay Pacific.svg',
-  'ANA All Nippon Airways': '/logos/airlines/All Nippon Airways.svg',
+  'ANA All Nippon Airlines': '/logos/airlines/All Nippon Airways.svg',
   'Japan Airlines': '/logos/airlines/Japan Airlines.svg',
   'United Airlines': '/logos/airlines/United Airlines.svg',
   'Delta Air Lines': '/logos/airlines/Delta Air Lines.svg',

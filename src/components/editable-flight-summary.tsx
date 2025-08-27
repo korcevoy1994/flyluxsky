@@ -9,7 +9,7 @@ import FlightSearchFormMobile from '@/components/flight-search-form-mobile'
 import FlightSearchForm from '@/components/flight-search-form'
 import SearchModal from '@/components/search-modal'
 import { useFlightSearch } from '@/hooks/useFlightSearch'
-import { Airport } from '@/lib/utils'
+import { Airport, formatAirportName } from '@/lib/utils'
 
 type AirportType = { code: string; city?: string; name?: string }
 
@@ -50,6 +50,8 @@ export default function EditableFlightSummary() {
       const fullAirportData = (airportsData as Airport[]).find(a => a.code === fromAirport.code)
       if (fullAirportData) {
         searchState.setFromSelection(fullAirportData)
+        // Also set the input value to show the airport name
+        searchState.setFromInput(formatAirportName(fullAirportData.name))
       }
     }
     if (toAirport) {
@@ -57,6 +59,8 @@ export default function EditableFlightSummary() {
       const fullAirportData = (airportsData as Airport[]).find(a => a.code === toAirport.code)
       if (fullAirportData) {
         searchState.setToSelection(fullAirportData)
+        // Also set the input value to show the airport name
+        searchState.setToInput(formatAirportName(fullAirportData.name))
       }
     }
     if (getStr('departureDate')) {

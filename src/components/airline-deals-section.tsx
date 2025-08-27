@@ -29,6 +29,15 @@ const airlineOrigins: Record<string, { code: string; city: string }[]> = {
     { code: 'BOS', city: 'Boston' },
     { code: 'MCO', city: 'Orlando' }
   ],
+  'ANA All Nippon Airways': [
+    { code: 'JFK', city: 'New York' },
+    { code: 'IAD', city: 'Washington, D.C.' },
+    { code: 'SFO', city: 'San Francisco' },
+    { code: 'LAX', city: 'Los Angeles' },
+    { code: 'ORD', city: 'Chicago' },
+    { code: 'SEA', city: 'Seattle' },
+    { code: 'HNL', city: 'Honolulu' }
+  ],
   'Lufthansa': [
     { code: 'ORD', city: 'Chicago' },
     { code: 'DEN', city: 'Denver' },
@@ -71,7 +80,7 @@ const airlineOrigins: Record<string, { code: string; city: string }[]> = {
     { code: 'IAD', city: 'Washington, D.C.' },
     { code: 'CLT', city: 'Charlotte' }
   ],
-  'Qatar Airways': [
+  'Qatar Airlines': [
     { code: 'ATL', city: 'Atlanta' },
     { code: 'BOS', city: 'Boston' },
     { code: 'ORD', city: 'Chicago' },
@@ -85,7 +94,7 @@ const airlineOrigins: Record<string, { code: string; city: string }[]> = {
     { code: 'SFO', city: 'San Francisco' },
     { code: 'IAD', city: 'Washington, D.C.' }
   ],
-  'Qantas Airways': [
+  'Qantas Airlines': [
     { code: 'DFW', city: 'Dallas' },
     { code: 'HNL', city: 'Honolulu' },
     { code: 'LAX', city: 'Los Angeles' },
@@ -139,10 +148,10 @@ const popularDestinations = [
 
 const airlineLogoMap: Record<string, string> = {
   'Emirates': '/logos/airlines/Emirates.svg',
-  'Qatar Airways': '/logos/airlines/Qatar Airways.svg',
+  'Qatar Airlines': '/logos/airlines/Qatar Airways.svg',
   'Singapore Airlines': '/logos/airlines/Singapore Airlines.svg',
   'Lufthansa': '/logos/airlines/Lufthansa.svg',
-  'British Airways': '/logos/airlines/British Airways.svg',
+  'British Airlines': '/logos/airlines/British Airways.svg',
   'Air France': '/logos/airlines/Air France.svg',
   'Turkish Airlines': '/logos/airlines/Turkish Airlines.svg',
   'KLM': '/logos/airlines/KLM.svg',
@@ -155,7 +164,7 @@ const airlineLogoMap: Record<string, string> = {
   'Delta Air Lines': '/logos/airlines/Delta Air Lines.svg',
   'American Airlines': '/logos/airlines/American Airlines.svg',
   'Qantas': '/logos/airlines/Qantas.svg',
-  'Qantas Airways': '/logos/airlines/Qantas.svg',
+  'Qantas Airlines': '/logos/airlines/Qantas.svg',
   'Virgin Atlantic': '/logos/airlines/Virgin Atlantic.svg',
   'Air Canada': '/logos/airlines/Air Canada.svg',
   'Finnair': '/logos/airlines/Finnair.svg',
@@ -174,11 +183,11 @@ const slugToAirlineName: Record<string, string> = {
   'singapore-airlines': 'Singapore Airlines',
   'lufthansa-airlines': 'Lufthansa',
   'american-airlines': 'American Airlines',
-  'nippon-airways': 'ANA All Nippon Airways',
-  'qantas-airways': 'Qantas Airways',
+  'nippon-airlines': 'ANA All Nippon Airways',
+  'qantas-airlines': 'Qantas Airlines',
   'turkish-airlines': 'Turkish Airlines',
   'etihad-airlines': 'Etihad Airways',
-  'qatar-airways': 'Qatar Airways',
+  'qatar-airlines': 'Qatar Airlines',
   'iberia-airlines': 'Iberia',
   'swiss-airlines': 'Swiss International Air Lines'
 };

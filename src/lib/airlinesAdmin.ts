@@ -14,6 +14,18 @@ export interface AirlineContent {
     title: string
     description: string
   }>
+  routes?: Array<{
+    from: string
+    to: string
+    duration: string
+    aircraft: string
+  }>
+  classes?: Array<{
+    name: string
+    description: string
+    features: string[]
+  }>
+  // Legacy fields for backward compatibility
   popularRoutes?: Array<{
     from: string
     to: string
@@ -32,10 +44,10 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     slug: 'emirates-airlines',
     title: 'Emirates Airlines',
     subtitle: 'Fly Better',
-    description: 'Experience luxury in the sky with Emirates Airlines. World-class service, modern fleet, and unparalleled comfort await you.',
-    heroImage: '/images/emirates-hero.jpg',
-    introTitle: 'Experience the Emirates Difference',
-    introText: 'Emirates Airlines redefines luxury air travel with award-winning service, state-of-the-art aircraft, and world-class amenities. From our spacious cabins to our gourmet cuisine, every detail is crafted to make your journey extraordinary.',
+    description: 'Emirates offers first and business class flights with private space, attentive service, and modern cabins that make international journeys effortless.',
+    heroImage: '/images/airlines/Emirates-Airlines-min.jpg',
+    introTitle: 'The Emirates Experience',
+    introText: 'Emirates has set benchmarks in luxury travel. Every flight blends comfort with scale, turning the idea of long-haul flying into a refined experience.',
     ctaTitle: 'Book Your Emirates Flight Today',
     ctaText: 'Join millions of satisfied passengers who choose Emirates for their premium travel experience. Contact our travel experts to secure your seat.',
     features: [
@@ -50,6 +62,24 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       {
         title: 'Global Network',
         description: 'Connect to over 150 destinations across 6 continents.'
+      }
+    ],
+    routes: [
+      { from: 'London', to: 'Dubai', duration: '7h 10m', aircraft: 'A380' },
+      { from: 'New York', to: 'Dubai', duration: '12h 30m', aircraft: 'B777' },
+      { from: 'Dubai', to: 'Tokyo', duration: '8h 35m', aircraft: 'A380' },
+      { from: 'Dubai', to: 'Sydney', duration: '14h 25m', aircraft: 'A380' }
+    ],
+    classes: [
+      {
+        name: 'First Class',
+        description: 'Private suites with shower spa, fine dining, and chauffeur service',
+        features: ['Private suite with sliding doors', 'Onboard shower spa', 'Chauffeur drive service', 'Gourmet dining']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats, premium dining, and priority boarding',
+        features: ['Lie-flat seats', 'Premium dining', 'Priority boarding', 'Lounge access']
       }
     ],
     popularRoutes: [
@@ -74,10 +104,10 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     slug: 'singapore-airlines',
     title: 'Singapore Airlines',
     subtitle: 'A Great Way to Fly',
-    description: 'Discover the world with Singapore Airlines. Exceptional service, innovative cuisine, and award-winning entertainment.',
-    heroImage: '/images/singapore-hero.jpg',
+    description: 'Experience travel in balance Singapore Airlines offers first and business class flights with comfort, attentive service, and refined details that make long journeys feel simple.',
+    heroImage: '/images/airlines/Singapore-Airlines-min.jpg',
     introTitle: 'The Singapore Airlines Experience',
-    introText: 'Singapore Airlines has been setting the standard for excellence in aviation for decades. With our commitment to innovation and service, we ensure every journey is memorable.',
+    introText: 'For decades the airline has set the standard in premium air travel. Every flight reflects care for detail and respect for time, making the journey as important as the destination.',
     ctaTitle: 'Fly Singapore Airlines Today',
     ctaText: 'Experience the difference that has made Singapore Airlines the world\'s most awarded airline.',
     features: [
@@ -92,6 +122,24 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       {
         title: 'KrisFlyer Program',
         description: 'Earn and redeem miles with our award-winning loyalty program.'
+      }
+    ],
+    routes: [
+      { from: 'London', to: 'Singapore', duration: '13h 25m', aircraft: 'A380' },
+      { from: 'New York', to: 'Singapore', duration: '18h 45m', aircraft: 'A350' },
+      { from: 'Singapore', to: 'Tokyo', duration: '7h 20m', aircraft: 'A350' },
+      { from: 'Singapore', to: 'Sydney', duration: '8h 10m', aircraft: 'A380' }
+    ],
+    classes: [
+      {
+        name: 'Suites Class',
+        description: 'Private suites with double beds and luxury amenities',
+        features: ['Private suite with double bed', 'Personal wardrobe', 'Premium dining', 'Dedicated service']
+      },
+      {
+        name: 'Business Class',
+        description: 'Lie-flat seats with direct aisle access',
+        features: ['Lie-flat seats', 'Direct aisle access', 'Premium dining', 'Priority boarding']
       }
     ],
     popularRoutes: [
@@ -116,10 +164,10 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     slug: 'lufthansa-airlines',
     title: 'Lufthansa Airlines',
     subtitle: 'Nonstop You',
-    description: 'Fly with Europe\'s leading airline. Lufthansa combines German precision with warm hospitality.',
-    heroImage: '/images/lufthansa-hero.jpg',
-    introTitle: 'Precision Meets Comfort',
-    introText: 'Lufthansa brings you the perfect blend of German engineering and hospitality. With our extensive European network and modern fleet, we connect you to the world.',
+    description: 'Lufthansa offers first and business class flights with reliability, attentive service, and thoughtful touches that make each journey smooth.',
+    heroImage: '/images/airlines/Lufthansa-Airlines-min.jpg',
+    introTitle: 'The Lufthansa Experience',
+    introText: 'For generations Lufthansa has defined German quality in the air. Every flight reflects precision and consistency, turning long travel into a steady and trusted experience.',
     ctaTitle: 'Choose Lufthansa for Your Next Journey',
     ctaText: 'Experience the reliability and comfort that has made Lufthansa a trusted choice for travelers worldwide.',
     features: [
@@ -158,10 +206,10 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     slug: 'american-airlines',
     title: 'American Airlines',
     subtitle: 'Going for Great',
-    description: 'Fly with America\'s largest airline network. Connect to more destinations with modern aircraft and exceptional service.',
-    heroImage: '/images/american-hero.jpg',
-    introTitle: 'America\'s Largest Network',
-    introText: 'American Airlines connects you to more destinations than any other carrier. With our modern fleet and commitment to service, we make your journey as comfortable as possible.',
+    description: 'American Airlines offers first and business class flights across a vast network with service, comfort, and space that support every kind of trip.',
+    heroImage: '/images/airlines/American-Airlines-min.jpg',
+    introTitle: 'The American Airlines Experience',
+    introText: 'For decades American Airlines has connected cities worldwide. Each flight shows commitment to accessibility and efficiency, making long distances feel closer.',
     ctaTitle: 'Fly American Airlines',
     ctaText: 'Join the millions who choose American Airlines for reliable service and extensive network coverage.',
     features: [
@@ -196,14 +244,14 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       }
     ]
   },
-  'nippon-airways': {
-    slug: 'nippon-airways',
-    title: 'Nippon Airways (ANA)',
+  'nippon-airlines': {
+    slug: 'nippon-airlines',
+    title: 'Nippon Airlines (ANA)',
     subtitle: 'Inspiration of Japan',
-    description: 'Experience Japanese hospitality and precision. ANA delivers the art of omotenashi service on every flight.',
-    heroImage: '/images/ana-hero.jpg',
-    introTitle: 'The Art of Japanese Hospitality',
-    introText: 'ANA brings you the finest in Japanese hospitality with our omotenashi service philosophy. Experience punctuality, comfort, and attention to detail that defines Japanese excellence.',
+    description: 'Nippon Airlines offers first and business class flights with quiet service, balanced design, and details that reflect Japanese precision.',
+    heroImage: '/images/airlines/Nippon-Airways-min.jpg',
+    introTitle: 'The Nippon Airlines Experience',
+    introText: 'For years the airline has carried Japan\'s spirit of omotenashi. Each flight values grace and respect, creating a calm and complete journey.',
     ctaTitle: 'Experience ANA\'s Omotenashi Service',
     ctaText: 'Discover why ANA is consistently rated among the world\'s best airlines for service and reliability.',
     features: [
@@ -238,14 +286,14 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       }
     ]
   },
-  'qantas-airways': {
-    slug: 'qantas-airways',
-    title: 'Qantas Airways',
+  'qantas-airlines': {
+    slug: 'qantas-airlines',
+    title: 'Qantas Airlines',
     subtitle: 'Spirit of Australia',
-    description: 'Fly with Australia\'s flag carrier. Experience the spirit of the land down under with safety excellence and warm hospitality.',
-    heroImage: '/images/qantas-hero.jpg',
-    introTitle: 'The Spirit of Australia',
-    introText: 'Qantas embodies the adventurous spirit of Australia. With our commitment to safety and service, we connect Australia to the world and bring the world to Australia.',
+    description: 'Qantas offers first and business class flights with wide cabins, attentive crews, and smooth service across long international routes.',
+    heroImage: '/images/airlines/Qantas-Airways-min.jpg',
+    introTitle: 'The Qantas Experience',
+    introText: 'As Australia\'s flagship airline, Qantas has earned trust through reliability and care. Every flight reflects safety and comfort, connecting Australia with global destinations.',
     ctaTitle: 'Fly the Spirit of Australia',
     ctaText: 'Experience the warmth and reliability that has made Qantas Australia\'s most trusted airline.',
     features: [
@@ -283,11 +331,11 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
   'turkish-airlines': {
     slug: 'turkish-airlines',
     title: 'Turkish Airlines',
-    subtitle: 'Widen Your World',
-    description: 'Discover the bridge between continents. Turkish Airlines connects you to more countries than any other airline.',
-    heroImage: '/images/turkish-hero.jpg',
-    introTitle: 'Bridge Between Continents',
-    introText: 'Turkish Airlines serves as the perfect bridge between Europe, Asia, and beyond. With Istanbul as our hub, we connect you to more destinations than any other airline in the world.',
+    subtitle: 'Соединяя миры',
+    description: 'Откройте для себя мост между континентами с Turkish Airlines. Испытайте турецкое гостеприимство, соединяясь с большим количеством стран, чем любая другая авиакомпания в мире.',
+    heroImage: '/images/airlines/Turkish-Airlines-min.jpg',
+    introTitle: 'Ворота в мир',
+    introText: 'Turkish Airlines соединяет вас с большим количеством стран и направлений, чем любая другая авиакомпания, а Стамбул служит идеальным мостом между Европой, Азией и Африкой. Испытайте подлинное турецкое гостеприимство и кухню на высоте 30 000 футов.',
     ctaTitle: 'Widen Your World with Turkish Airlines',
     ctaText: 'Discover new horizons with Turkish Airlines\' extensive global network and renowned Turkish hospitality.',
     features: [
@@ -322,14 +370,14 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       }
     ]
   },
-  'british-airways': {
-    slug: 'british-airways',
-    title: 'British Airways',
-    subtitle: 'To Fly. To Serve.',
-    description: 'Experience British elegance and service excellence. British Airways connects you to the world with style and sophistication.',
-    heroImage: '/images/british-airways-hero.jpg',
-    introTitle: 'British Excellence in Aviation',
-    introText: 'British Airways embodies the finest traditions of British service and hospitality. With our global network and commitment to excellence, we make every journey memorable.',
+  'british-airlines': {
+    slug: 'british-airlines',
+    title: 'British Airlines',
+    subtitle: 'Лететь. Служить.',
+    description: 'Испытайте британскую элегантность и превосходство в обслуживании. British Airways соединяет вас с миром со стилем и изысканностью.',
+    heroImage: '/images/airlines/British-Airways-min.jpg',
+    introTitle: 'Британское совершенство в авиации',
+    introText: 'British Airways воплощает лучшие традиции британского сервиса и гостеприимства. С нашей глобальной сетью и приверженностью к совершенству мы делаем каждое путешествие незабываемым.',
     ctaTitle: 'Fly British Airways',
     ctaText: 'Experience the elegance and reliability that has made British Airways a world-renowned airline.',
     features: [
@@ -367,11 +415,11 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
   'united-airlines': {
     slug: 'united-airlines',
     title: 'United Airlines',
-    subtitle: 'Fly the Friendly Skies',
-    description: 'Connect to more destinations across the globe with United Airlines. Experience friendly service and modern amenities.',
-    heroImage: '/images/united-airlines-hero.jpg',
-    introTitle: 'Connecting the World',
-    introText: 'United Airlines connects people and unites the world. With our extensive network and commitment to service, we make travel accessible and enjoyable for everyone.',
+    subtitle: 'Connecting People. Uniting the World.',
+    description: 'United Airlines connects people and unites the world. Our extensive network and commitment to service make travel accessible and enjoyable for everyone.',
+    heroImage: '/images/airlines/United-Airlines-min.jpg',
+    introTitle: 'The United Airlines Experience',
+    introText: 'United Airlines connects people and unites the world. Through our extensive network and commitment to service, we make travel accessible and enjoyable for everyone.',
     ctaTitle: 'Fly United Airlines',
     ctaText: 'Join millions of travelers who choose United for reliable service and global connectivity.',
     features: [
@@ -410,12 +458,12 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     slug: 'etihad-airlines',
     title: 'Etihad Airlines',
     subtitle: 'From Abu Dhabi to the World',
-    description: 'Experience Arabian hospitality with Etihad Airlines. Luxury, comfort, and service excellence from the heart of the UAE.',
-    heroImage: '/images/etihad-airlines-hero.jpg',
+    description: 'Experience Arabian hospitality with Etihad Airways. Luxury, comfort, and exceptional service from the heart of the UAE.',
+    heroImage: '/images/airlines/Etihad-Airlines-min.jpg',
     introTitle: 'Arabian Hospitality Redefined',
-    introText: 'Etihad Airways brings you the warmth of Arabian hospitality combined with modern luxury. From our Abu Dhabi hub, we connect you to destinations worldwide.',
+    introText: 'Etihad Airways brings you the warmth of Arabian hospitality combined with modern luxury. From our Abu Dhabi hub, we connect you to destinations around the world.',
     ctaTitle: 'Fly Etihad Airways',
-    ctaText: 'Experience the luxury and hospitality that defines Etihad Airways.',
+    ctaText: 'Experience the luxury and hospitality that define Etihad Airways.',
     features: [
       {
         title: 'Arabian Hospitality',
@@ -448,12 +496,12 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
       }
     ]
   },
-  'qatar-airways': {
-    slug: 'qatar-airways',
-    title: 'Qatar Airways',
+  'qatar-airlines': {
+    slug: 'qatar-airlines',
+    title: 'Qatar Airlines',
     subtitle: 'Going Places Together',
     description: 'Experience award-winning service with Qatar Airways. Connect the world through our Doha hub with luxury and excellence.',
-    heroImage: '/images/qatar-airways-hero.jpg',
+    heroImage: '/images/airlines/Qatar-Airways-min.jpg',
     introTitle: 'World\'s Best Airline',
     introText: 'Qatar Airways has been recognized as the World\'s Best Airline multiple times. Experience our commitment to excellence and innovation in every aspect of your journey.',
     ctaTitle: 'Fly Qatar Airways',
@@ -495,7 +543,7 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     title: 'Iberia Airlines',
     subtitle: 'Spain in the Sky',
     description: 'Discover the spirit of Spain with Iberia Airlines. Connect Europe and Latin America with Spanish warmth and hospitality.',
-    heroImage: '/images/iberia-airlines-hero.jpg',
+    heroImage: '/images/airlines/Iberia-Airlines-min.jpg',
     introTitle: 'The Spirit of Spain',
     introText: 'Iberia brings you the warmth and passion of Spain to every journey. As Spain\'s flag carrier, we connect Europe with Latin America and beyond.',
     ctaTitle: 'Fly Iberia Airlines',
@@ -537,7 +585,7 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     title: 'Swiss Airlines',
     subtitle: 'The Airline of Switzerland',
     description: 'Experience Swiss precision and quality with SWISS. Connect to the world with reliability, comfort, and Swiss hospitality.',
-    heroImage: '/images/swiss-airlines-hero.jpg',
+    heroImage: '/images/airlines/Swiss-Airlines-min.jpg',
     introTitle: 'Swiss Quality in the Sky',
     introText: 'SWISS embodies the values that Switzerland is renowned for: quality, reliability, and attention to detail. Experience Swiss hospitality at 35,000 feet.',
     ctaTitle: 'Fly SWISS',
@@ -579,7 +627,7 @@ export const DEFAULT_AIRLINE_CONTENT: Record<string, AirlineContent> = {
     title: 'Air France',
     subtitle: 'France is in the Air',
     description: 'Experience French elegance and savoir-vivre with Air France. Connect to the world with style, sophistication, and French hospitality.',
-    heroImage: '/images/air-france-hero.jpg',
+    heroImage: '/images/airlines/Air-France-min.jpg',
     introTitle: 'French Elegance in the Sky',
     introText: 'Air France brings you the art de vivre that France is famous for. Experience French elegance, cuisine, and hospitality on every flight.',
     ctaTitle: 'Fly Air France',

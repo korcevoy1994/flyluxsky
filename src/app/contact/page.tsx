@@ -13,6 +13,8 @@ export default function ContactPage() {
     destination: '',
     message: ''
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'error' | null>(null)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -21,10 +23,47 @@ export default function ContactPage() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    // Here you would typically send the data to your backend
+    
+    if (!formData.fullName || !formData.email || !formData.message) {
+      setSubmissionStatus('error')
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmissionStatus(null)
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setSubmissionStatus('success')
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          destination: '',
+          message: ''
+        })
+        setTimeout(() => {
+          setSubmissionStatus(null)
+        }, 5000)
+      } else {
+        setSubmissionStatus('error')
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error)
+      setSubmissionStatus('error')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -182,9 +221,24 @@ export default function ContactPage() {
               <div className="mt-8">
                 <button 
                   type="submit" 
-                  className="w-full md:w-auto px-10 py-4 bg-[#EC5E39] text-white font-poppins font-semibold rounded-2xl shadow-[0_6px_18px_rgba(236,94,57,0.35)] cursor-pointer transition-all hover:brightness-95 hover:shadow-[0_8px_20px_rgba(236,94,57,0.4)] transform hover:-translate-y-0.5"
+                  disabled={isSubmitting}
+                  className={`w-full md:w-auto px-10 py-4 font-poppins font-semibold rounded-2xl transition-all transform ${
+                    submissionStatus === 'success'
+                      ? 'bg-green-500 text-white shadow-[0_6px_18px_rgba(34,197,94,0.35)]'
+                      : submissionStatus === 'error'
+                      ? 'bg-red-500 text-white shadow-[0_6px_18px_rgba(239,68,68,0.35)]'
+                      : isSubmitting
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-[#EC5E39] text-white shadow-[0_6px_18px_rgba(236,94,57,0.35)] cursor-pointer hover:brightness-95 hover:shadow-[0_8px_20px_rgba(236,94,57,0.4)] hover:-translate-y-0.5'
+                  }`}
                 >
-                  SEND MESSAGE
+                  {submissionStatus === 'success'
+                    ? 'MESSAGE SENT!'
+                    : submissionStatus === 'error'
+                    ? 'ERROR - TRY AGAIN'
+                    : isSubmitting
+                    ? 'SENDING...'
+                    : 'SEND MESSAGE'}
                 </button>
               </div>
             </form>

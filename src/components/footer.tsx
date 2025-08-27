@@ -121,13 +121,13 @@ const topAirlines = [
   { name: 'Lufthansa Airlines', href: '/airlines/lufthansa-airlines' },
   { name: 'American Airlines', href: '/airlines/american-airlines' },
   { name: 'Emirates Airlines', href: '/airlines/emirates-airlines' },
-  { name: 'Nippon Airways', href: '/airlines/nippon-airways' },
-  { name: 'Qantas Airways', href: '/airlines/qantas-airways' },
+  { name: 'Nippon Airlines', href: '/airlines/nippon-airlines' },
+  { name: 'Qantas Airlines', href: '/airlines/qantas-airlines' },
   { name: 'Turkish Airlines', href: '/airlines/turkish-airlines' },
-  { name: 'British Airways', href: '/airlines/british-airways' },
+  { name: 'British Airlines', href: '/airlines/british-airlines' },
   { name: 'United Airlines', href: '/airlines/united-airlines' },
   { name: 'Etihad Airlines', href: '/airlines/etihad-airlines' },
-  { name: 'Qatar Airways', href: '/airlines/qatar-airways' },
+  { name: 'Qatar Airlines', href: '/airlines/qatar-airlines' },
   { name: 'Iberia Airlines', href: '/airlines/iberia-airlines' },
   { name: 'Swiss Airlines', href: '/airlines/swiss-airlines' }
 ];

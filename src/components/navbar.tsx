@@ -219,6 +219,17 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
                                 </div>
                             </div>
                         </Link>
+                        
+                        <Link href="/faq" onClick={handleMenuClose} className="group block cursor-pointer">
+                            <div className="flex items-center justify-between py-1">
+                                <span className="font-semibold text-[16px] sm:text-[20px] font-poppins uppercase text-[#2C3E50] leading-tight tracking-tight group-hover:text-[#0ABAB5] transition-all duration-300">
+                                    FAQ
+                                </span>
+                                <div className="ml-2 transition-all duration-300 group-hover:translate-x-1 text-[#2C3E50] group-hover:text-[#0ABAB5]">
+                                    <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 </nav>
             </div>

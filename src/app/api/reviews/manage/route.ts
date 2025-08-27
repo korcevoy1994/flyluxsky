@@ -67,6 +67,9 @@ export async function POST(req: Request) {
     )
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unexpected error'
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 })
+    return new NextResponse(
+      JSON.stringify({ ok: false, error: msg }),
+      { status: 500, headers: { 'x-reviews-write': 'supabase' } }
+    )
   }
 }

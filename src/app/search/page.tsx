@@ -140,13 +140,13 @@ const MultiCityFlightCard = ({ flight, isSelected, onSelect, departureDates }: {
                             </div>
                             
                             <div className="flex-1 mx-4">
-                                <div className="flex items-center justify-center relative">
+                                <div className="flex items-center justify-center relative mb-2">
                                     <div className="w-full h-px bg-gray-200"></div>
-                                    <div className="absolute bg-white px-2">
-                                        <AirportFromIcon className="w-3 h-3 text-[#0abab5]" />
+                                    <div className="absolute bg-white px-2 py-1 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-200 rounded-full">
+                                        <AirportFromIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#0abab5] flex-shrink-0" />
                                     </div>
                                 </div>
-                                <div className="text-center mt-1">
+                                <div className="text-center mt-3">
                                     <p className="text-xs font-medium text-gray-600">{segment.duration}</p>
                                     <p className="text-xs text-gray-400">
                                         {segment.stops === 0 ? 'Non-stop' : (
@@ -280,14 +280,14 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                     )}
                 </div>
                 
-                <div className="flex-1 mx-6">
-                    <div className="flex items-center justify-center relative">
+                <div className="flex-1 mx-4 sm:mx-6">
+                    <div className="flex items-center justify-center relative mb-2">
                         <div className="w-full h-px bg-gray-200"></div>
-                        <div className="absolute bg-white px-2">
-                            <AirportFromIcon className="w-4 h-4 text-[#0abab5]" />
+                        <div className="absolute bg-white px-2 py-1 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-200 rounded-full">
+                            <AirportFromIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#0abab5] flex-shrink-0" />
                         </div>
                     </div>
-                    <div className="text-center mt-2">
+                    <div className="text-center mt-3">
                         <p className="text-sm font-medium text-gray-600">{flight.duration}</p>
                         <p className="text-xs text-gray-400">
                             {flight.stops === 0 ? 'Non-stop' : (
@@ -386,13 +386,13 @@ const FlightCard = ({ flight, isSelected, onSelect, tripType, passengers, depart
                         </div>
                         
                         <div className="flex-1 mx-4">
-                            <div className="flex items-center justify-center relative">
+                            <div className="flex items-center justify-center relative mb-2">
                                 <div className="w-full h-px bg-gray-300"></div>
-                                <div className="absolute bg-gray-50 px-2">
-                                    <AirportFromIcon className="w-3.5 h-3.5 text-[#0abab5]" />
+                                <div className="absolute bg-white px-2 py-1 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-200 rounded-full">
+                                    <AirportFromIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#0abab5] flex-shrink-0" />
                                 </div>
                             </div>
-                            <div className="text-center mt-1">
+                            <div className="text-center mt-3">
                                 <p className="text-xs font-medium text-gray-600">{flight.returnFlight.duration}</p>
                                 <p className="text-xs text-gray-400">
                                     {flight.returnFlight.stops === 0 ? 'Non-stop' : (

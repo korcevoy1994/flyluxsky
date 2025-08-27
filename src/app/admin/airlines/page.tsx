@@ -24,7 +24,26 @@ export default function AirlinesAdmin() {
         setIsLoading(false)
       }
     }
+    
     loadContent()
+    
+    // Listen for localStorage changes to sync in real-time
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'flyluxsky_airlines_content' && e.newValue) {
+        try {
+          const updatedContent = JSON.parse(e.newValue)
+          setContent(updatedContent)
+        } catch (error) {
+          console.error('Failed to parse updated content:', error)
+        }
+      }
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [])
 
   const handleSave = async () => {
