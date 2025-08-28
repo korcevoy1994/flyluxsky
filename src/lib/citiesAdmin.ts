@@ -6,6 +6,7 @@ export interface CityContent {
   subtitle: string
   description: string
   heroImage: string // public path to image
+  heroVideo?: string // public path to video (optional)
   introTitle?: string // e.g. 'Enjoy Your Barcelona Trip With Fly Lux Sky'
   introText?: string // e.g. 'Explore Barcelona's rich history and modern charm...'
   ctaTitle?: string
@@ -64,6 +65,7 @@ export const DEFAULT_CITY_CONTENT: Record<string, CityContent> = {
     subtitle: 'First & Business Class Flights',
     description: 'Discover the Best First & Business Class Travel Deals to France',
     heroImage: '/images/paris.jpg',
+    heroVideo: '/video/IMG_4041_1_1.mp4',
     introTitle: 'Enjoy Your Paris Trip With Fly Lux Sky',
     introText: 'Explore Paris\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
     ctaTitle: 'Book Your Paris Business Class Flight Today.',

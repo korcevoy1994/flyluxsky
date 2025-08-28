@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from "next/image";
 import useEmblaCarousel, { UseEmblaCarouselType } from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
@@ -19,6 +19,7 @@ interface Deal {
   image: string;
   airline: string;
   duration: string;
+  video?: string;
 }
 
 const deals: Deal[] = [
@@ -75,7 +76,8 @@ const deals: Deal[] = [
     discount: "33% OFF",
     image: "/images/deals/paris.png", 
     airline: "Air France",
-    duration: "9h 10m"
+    duration: "9h 10m",
+    video: "/video/IMG_4041_1_1.mp4"
   },
   {
     id: 6,
@@ -176,39 +178,82 @@ function useDealsCarousel() {
 }
 
 // Components
-const DealCard = ({ deal, onClick }: { deal: Deal, onClick: () => void }) => (
-  <div className="relative w-full h-full rounded-3xl overflow-hidden cursor-pointer group" onClick={onClick}>
-    {/* Background Image */}
-    <Image 
-      src={deal.image} 
-      alt={deal.city} 
-      fill
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      className="object-cover transition-transform duration-300 group-hover:scale-105"
-    />
-    {/* Gradient Overlay */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-    
-    {/* Content */}
-    <div className="relative h-full flex flex-col justify-between items-center text-center py-10 px-6 text-white">
-      {/* Top Content */}
-      <div>
-        <h3 className="text-4xl font-bold font-poppins">{deal.city}</h3>
-        <p className="text-lg font-poppins">{deal.country}</p>
-      </div>
+const DealCard = ({ deal, onClick, isCenter }: { deal: Deal, onClick: () => void, isCenter: boolean }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-      {/* Bottom Content */}
-      <div>
-        <p className="text-sm font-poppins uppercase">Save up to</p>
-        <p className="text-4xl font-bold font-poppins">{deal.price}</p>
-        <div className="mt-2 inline-flex items-center gap-2 bg-white text-[#0ABAB5] px-4 py-2 rounded-full text-base font-bold font-poppins whitespace-nowrap">
-          <Image src="/icons/clock.svg" alt="clock icon" width={24} height={24} className="text-white h-auto w-auto"/>
-          <span className="uppercase">Limited time</span>
+  useEffect(() => {
+    if (deal.video && videoRef.current) {
+      if (isCenter) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [isCenter, deal.video]);
+
+  return (
+    <div 
+      className="relative w-full h-full rounded-3xl overflow-hidden cursor-pointer group" 
+      onClick={onClick}
+    >
+      {/* Background Video or Image */}
+      {deal.video ? (
+        <>
+          <video
+            ref={videoRef}
+            src={deal.video}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+              isCenter ? 'opacity-100' : 'opacity-0'
+            }`}
+            muted
+            loop
+            playsInline
+          />
+          <Image 
+            src={deal.image} 
+            alt={deal.city} 
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={`object-cover transition-all duration-500 ${
+              isCenter ? 'opacity-0 scale-105' : 'opacity-100 group-hover:scale-105'
+            }`}
+          />
+        </>
+      ) : (
+        <Image 
+          src={deal.image} 
+          alt={deal.city} 
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      )}
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+      
+      {/* Content */}
+      <div className="relative h-full flex flex-col justify-between items-center text-center py-10 px-6 text-white">
+        {/* Top Content */}
+        <div>
+          <h3 className="text-4xl font-bold font-poppins">{deal.city}</h3>
+          <p className="text-lg font-poppins">{deal.country}</p>
+        </div>
+
+        {/* Bottom Content */}
+        <div>
+          <p className="text-sm font-poppins uppercase">Save up to</p>
+          <p className="text-4xl font-bold font-poppins">{deal.price}</p>
+          <div className="mt-2 inline-flex items-center gap-2 bg-white text-[#0ABAB5] px-4 py-2 rounded-full text-base font-bold font-poppins whitespace-nowrap">
+            <Image src="/icons/clock.svg" alt="clock icon" width={24} height={24} className="text-white h-auto w-auto"/>
+            <span className="uppercase">Limited time</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Main Component
 export default function CarouselDeals() {
@@ -339,7 +384,7 @@ export default function CarouselDeals() {
               }}
               transition={{ type: "spring", stiffness: 400, damping: 40 }}
             >
-              <DealCard deal={deal} onClick={() => handleDealClick(deal)} />
+              <DealCard deal={deal} onClick={() => handleDealClick(deal)} isCenter={index === selectedIndex} />
             </motion.div>
           ))}
         </div>

@@ -114,20 +114,32 @@ export default function CityPage({ slug }: CityPageProps) {
   }
 
   const heroSrc = cityContent.heroImage || IMAGE_FALLBACKS[slug] || '/images/london-big.jpg';
+  const heroVideoSrc = cityContent.heroVideo;
 
   return (
     <main className="min-h-screen w-full bg-white">
       {/* Hero */}
       <section className="relative w-full min-h-[700px] pb-8 md:pb-12">
         <div className="absolute inset-0">
-          <Image
-            src={heroSrc}
-            alt={`${cityContent.title} skyline`}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          {heroVideoSrc ? (
+            <video
+              src={heroVideoSrc}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover object-center"
+            />
+          ) : (
+            <Image
+              src={heroSrc}
+              alt={`${cityContent.title} skyline`}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          )}
           {/* Brand color gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0ABAB5]/45 via-[#0ABAB5]/25 to-transparent" />
         </div>
