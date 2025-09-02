@@ -18,11 +18,11 @@ export function middleware(request: NextRequest) {
   // Content Security Policy
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://snap.licdn.com https://px.ads.linkedin.com https://analytics.tiktok.com https://www.facebook.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://snap.licdn.com https://px.ads.linkedin.com https://analytics.tiktok.com https://www.facebook.com https://gso.kommo.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https: http:",
-    "connect-src 'self' https://api.ipify.org https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net https://analytics.tiktok.com https://business-api.tiktok.com",
+    "connect-src 'self' https://api.ipify.org https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net https://analytics.tiktok.com https://business-api.tiktok.com https://gso.kommo.com https://*.kommo.com",
     "frame-src 'self' https://www.facebook.com https://connect.facebook.net",
     "object-src 'none'",
     "base-uri 'self'",

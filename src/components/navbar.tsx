@@ -61,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
 
   return (
     <>
-      <header className="w-full px-2 py-2 flex items-center justify-between rounded-3xl max-w-[1280px] mx-auto relative z-50 gap-4">
+      <header className="w-full px-2 pt-6 pb-2 flex items-center justify-between rounded-3xl max-w-[1280px] mx-auto relative z-50 gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center select-none cursor-pointer" tabIndex={0} aria-label="fls logo">
           <Image 
@@ -83,6 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isDarkBackground = true }) => {
             className="flex items-center gap-2 px-5 py-3 bg-[#D44A26] text-white font-bold text-[14px] font-poppins uppercase leading-none rounded-full focus:outline-none focus:ring-2 focus:ring-[#D44A26] cursor-pointer transition-all duration-200 hover:brightness-95"
             tabIndex={0}
             aria-label={`Call us at ${NAVBAR_PHONE}`}
+            onClick={() => window.open(`tel:${NAVBAR_PHONE}`, '_self')}
           >
             <Phone size={16} />
             <span>{NAVBAR_PHONE}</span>

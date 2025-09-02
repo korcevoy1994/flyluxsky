@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Navbar from '@/components/navbar';
 import FlightSearchForm from '@/components/flight-search-form';
@@ -12,7 +12,6 @@ import { getNearbyAirports, Airport } from '@/lib/utils';
 import { type Coordinates } from '@/app/page';
 import { useFlightSearch } from '@/hooks/useFlightSearch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef } from 'react';
 
 interface CountryPageProps {
   slug: string;
@@ -29,6 +28,9 @@ const IMAGE_FALLBACKS: Record<string, string> = {
   'turkey': '/images/london-big.jpg',
   'japan': '/images/london-big.jpg',
   'qatar': '/images/london-big.jpg',
+  'united-states': '/images/countries/united-states.jpg',
+  'canada': '/images/countries/canada.jpg',
+  'switzerland': '/images/countries/switzerland.jpg',
 };
 
 export default function CountryPage({ slug }: CountryPageProps) {
@@ -39,6 +41,8 @@ export default function CountryPage({ slug }: CountryPageProps) {
   const [isSticky, setSticky] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoError, setVideoError] = useState(false);
   const searchState = useFlightSearch(nearestAirport);
 
   useEffect(() => {
@@ -102,6 +106,14 @@ export default function CountryPage({ slug }: CountryPageProps) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (videoRef.current && countryContent.heroVideo) {
+      videoRef.current.play().catch(() => {
+        // Silently handle video play errors
+      });
+    }
+  }, [countryContent.heroVideo]);
+
   if (isLoading) {
     return (
       <main className="min-h-screen w-full bg-white flex items-center justify-center">
@@ -120,13 +132,33 @@ export default function CountryPage({ slug }: CountryPageProps) {
       {/* Hero */}
       <section className="relative w-full min-h-[700px] pb-8 md:pb-12">
         <div className="absolute inset-0">
+          {/* Static Image */}
           <Image
             src={heroSrc}
             alt={`${countryContent.title} landscape`}
             fill
             priority
-            className="object-cover object-center"
+            className={`object-cover object-center transition-opacity duration-1000 ${
+              countryContent.heroVideo && !videoError ? 'opacity-0' : 'opacity-100'
+            }`}
           />
+          
+          {/* Video Background */}
+          {countryContent.heroVideo && !videoError && (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-1000"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              onError={() => setVideoError(true)}
+            >
+              <source src={countryContent.heroVideo} type="video/mp4" />
+            </video>
+          )}
+          
           {/* Brand color gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0ABAB5]/45 via-[#0ABAB5]/25 to-transparent" />
         </div>

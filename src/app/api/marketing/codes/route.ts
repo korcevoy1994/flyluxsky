@@ -10,7 +10,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from('marketing_codes')
-      .select('google_tag_manager, google_analytics_4, google_search_console, bing_webmaster_tools, facebook_pixel, google_ads_tag, hotjar')
+      .select('google_tag_manager, google_analytics_4, google_search_console, bing_webmaster_tools, facebook_pixel, google_ads_tag, hotjar, kommo_chat')
       .single()
 
     if (error && error.code !== 'PGRST116') {
@@ -26,7 +26,8 @@ export async function GET() {
       bingWebmasterTools: '',
       facebookPixel: '',
       googleAdsTag: '',
-      hotjar: ''
+      hotjar: '',
+      kommoChat: ''
     }
 
     // Map database fields to camelCase
@@ -37,7 +38,8 @@ export async function GET() {
       bingWebmasterTools: data.bing_webmaster_tools || '',
       facebookPixel: data.facebook_pixel || '',
       googleAdsTag: data.google_ads_tag || '',
-      hotjar: data.hotjar || ''
+      hotjar: data.hotjar || '',
+      kommoChat: data.kommo_chat || ''
     } : defaultCodes
 
     return NextResponse.json(mappedData)
@@ -67,6 +69,7 @@ export async function POST(request: NextRequest) {
         facebook_pixel: body.facebookPixel || '',
         google_ads_tag: body.googleAdsTag || '',
         hotjar: body.hotjar || '',
+        kommo_chat: body.kommoChat || '',
         updated_at: new Date().toISOString()
       })
       .select()

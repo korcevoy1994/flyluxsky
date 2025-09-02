@@ -1090,7 +1090,7 @@ function HeroRouteText() {
     if (!fromCity && !toCity) return null;
 
     return (
-        <div className="mx-auto max-w-7xl px-4 pt-10 pb-0">
+        <div className="mx-auto max-w-7xl px-4 pt-0 pb-">
             <div className="text-center text-white">
                 <div className="text-[24px] md:text-[72px] font-semibold">
                     {fromCity || '—'} 

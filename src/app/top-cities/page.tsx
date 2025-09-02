@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
@@ -12,6 +12,7 @@ const cities = [
     country: 'United Kingdom',
     countryCode: 'GB',
     image: '/images/cities/london.jpg',
+    video: '/video/london.mp4',
     description: 'Experience the capital of England with its rich history, iconic landmarks, and world-class business opportunities.',
     airports: ['LHR', 'LGW', 'STN'],
     airlines: ['British Airways', 'Virgin Atlantic', 'Emirates'],
@@ -24,6 +25,7 @@ const cities = [
     country: 'Spain',
     countryCode: 'ES',
     image: '/images/cities/madrid.jpg',
+    video: '/video/madrid.mp4',
     description: 'Spain\'s vibrant capital offers rich culture, world-class museums, and exceptional cuisine.',
     airports: ['MAD'],
     airlines: ['Iberia', 'Emirates', 'Qatar Airways'],
@@ -36,6 +38,7 @@ const cities = [
     country: 'Greece',
     countryCode: 'GR',
     image: '/images/cities/athens.jpg',
+    video: '/video/athenes.mp4',
     description: 'The cradle of democracy offers ancient history, stunning architecture, and Mediterranean charm.',
     airports: ['ATH'],
     airlines: ['Aegean Airlines', 'Emirates', 'Qatar Airways'],
@@ -48,6 +51,7 @@ const cities = [
     country: 'Italy',
     countryCode: 'IT',
     image: '/images/cities/rome.jpg',
+    video: '/video/rome.mp4',
     description: 'The Eternal City combines ancient history with modern Italian style and world-renowned cuisine.',
     airports: ['FCO', 'CIA'],
     airlines: ['Alitalia', 'Emirates', 'Qatar Airways'],
@@ -60,6 +64,7 @@ const cities = [
     country: 'France',
     countryCode: 'FR',
     image: '/images/cities/paris.jpg',
+    video: '/video/paris.mp4',
     description: 'The City of Light offers romance, culture, fashion, and exceptional cuisine in the heart of Europe.',
     airports: ['CDG', 'ORY'],
     airlines: ['Air France', 'Emirates', 'Qatar Airways'],
@@ -72,6 +77,7 @@ const cities = [
     country: 'Portugal',
     countryCode: 'PT',
     image: '/images/cities/lisbon.jpg',
+    video: '/video/lisbon.mp4',
     description: 'Portugal\'s coastal capital offers historic charm, stunning architecture, and vibrant cultural scene.',
     airports: ['LIS'],
     airlines: ['TAP Air Portugal', 'Emirates', 'Qatar Airways'],
@@ -84,6 +90,7 @@ const cities = [
     country: 'Netherlands',
     countryCode: 'NL',
     image: '/images/cities/amsterdam.jpg',
+    video: '/video/amsterdam.mp4',
     description: 'The Venice of the North with its famous canals, rich history, and vibrant cultural scene.',
     airports: ['AMS'],
     airlines: ['KLM', 'Emirates', 'British Airways'],
@@ -96,6 +103,7 @@ const cities = [
     country: 'Singapore',
     countryCode: 'SG',
     image: '/images/cities/singapore.jpg',
+    video: '/video/singapore.mp4',
     description: 'The gateway to Asia, combining modern efficiency with rich cultural heritage and culinary excellence.',
     airports: ['SIN'],
     airlines: ['Singapore Airlines', 'Emirates', 'Qatar Airways'],
@@ -108,6 +116,7 @@ const cities = [
     country: 'Spain',
     countryCode: 'ES',
     image: '/images/cities/barcelona.jpg',
+    video: '/video/barcelona.mp4',
     description: 'Catalonia\'s capital combines stunning architecture, beautiful beaches, and vibrant nightlife.',
     airports: ['BCN'],
     airlines: ['Vueling', 'Emirates', 'Qatar Airways'],
@@ -120,6 +129,7 @@ const cities = [
     country: 'Germany',
     countryCode: 'DE',
     image: '/images/cities/frankfurt.jpg',
+    video: '/video/frankfurt.mp4',
     description: 'Europe\'s financial capital with impressive skyline, rich culture, and excellent business infrastructure.',
     airports: ['FRA'],
     airlines: ['Lufthansa', 'Emirates', 'Singapore Airlines'],
@@ -132,6 +142,7 @@ const cities = [
     country: 'Turkey',
     countryCode: 'TR',
     image: '/images/cities/istanbul.jpg',
+    video: '/video/istanbul.mp4',
     description: 'Where Europe meets Asia, offering rich history, stunning architecture, and vibrant cultural heritage.',
     airports: ['IST', 'SAW'],
     airlines: ['Turkish Airlines', 'Emirates', 'Qatar Airways'],
@@ -143,7 +154,8 @@ const cities = [
     slug: 'sydney',
     country: 'Australia',
     countryCode: 'AU',
-    image: '/images/cities/sydney.jpg',
+    image: '/images/cities/sidney.jpg',
+    video: '/video/sidney.mp4',
     description: 'Australia\'s largest city offers stunning harbor views, beautiful beaches, and vibrant cultural scene.',
     airports: ['SYD'],
     airlines: ['Qantas', 'Emirates', 'Singapore Airlines'],
@@ -156,6 +168,7 @@ const cities = [
     country: 'United Arab Emirates',
     countryCode: 'AE',
     image: '/images/cities/dubai.jpg',
+    video: '/video/dubai.mp4',
     description: 'A modern metropolis in the desert, offering luxury shopping, stunning architecture, and business excellence.',
     airports: ['DXB', 'DWC'],
     airlines: ['Emirates', 'Etihad Airways', 'Qatar Airways'],
@@ -168,27 +181,100 @@ const cities = [
     country: 'Japan',
     countryCode: 'JP',
     image: '/images/cities/tokyo.jpg',
+    video: '/video/tokyo.mp4',
     description: 'A fascinating blend of traditional culture and cutting-edge technology in Japan\'s bustling capital.',
     airports: ['NRT', 'HND'],
     airlines: ['Japan Airlines', 'ANA', 'Singapore Airlines'],
     attractions: ['Tokyo Tower', 'Senso-ji Temple', 'Shibuya Crossing'],
     continent: 'Asia'
+  },
+  {
+    name: 'New York',
+    slug: 'new-york',
+    country: 'United States',
+    countryCode: 'US',
+    image: '/images/cities/new-york.jpg',
+    // video: '/video/new-york.mp4', // Video file not available
+    description: 'The Big Apple - America\'s financial and cultural capital offering Broadway shows, world-class museums, and unparalleled business opportunities.',
+    airports: ['JFK', 'LGA', 'EWR'],
+    airlines: ['American Airlines', 'Delta', 'Emirates'],
+    attractions: ['Empire State Building', 'Brooklyn Bridge', 'Wall Street'],
+    continent: 'North America'
+  },
+  {
+    name: 'Hong Kong',
+    slug: 'hong-kong',
+    country: 'Hong Kong',
+    countryCode: 'HK',
+    image: '/images/cities/hong-kong.jpg',
+    // video: '/video/hong-kong.mp4', // Video file not available
+    description: 'Pearl of the Orient - where East meets West in a dynamic metropolis of towering skyscrapers, dim sum, and bustling harbors.',
+    airports: ['HKG'],
+    airlines: ['Cathay Pacific', 'Emirates', 'Singapore Airlines'],
+    attractions: ['Symphony of Lights', 'Tsim Sha Tsui Promenade', 'Wong Tai Sin Temple'],
+    continent: 'Asia'
   }
 ];
 
 const CityCard = ({ city }: { city: typeof cities[0] }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleMouseEnter = async () => {
+    setIsHovered(true);
+    if (videoRef.current && city.video) {
+      try {
+        videoRef.current.currentTime = 0;
+        await videoRef.current.play();
+      } catch (error) {
+        console.log('Video play failed:', error);
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
   return (
     <Link href={`/cities/${city.slug}`} className="group">
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group-hover:border-[#0ABAB5]/20 h-full flex flex-col">
-        {/* City Image */}
+      <div 
+        className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group-hover:border-[#0ABAB5]/20 h-full flex flex-col"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* City Image/Video */}
         <div className="relative h-48 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-          <Image
-            src={city.image}
-            alt={`${city.name} destination`}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          {isHovered && city.video ? (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              muted
+              loop
+              playsInline
+              autoPlay
+              onLoadedData={() => {
+                if (videoRef.current && isHovered) {
+                  videoRef.current.currentTime = 0;
+                  videoRef.current.play().catch(console.log);
+                }
+              }}
+            >
+              <source src={city.video} type="video/mp4" />
+            </video>
+          ) : (
+            <Image
+              src={city.image}
+              alt={`${city.name} destination`}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          )}
           {/* Country Badge */}
           <div className="absolute top-4 left-4 z-20">
             <span className="bg-white/90 text-[#0D2B29] text-xs font-medium px-2 py-1 rounded-full">

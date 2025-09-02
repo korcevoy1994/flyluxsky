@@ -193,6 +193,30 @@ export const DEFAULT_CITY_CONTENT: Record<string, CityContent> = {
     introText: 'Explore Doha\'s rich history and modern charm. Fly Lux Sky offers flight options and pricing designed to fit your itinerary and preferences. Whether for business meetings or sightseeing, expect spacious seating, priority boarding, and excellent service. Travel relaxed and arrive ready.',
     ctaTitle: 'Book Your Doha Business Class Flight Today.',
     ctaText: 'Experience premium travel to Doha.'
+  },
+  'new-york': {
+    slug: 'new-york',
+    title: 'New York',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to the United States',
+    heroImage: '/images/cities/new-york.jpg',
+    heroVideo: '/video/new-york.mp4',
+    introTitle: 'Enjoy Your New York Trip With Fly Lux Sky',
+    introText: 'Experience the energy of the Big Apple with Fly Lux Sky. From Broadway shows to Wall Street, New York offers endless opportunities. Our premium flight options ensure you arrive refreshed and ready to explore America\'s most dynamic city.',
+    ctaTitle: 'Book Your New York Business Class Flight Today.',
+    ctaText: 'Let Fly Lux Sky elevate your journey to New York with unmatched luxury and convenience. Contact our expert travel advisors to secure your exclusive fare.'
+  },
+  'hong-kong': {
+    slug: 'hong-kong',
+    title: 'Hong Kong',
+    subtitle: 'First & Business Class Flights',
+    description: 'Discover the Best First & Business Class Travel Deals to Hong Kong',
+    heroImage: '/images/cities/hong-kong.jpg',
+    heroVideo: '/video/hong-kong.mp4',
+    introTitle: 'Enjoy Your Hong Kong Trip With Fly Lux Sky',
+    introText: 'Discover where East meets West in Hong Kong. This vibrant metropolis combines traditional Chinese culture with modern international business. Fly Lux Sky ensures your journey to this Pearl of the Orient is as spectacular as the destination itself.',
+    ctaTitle: 'Book Your Hong Kong Business Class Flight Today.',
+    ctaText: 'Experience premium travel to Hong Kong with Fly Lux Sky. Our luxury service matches the sophistication of this world-class destination.'
   }
 }
 

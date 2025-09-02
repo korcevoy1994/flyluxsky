@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS marketing_codes (
   facebook_pixel TEXT DEFAULT '',
   google_ads_tag TEXT DEFAULT '',
   hotjar TEXT DEFAULT '',
+  kommo_chat TEXT DEFAULT '',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

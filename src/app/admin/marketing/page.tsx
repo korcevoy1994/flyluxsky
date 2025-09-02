@@ -13,6 +13,7 @@ interface MarketingCodes {
   facebookPixel: string
   googleAdsTag: string
   hotjar: string
+  kommoChat: string
 }
 
 const DEFAULT_MARKETING_CODES: MarketingCodes = {
@@ -22,7 +23,8 @@ const DEFAULT_MARKETING_CODES: MarketingCodes = {
   bingWebmasterTools: '',
   facebookPixel: '',
   googleAdsTag: '',
-  hotjar: ''
+  hotjar: '',
+  kommoChat: ''
 }
 
 export default function AdminMarketingPage() {
@@ -121,6 +123,12 @@ export default function AdminMarketingPage() {
       title: 'Hotjar',
       description: 'Hotjar tracking code for user behavior analytics',
       placeholder: 'Paste your Hotjar tracking code here...'
+    },
+    {
+      key: 'kommoChat' as keyof MarketingCodes,
+      title: 'Kommo Chat',
+      description: 'Kommo chat widget for customer support',
+      placeholder: 'Paste your Kommo chat script here...'
     }
   ]
 

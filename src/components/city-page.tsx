@@ -29,6 +29,8 @@ const IMAGE_FALLBACKS: Record<string, string> = {
   dubai: '/images/london-big.jpg',
   tokyo: '/images/london-big.jpg',
   doha: '/images/london-big.jpg',
+  'new-york': '/images/cities/new-york.jpg',
+  'hong-kong': '/images/cities/hong-kong.jpg',
 };
 
 export default function CityPage({ slug }: CityPageProps) {
