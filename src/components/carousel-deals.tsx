@@ -32,7 +32,8 @@ const deals: Deal[] = [
     discount: "33% OFF",
     image: "/images/deals/amsterdam.png",
     airline: "KLM",
-    duration: "8h 15m"
+    duration: "8h 15m",
+    video: "/video/amsterdam.mp4"
   },
   {
     id: 2,
@@ -43,7 +44,8 @@ const deals: Deal[] = [
     discount: "43% OFF", 
     image: "/images/deals/istanbul.png",
     airline: "Turkish Airlines",
-    duration: "6h 30m"
+    duration: "6h 30m",
+    video: "/video/istanbul.mp4"
   },
   {
     id: 3,
@@ -54,7 +56,8 @@ const deals: Deal[] = [
     discount: "33% OFF",
     image: "/images/deals/dubai.png",
     airline: "Emirates",    
-    duration: "7h 45m"
+    duration: "7h 45m",
+    video: "/video/dubai.mp4"
   },
   {
     id: 4,
@@ -65,7 +68,8 @@ const deals: Deal[] = [
     discount: "33% OFF",
     image: "/images/deals/sydney.png",
     airline: "Qantas",
-    duration: "15h 20m"
+    duration: "15h 20m",
+    video: "/video/sidney.mp4"
   },
   {
     id: 5,
@@ -77,7 +81,7 @@ const deals: Deal[] = [
     image: "/images/deals/paris.png", 
     airline: "Air France",
     duration: "9h 10m",
-    video: "/video/IMG_4041_1_1.mp4"
+    video: "/video/paris.mp4"
   },
   {
     id: 6,
@@ -88,7 +92,8 @@ const deals: Deal[] = [
     discount: "36% OFF",
     image: "/images/london.jpg",
     airline: "British Airways",
-    duration: "8h 45m"
+    duration: "8h 45m",
+    video: "/video/london.mp4"
   },
   {
     id: 7,
@@ -99,7 +104,8 @@ const deals: Deal[] = [
     discount: "33% OFF", 
     image: "/images/rome.jpg",
     airline: "Alitalia",
-    duration: "9h 30m"
+    duration: "9h 30m",
+    video: "/video/rome.mp4"
   },
   {
     id: 8,
@@ -110,7 +116,8 @@ const deals: Deal[] = [
     discount: "34% OFF",
     image: "/images/madrid.jpg",
     airline: "Iberia",
-    duration: "8h 20m"
+    duration: "8h 20m",
+    video: "/video/madrid.mp4"
   },
   {
     id: 9,
@@ -121,7 +128,8 @@ const deals: Deal[] = [
     discount: "35% OFF",
     image: "/images/athens.jpg",
     airline: "Aegean Airlines",
-    duration: "10h 15m"
+    duration: "10h 15m",
+    video: "/video/athenes.mp4"
   },
   {
     id: 10,
@@ -132,8 +140,10 @@ const deals: Deal[] = [
     discount: "34% OFF",
     image: "/images/lisbon.jpg", 
     airline: "TAP Air Portugal",
-    duration: "9h 45m"
-  }
+    duration: "9h 45m",
+    video: "/video/lisbon.mp4"
+  },
+
 ];
 
 // Custom Hook for Carousel Logic
@@ -272,6 +282,10 @@ export default function CarouselDeals() {
     Madrid: 'MAD',
     Athens: 'ATH',
     Lisbon: 'LIS',
+    Barcelona: 'BCN',
+    Frankfurt: 'FRA',
+    Singapore: 'SIN',
+    Tokyo: 'NRT',
   };
 
   const pickDestinationCode = (city: string, country: string): string => {
